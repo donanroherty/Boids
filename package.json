@@ -1,0 +1,8 @@
+{
+  "name": "boids",
+  "description": "An implementation of Craig Reynolds boids flocking algorithm",
+  "version": "1.0.0",
+  "author": "Ronan Doherty",
+  "license": "MIT",
+  "type": "module"
+}

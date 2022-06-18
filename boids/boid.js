@@ -8,6 +8,7 @@ function createBoid(pos, vel, canvas) {
     size: 5,
     detectionRange: 50,
     cohesionFactor: 0.2,
+    alignmentMaxStrength: 0.3,
     minSpeed: 50,
     maxSpeed: 150,
   }
@@ -21,6 +22,7 @@ function createBoid(pos, vel, canvas) {
 
     if (boidsInRange.length > 0) {
       addForce(cohesion(boidsInRange))
+      addForce(alignment(boidsInRange))
     }
 
     velocity = velocity.clampedLen(config.minSpeed, config.maxSpeed)
@@ -39,6 +41,18 @@ function createBoid(pos, vel, canvas) {
 
     const toGroupCenter = avgPos.sub(position)
     return toGroupCenter.scale(config.cohesionFactor)
+  }
+
+  function alignment(boids) {
+    const avgVel = boids
+      .reduce((acc, b) => {
+        acc = acc.add(b.getVelocity())
+        return acc
+      }, vec2())
+      .div(vec2(boids.length, boids.length))
+
+    const diff = avgVel.sub(velocity)
+    return diff.clampedLen(0, config.alignmentMaxStrength)
   }
 
   function addForce(force) {

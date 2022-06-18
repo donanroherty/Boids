@@ -8,6 +8,8 @@ function createBoid(pos, vel, canvas) {
     size: 5,
     detectionRange: 50,
     cohesionFactor: 0.2,
+    minSpeed: 50,
+    maxSpeed: 150,
   }
 
   function update(dt, boids) {
@@ -21,6 +23,7 @@ function createBoid(pos, vel, canvas) {
       addForce(cohesion(boidsInRange))
     }
 
+    velocity = velocity.clampedLen(config.minSpeed, config.maxSpeed)
     position = position.add(velocity.scale(dt))
 
     mirrorOutOfBounds()

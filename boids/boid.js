@@ -6,12 +6,40 @@ function createBoid(pos, vel, canvas) {
 
   let config = {
     size: 5,
+    detectionRange: 50,
+    cohesionFactor: 0.2,
   }
 
   function update(dt, boids) {
+    const boidsInRange = boids.filter(
+      (b) =>
+        position !== b.getPosition() &&
+        position.sub(b.getPosition()).lenSq() < config.detectionRange * config.detectionRange
+    )
+
+    if (boidsInRange.length > 0) {
+      addForce(cohesion(boidsInRange))
+    }
+
     position = position.add(velocity.scale(dt))
 
     mirrorOutOfBounds()
+  }
+
+  function cohesion(boids) {
+    const avgPos = boids
+      .reduce((acc, b) => {
+        acc = acc.add(b.getPosition())
+        return acc
+      }, vec2())
+      .div(vec2(boids.length, boids.length))
+
+    const toGroupCenter = avgPos.sub(position)
+    return toGroupCenter.scale(config.cohesionFactor)
+  }
+
+  function addForce(force) {
+    velocity = velocity.add(force)
   }
 
   function mirrorOutOfBounds() {

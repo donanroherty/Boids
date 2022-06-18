@@ -11,6 +11,7 @@ function createBoid(pos, vel, canvas) {
     alignmentMaxStrength: 0.3,
     separationMaxStrength: 10,
     separationRange: 30,
+    dragFactor: 0.01,
     minSpeed: 50,
     maxSpeed: 150,
   }
@@ -29,6 +30,8 @@ function createBoid(pos, vel, canvas) {
     }
 
     velocity = velocity.clampedLen(config.minSpeed, config.maxSpeed)
+    addForce(drag())
+
     position = position.add(velocity.scale(dt))
 
     mirrorOutOfBounds()
@@ -70,6 +73,10 @@ function createBoid(pos, vel, canvas) {
       const perc = 1 - dist / config.separationRange
       return acc.add(ba.norm().scale(config.separationMaxStrength * perc))
     }, vec2())
+  }
+
+  function drag() {
+    return velocity.scale(-config.dragFactor)
   }
 
   function addForce(force) {

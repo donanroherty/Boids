@@ -9,6 +9,8 @@ function createBoid(pos, vel, canvas) {
     detectionRange: 50,
     cohesionFactor: 0.2,
     alignmentMaxStrength: 0.3,
+    separationMaxStrength: 10,
+    separationRange: 30,
     minSpeed: 50,
     maxSpeed: 150,
   }
@@ -23,6 +25,7 @@ function createBoid(pos, vel, canvas) {
     if (boidsInRange.length > 0) {
       addForce(cohesion(boidsInRange))
       addForce(alignment(boidsInRange))
+      addForce(separation(boidsInRange))
     }
 
     velocity = velocity.clampedLen(config.minSpeed, config.maxSpeed)
@@ -53,6 +56,20 @@ function createBoid(pos, vel, canvas) {
 
     const diff = avgVel.sub(velocity)
     return diff.clampedLen(0, config.alignmentMaxStrength)
+  }
+
+  function separation(boids) {
+    const boidsTooClose = boids.filter(
+      (b) => position.sub(b.getPosition()).lenSq() < config.separationRange * config.separationRange
+    )
+
+    return boidsTooClose.reduce((acc, other) => {
+      const ba = getPosition().sub(other.getPosition())
+      const dist = ba.len()
+
+      const perc = 1 - dist / config.separationRange
+      return acc.add(ba.norm().scale(config.separationMaxStrength * perc))
+    }, vec2())
   }
 
   function addForce(force) {

@@ -133,11 +133,21 @@ function createBoid(pos, vel, canvas) {
     return velocity
   }
 
+  function getConfig() {
+    return config
+  }
+
+  function setConfig(cfg) {
+    config = cfg
+  }
+
   return {
     update,
     draw,
     getPosition,
     getVelocity,
+    getConfig,
+    setConfig,
   }
 }
 

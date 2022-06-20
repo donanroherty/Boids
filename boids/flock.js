@@ -14,7 +14,7 @@ function createFlock(canvas) {
     const vel = vec2(-Math.random() + Math.random(), -Math.random() + Math.random())
       .norm()
       .scale(100)
-    return createBoid(pos, vel)
+    return createBoid(pos, vel, canvas)
   }
 
   function update(dt) {
@@ -29,10 +29,38 @@ function createFlock(canvas) {
     boids.forEach((boid) => boid.draw(canvas))
   }
 
+  function updateFlockSize() {
+    if (boids.length > numBoids) {
+      return boids.slice(0, boids.length - (boids.length - numBoids) - 1)
+    } else if (boids.length < numBoids) {
+      return boids.concat(
+        Array(numBoids - boids.length)
+          .fill(undefined)
+          .map((_) => createRandomBoid())
+      )
+    }
+    return boids
+  }
+
+  function setNumBoids(num) {
+    numBoids = num
+    boids = updateFlockSize()
+  }
+
+  function setFlockConfig(cfg) {
+    boids.forEach((b) => b.setConfig(cfg))
+  }
+
+  function getBoids() {
+    return boids
+  }
+
   return {
     update,
     getBoids,
     draw,
+    setNumBoids,
+    setFlockConfig,
   }
 }
 

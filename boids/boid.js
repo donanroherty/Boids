@@ -1,6 +1,6 @@
 import vec2 from "./vec2.js"
 
-function createBoid(pos, vel) {
+function createBoid(pos, vel, canvas) {
   let position = pos
   let velocity = vel
 
@@ -8,7 +8,27 @@ function createBoid(pos, vel) {
     size: 5,
   }
 
-  function update(dt, boids) {}
+  function update(dt, boids) {
+    position = position.add(velocity.scale(dt))
+
+    mirrorOutOfBounds()
+  }
+
+  function mirrorOutOfBounds() {
+    const { clientWidth: x, clientHeight: y } = canvas
+
+    if (position.y > y) {
+      position.y = position.y - y
+    } else if (position.y < 0) {
+      position.y = y + position.y
+    }
+
+    if (position.x > x) {
+      position.x = position.x - x
+    } else if (position.x < 0) {
+      position.x = x + position.x
+    }
+  }
 
   function draw(canvas) {
     const ctx = canvas.getContext("2d")

@@ -4,8 +4,8 @@ function RangeSlider(props = defaultProps) {
   }
 
   return (
-    <div>
-      <label>{props.label}</label>
+    <div class="flex flex-row py-1 text-xs">
+      <label class="">{props.label}</label>
       <input
         type="range"
         min={props.min}
@@ -13,8 +13,9 @@ function RangeSlider(props = defaultProps) {
         value={props.value}
         step={props.step}
         onInput={onInput}
+        class="ml-auto mt-[.45rem] h-1 bg-gray-200  appearance-none slider-thumb rounded-sm border-[1px] border-gray-300 border-solid"
       ></input>
-      <div>{props.value}</div>
+      <div class="w-10 ml-2 text-right">{props.value}</div>
     </div>
   )
 }

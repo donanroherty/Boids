@@ -58,95 +58,100 @@ function Controls(props = defaultProps) {
   }
 
   return (
-    <div>
-      <RangeSlider
-        label="Num Boids"
-        min={0}
-        max={500}
-        step={1}
-        value={numBoids()}
-        setValue={setNumBoids}
-      />
-      <RangeSlider
-        label="Detection Range"
-        min={0}
-        max={300}
-        step={0.001}
-        value={detectionRange()}
-        setValue={setDetectionRange}
-      />
-      <RangeSlider
-        label="Cohesion Factor"
-        min={0}
-        max={0.5}
-        step={0.001}
-        value={cohesionFactor()}
-        setValue={setCohesionFactor}
-      />
-      <RangeSlider
-        label="Alignment Force"
-        min={0}
-        max={2}
-        step={0.001}
-        value={alignmentMaxStrength()}
-        setValue={setAlignmentMaxStrength}
-      />
-      <RangeSlider
-        label="Separation Force"
-        min={0}
-        max={20}
-        step={0.001}
-        value={separationMaxStrength()}
-        setValue={setSeparationMaxStrength}
-      />
-      <RangeSlider
-        label="Separation Range"
-        min={0}
-        max={50}
-        step={0.001}
-        value={separationRange()}
-        setValue={setSeparationRange}
-      />
-
-      <RangeSlider
-        label="Drag"
-        min={0}
-        max={0.5}
-        step={0.001}
-        value={dragFactor()}
-        setValue={seetDragFactor}
-      />
-      <RangeSlider
-        label="Min Speed"
-        min={0}
-        max={500}
-        step={0.001}
-        value={minSpeed()}
-        setValue={setMinSpeed}
-      />
-      <RangeSlider
-        label="Max Speed"
-        min={0}
-        max={500}
-        step={0.001}
-        value={maxSpeed()}
-        setValue={setMaxSpeed}
-      />
-      <RangeSlider
-        label="Size"
-        id="size"
-        min={0}
-        max={15}
-        step={0.001}
-        value={size()}
-        setValue={setSize}
-      />
-      <button
-        onClick={reset}
-        class="bg-gray-400 hover:bg-gray-300 text-white font-bold rounded-md border-[1px] border-gray-500 border-solid w-full px-4 h-full mt-1"
-      >
-        Reset
-      </button>
+    <div class="px-2 py-2 bg-gray-100 rounded-bl-md rounded-br-md border-[1px] border-black border-solid border-t-inherit">
+      <div class="grid grid-cols-2 gap-x-1 gap-y-2px">
+        <div class="pr-2 flex flex-col">
+          <RangeSlider
+            label="Num Boids"
+            min={0}
+            max={500}
+            step={1}
+            value={numBoids()}
+            setValue={setNumBoids}
+          />
+          <RangeSlider
+            label="Detection Range"
+            min={0}
+            max={300}
+            step={0.001}
+            value={detectionRange()}
+            setValue={setDetectionRange}
+          />
+          <RangeSlider
+            label="Cohesion Factor"
+            min={0}
+            max={0.5}
+            step={0.001}
+            value={cohesionFactor()}
+            setValue={setCohesionFactor}
+          />
+          <RangeSlider
+            label="Alignment Force"
+            min={0}
+            max={2}
+            step={0.001}
+            value={alignmentMaxStrength()}
+            setValue={setAlignmentMaxStrength}
+          />
+          <RangeSlider
+            label="Separation Force"
+            min={0}
+            max={20}
+            step={0.001}
+            value={separationMaxStrength()}
+            setValue={setSeparationMaxStrength}
+          />
+          <RangeSlider
+            label="Separation Range"
+            min={0}
+            max={50}
+            step={0.001}
+            value={separationRange()}
+            setValue={setSeparationRange}
+          />
+        </div>
+        <div class="pl-2 flex flex-col">
+          <RangeSlider
+            label="Drag"
+            min={0}
+            max={0.5}
+            step={0.001}
+            value={dragFactor()}
+            setValue={seetDragFactor}
+          />
+          <RangeSlider
+            label="Min Speed"
+            min={0}
+            max={500}
+            step={0.001}
+            value={minSpeed()}
+            setValue={setMinSpeed}
+          />
+          <RangeSlider
+            label="Max Speed"
+            min={0}
+            max={500}
+            step={0.001}
+            value={maxSpeed()}
+            setValue={setMaxSpeed}
+          />
+          <RangeSlider
+            label="Boid Size"
+            id="size"
+            min={0}
+            max={15}
+            step={0.001}
+            value={size()}
+            setValue={setSize}
+          />
+          <button
+            onClick={reset}
+            class="bg-gray-400 hover:bg-gray-300 text-white font-bold rounded-md border-[1px] border-gray-500 border-solid w-full px-4 h-full mt-1"
+          >
+            Reset
+          </button>
+        </div>
+      </div>
     </div>
   )
 }

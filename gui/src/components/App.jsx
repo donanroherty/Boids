@@ -13,8 +13,13 @@ function App() {
   })
 
   return (
-    <div>
-      <canvas ref={canvas} width={canvasSize().x} height={canvasSize().y}></canvas>
+    <div class="w-[640px] shadow-sm">
+      <canvas
+        ref={canvas}
+        class="w-full border-[1px] border-black border-solid rounded-bl-md rounded-br-md"
+        width={canvasSize().x}
+        height={canvasSize().y}
+      ></canvas>
       <Controls boidsApp={boidsApp()} />
     </div>
   )

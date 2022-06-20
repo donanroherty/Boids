@@ -1,7 +1,6 @@
-import styles from "./App.module.css"
 import createBoidsApp from "../../../boids/app"
-
 import { onMount, createSignal } from "solid-js"
+import Controls from "./Controls"
 
 function App() {
   let canvas
@@ -14,13 +13,9 @@ function App() {
   })
 
   return (
-    <div class={styles.App}>
-      <canvas
-        ref={canvas}
-        class={styles.canvas}
-        width={canvasSize().x}
-        height={canvasSize().y}
-      ></canvas>
+    <div>
+      <canvas ref={canvas} width={canvasSize().x} height={canvasSize().y}></canvas>
+      <Controls boidsApp={boidsApp()} />
     </div>
   )
 }

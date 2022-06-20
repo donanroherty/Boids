@@ -7,7 +7,11 @@ function createBoidsApp(canvas) {
   const tick = createTick(update)
 
   function update(deltatime) {
+    const ctx = canvas.getContext("2d")
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+
     flock.update(deltatime)
+    flock.draw(canvas)
   }
 
   return {

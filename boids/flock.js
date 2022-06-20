@@ -25,9 +25,14 @@ function createFlock(canvas) {
     return boids
   }
 
+  function draw(canvas) {
+    boids.forEach((boid) => boid.draw(canvas))
+  }
+
   return {
-    getBoids,
     update,
+    getBoids,
+    draw,
   }
 }
 

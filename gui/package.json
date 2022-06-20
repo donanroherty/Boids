@@ -1,0 +1,20 @@
+{
+  "name": "boids",
+  "version": "1.0.0",
+  "description": "An implementation of Craig Reynolds boids flocking algorithm",
+  "author": "Ronan Doherty",
+  "license": "MIT",
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^2.9.9",
+    "vite-plugin-solid": "^2.2.6"
+  },
+  "dependencies": {
+    "solid-js": "^1.4.2"
+  }
+}

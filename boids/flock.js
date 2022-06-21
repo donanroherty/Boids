@@ -9,7 +9,7 @@ function createFlock(canvas) {
     .map((_) => createRandomBoid())
 
   function createRandomBoid() {
-    const sceneSize = vec2(canvas.clientWidth, canvas.clientHeight)
+    const sceneSize = vec2(canvas.width, canvas.height)
     const pos = sceneSize.mul(vec2(Math.random(), Math.random()))
     const vel = vec2(-Math.random() + Math.random(), -Math.random() + Math.random())
       .norm()

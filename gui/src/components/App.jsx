@@ -22,7 +22,7 @@ function App(props) {
   return (
     <>
       <style>{styles}</style>
-      <div class="w-[640px] shadow-sm relative font-sans">
+      <div class="w-full shadow-sm relative font-sans">
         <canvas
           ref={canvas}
           class="w-full border-[1px] border-black border-solid rounded-bl-md rounded-br-md"

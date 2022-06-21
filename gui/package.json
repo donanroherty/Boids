@@ -6,10 +6,10 @@
   "license": "MIT",
   "scripts": {
     "start": "vite",
-    "dev": "vite",
-    "build": "vite build",
-    "serve": "vite preview",
-    "build:webcomponent": "npx rollup -c"
+    "dev": "vite --host",
+    "build": "npx rollup -c",
+    "build:app": "vite build",
+    "serve": "vite preview"
   },
   "dependencies": {
     "solid-js": "^1.4.4"

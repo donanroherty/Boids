@@ -73,7 +73,7 @@ function Controls(props = defaultProps) {
             label="Detection Range"
             min={0}
             max={300}
-            step={0.001}
+            step={0.1}
             value={detectionRange()}
             setValue={setDetectionRange}
           />
@@ -81,7 +81,7 @@ function Controls(props = defaultProps) {
             label="Cohesion Factor"
             min={0}
             max={0.5}
-            step={0.001}
+            step={0.01}
             value={cohesionFactor()}
             setValue={setCohesionFactor}
           />
@@ -89,7 +89,7 @@ function Controls(props = defaultProps) {
             label="Alignment Force"
             min={0}
             max={2}
-            step={0.001}
+            step={0.01}
             value={alignmentMaxStrength()}
             setValue={setAlignmentMaxStrength}
           />
@@ -97,7 +97,7 @@ function Controls(props = defaultProps) {
             label="Separation Force"
             min={0}
             max={20}
-            step={0.001}
+            step={0.1}
             value={separationMaxStrength()}
             setValue={setSeparationMaxStrength}
           />
@@ -105,7 +105,7 @@ function Controls(props = defaultProps) {
             label="Separation Range"
             min={0}
             max={50}
-            step={0.001}
+            step={0.1}
             value={separationRange()}
             setValue={setSeparationRange}
           />
@@ -123,7 +123,7 @@ function Controls(props = defaultProps) {
             label="Min Speed"
             min={0}
             max={500}
-            step={0.001}
+            step={0.1}
             value={minSpeed()}
             setValue={setMinSpeed}
           />
@@ -131,7 +131,7 @@ function Controls(props = defaultProps) {
             label="Max Speed"
             min={0}
             max={500}
-            step={0.001}
+            step={0.1}
             value={maxSpeed()}
             setValue={setMaxSpeed}
           />
@@ -140,7 +140,7 @@ function Controls(props = defaultProps) {
             id="size"
             min={0}
             max={15}
-            step={0.001}
+            step={0.1}
             value={size()}
             setValue={setSize}
           />

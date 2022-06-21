@@ -29,22 +29,18 @@ function createFlock(canvas) {
     boids.forEach((boid) => boid.draw(canvas))
   }
 
-  function updateFlockSize() {
+  function setNumBoids(num) {
+    numBoids = num
+
     if (boids.length > numBoids) {
-      return boids.slice(0, boids.length - (boids.length - numBoids) - 1)
+      boids = boids.slice(0, boids.length - (boids.length - numBoids))
     } else if (boids.length < numBoids) {
-      return boids.concat(
+      boids = boids.concat(
         Array(numBoids - boids.length)
           .fill(undefined)
           .map((_) => createRandomBoid())
       )
     }
-    return boids
-  }
-
-  function setNumBoids(num) {
-    numBoids = num
-    boids = updateFlockSize()
   }
 
   function setFlockConfig(cfg) {

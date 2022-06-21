@@ -59,8 +59,8 @@ function Controls(props = defaultProps) {
 
   return (
     <div class="px-2 py-2 bg-gray-100 rounded-bl-md rounded-br-md border-[1px] border-black border-solid border-t-inherit">
-      <div class="grid grid-cols-2 gap-x-1 gap-y-2px">
-        <div class="pr-2 flex flex-col">
+      <div class="grid sm:grid-cols-2 gap-x-1 gap-y-2px">
+        <div class="sm:pr-2 flex flex-col">
           <RangeSlider
             label="Num Boids"
             min={0}
@@ -73,7 +73,7 @@ function Controls(props = defaultProps) {
             label="Detection Range"
             min={0}
             max={300}
-            step={0.001}
+            step={0.1}
             value={detectionRange()}
             setValue={setDetectionRange}
           />
@@ -81,7 +81,7 @@ function Controls(props = defaultProps) {
             label="Cohesion Factor"
             min={0}
             max={0.5}
-            step={0.001}
+            step={0.01}
             value={cohesionFactor()}
             setValue={setCohesionFactor}
           />
@@ -89,7 +89,7 @@ function Controls(props = defaultProps) {
             label="Alignment Force"
             min={0}
             max={2}
-            step={0.001}
+            step={0.01}
             value={alignmentMaxStrength()}
             setValue={setAlignmentMaxStrength}
           />
@@ -97,7 +97,7 @@ function Controls(props = defaultProps) {
             label="Separation Force"
             min={0}
             max={20}
-            step={0.001}
+            step={0.1}
             value={separationMaxStrength()}
             setValue={setSeparationMaxStrength}
           />
@@ -105,16 +105,16 @@ function Controls(props = defaultProps) {
             label="Separation Range"
             min={0}
             max={50}
-            step={0.001}
+            step={0.1}
             value={separationRange()}
             setValue={setSeparationRange}
           />
         </div>
-        <div class="pl-2 flex flex-col">
+        <div class="sm:pl-2 flex flex-col">
           <RangeSlider
             label="Drag"
             min={0}
-            max={0.5}
+            max={0.2}
             step={0.001}
             value={dragFactor()}
             setValue={seetDragFactor}
@@ -123,7 +123,7 @@ function Controls(props = defaultProps) {
             label="Min Speed"
             min={0}
             max={500}
-            step={0.001}
+            step={0.1}
             value={minSpeed()}
             setValue={setMinSpeed}
           />
@@ -131,7 +131,7 @@ function Controls(props = defaultProps) {
             label="Max Speed"
             min={0}
             max={500}
-            step={0.001}
+            step={0.1}
             value={maxSpeed()}
             setValue={setMaxSpeed}
           />
@@ -140,16 +140,18 @@ function Controls(props = defaultProps) {
             id="size"
             min={0}
             max={15}
-            step={0.001}
+            step={0.1}
             value={size()}
             setValue={setSize}
           />
-          <button
-            onClick={reset}
-            class="bg-gray-400 hover:bg-gray-300 text-white font-bold rounded-md border-[1px] border-gray-500 border-solid w-full px-4 h-full mt-1"
-          >
-            Reset
-          </button>
+          <div class="pt-2 pb-1 w-full h-full">
+            <button
+              onClick={reset}
+              class="bg-gray-400 hover:bg-gray-300 text-white font-bold rounded-md border-[1px] border-gray-500 border-solid w-full h-full"
+            >
+              Reset
+            </button>
+          </div>
         </div>
       </div>
     </div>

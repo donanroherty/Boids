@@ -84,7 +84,7 @@ function createBoid(pos, vel, canvas) {
   }
 
   function mirrorOutOfBounds() {
-    const { clientWidth: x, clientHeight: y } = canvas
+    const { width: x, height: y } = canvas
 
     if (position.y > y) {
       position.y = position.y - y

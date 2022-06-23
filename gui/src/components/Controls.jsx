@@ -1,8 +1,8 @@
 import { createEffect, createSignal } from "solid-js"
 import RangeSlider from "./RangeSlider"
 
-let numBoidsDefault = 100
-let cfg = {
+let flock = {
+  numBoids: 100,
   size: 5,
   detectionRange: 50,
   cohesionFactor: 0.2,
@@ -15,19 +15,24 @@ let cfg = {
 }
 
 function Controls(props = defaultProps) {
-  const [numBoids, setNumBoids] = createSignal(numBoidsDefault)
-  const [size, setSize] = createSignal(cfg.size)
-  const [detectionRange, setDetectionRange] = createSignal(cfg.detectionRange)
-  const [cohesionFactor, setCohesionFactor] = createSignal(cfg.cohesionFactor)
-  const [alignmentMaxStrength, setAlignmentMaxStrength] = createSignal(cfg.alignmentMaxStrength)
-  const [separationMaxStrength, setSeparationMaxStrength] = createSignal(cfg.separationMaxStrength)
-  const [separationRange, setSeparationRange] = createSignal(cfg.separationRange)
-  const [dragFactor, seetDragFactor] = createSignal(cfg.dragFactor)
-  const [minSpeed, setMinSpeed] = createSignal(cfg.minSpeed)
-  const [maxSpeed, setMaxSpeed] = createSignal(cfg.maxSpeed)
+  const [numBoids, setNumBoids] = createSignal(flock.numBoids)
+  const [size, setSize] = createSignal(flock.size)
+  const [detectionRange, setDetectionRange] = createSignal(flock.detectionRange)
+  const [cohesionFactor, setCohesionFactor] = createSignal(flock.cohesionFactor)
+  const [alignmentMaxStrength, setAlignmentMaxStrength] = createSignal(flock.alignmentMaxStrength)
+  const [separationMaxStrength, setSeparationMaxStrength] = createSignal(
+    flock.separationMaxStrength
+  )
+  const [separationRange, setSeparationRange] = createSignal(flock.separationRange)
+  const [dragFactor, seetDragFactor] = createSignal(flock.dragFactor)
+  const [minSpeed, setMinSpeed] = createSignal(flock.minSpeed)
+  const [maxSpeed, setMaxSpeed] = createSignal(flock.maxSpeed)
 
   createEffect(() => {
+    if (!props.boidsApp) return
+
     let config = {
+      numBoids: numBoids(),
       size: size(),
       detectionRange: detectionRange(),
       cohesionFactor: cohesionFactor(),
@@ -39,22 +44,20 @@ function Controls(props = defaultProps) {
       maxSpeed: maxSpeed(),
     }
 
-    if (!props.boidsApp) return
     props.boidsApp.flock.setFlockConfig(config)
-    props.boidsApp.flock.setNumBoids(numBoids())
   })
 
   function reset() {
-    setNumBoids(numBoidsDefault)
-    setSize(cfg.size)
-    setDetectionRange(cfg.detectionRange)
-    setCohesionFactor(cfg.cohesionFactor)
-    setAlignmentMaxStrength(cfg.alignmentMaxStrength)
-    setSeparationMaxStrength(cfg.separationMaxStrength)
-    setSeparationRange(cfg.separationRange)
-    seetDragFactor(cfg.dragFactor)
-    setMinSpeed(cfg.minSpeed)
-    setMaxSpeed(cfg.maxSpeed)
+    setNumBoids(flock.numBoids)
+    setSize(flock.size)
+    setDetectionRange(flock.detectionRange)
+    setCohesionFactor(flock.cohesionFactor)
+    setAlignmentMaxStrength(flock.alignmentMaxStrength)
+    setSeparationMaxStrength(flock.separationMaxStrength)
+    setSeparationRange(flock.separationRange)
+    seetDragFactor(flock.dragFactor)
+    setMinSpeed(flock.minSpeed)
+    setMaxSpeed(flock.maxSpeed)
   }
 
   return (

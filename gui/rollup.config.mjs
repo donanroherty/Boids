@@ -5,13 +5,16 @@ import babel from "rollup-plugin-babel"
 import postcss from "rollup-plugin-postcss"
 import autoprefixer from "autoprefixer"
 import tailwindcss from "tailwindcss"
+import path from "path"
+import fs from "fs"
 
 const extensions = [".js", ".jsx"]
+const version = JSON.parse(fs.readFileSync(`../package.json`, "utf8")).version
 
 export default {
   input: "./src/boids-element.jsx",
   output: {
-    file: "dist/boids-element.mjs",
+    file: `dist/boids-element_${version}.mjs`,
     format: "es",
   },
   external: [],

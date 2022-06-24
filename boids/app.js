@@ -9,6 +9,15 @@ function boidsApp(canvas) {
   const tick = createTick(update)
   tick.start()
 
+  const app = {
+    canvas,
+    getFlocks,
+    addFlock,
+    removeFlock,
+    tick,
+    getSceneSize,
+  }
+
   function update(deltatime) {
     const ctx = canvas.getContext("2d")
     ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -19,7 +28,7 @@ function boidsApp(canvas) {
     })
   }
 
-  function addFlock(app, cfg) {
+  function addFlock(cfg) {
     const f = flock(app, cfg)
     flocks = [...flocks, f]
     return f
@@ -37,14 +46,7 @@ function boidsApp(canvas) {
     return vec2(canvas.width, canvas.height)
   }
 
-  return {
-    canvas,
-    getFlocks,
-    addFlock,
-    removeFlock,
-    tick,
-    getSceneSize,
-  }
+  return app
 }
 
 export default boidsApp

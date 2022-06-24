@@ -1,20 +1,31 @@
+import { createSignal } from "solid-js"
+
 function RangeSlider(props = defaultProps) {
   const split = String(props.step).split(".")
   const decimals = split.length > 1 ? split[1].length : 0
 
+  function onInput(e) {
+    props.setValue(parseFloat(e.target.value))
+  }
+
   return (
-    <div class="flex flex-row py-1 text-xs w-full h-7">
-      <label class="w-64 my-auto">{props.label}</label>
+    <div
+      class={`flex h-7 w-full select-none flex-row py-1 text-xs ${
+        props.disabled && "text-gray-400"
+      }`}
+    >
+      <label class="my-auto w-64">{props.label}</label>
       <input
+        disabled={props.disabled}
         type="range"
         min={props.min}
         max={props.max}
-        value={props.value}
+        value={props.disabled ? 0 : props.value}
         step={props.step}
-        onInput={(e) => props.setValue(e.target.value)}
-        class="w-full h-full my-auto ml-auto bg-gray-200  appearance-none slider-thumb rounded-sm border-[1px] border-gray-300 border-solid"
+        onInput={onInput}
+        class="slider-thumb my-auto ml-auto h-full w-full  appearance-none rounded-sm border-[1px] border-solid border-gray-300 bg-gray-200"
       ></input>
-      <div class="w-16 h-full ml-2 text-right">{parseFloat(props.value).toFixed(decimals)}</div>
+      <div class="ml-2 h-full w-16 text-right">{parseFloat(props.value).toFixed(decimals)}</div>
     </div>
   )
 }

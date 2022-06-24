@@ -7,7 +7,9 @@ function createTick(tickFn) {
   let timeout
   let lastRealDelta
 
-  doTick_R(performance.now())
+  function start() {
+    doTick_R(performance.now())
+  }
 
   function doTick_R(timestamp) {
     const now = performance.now()
@@ -23,6 +25,7 @@ function createTick(tickFn) {
   }
 
   return {
+    start,
     targetFPS,
     getTimeout: () => timeout,
     getLastRealDelta: () => lastRealDelta,

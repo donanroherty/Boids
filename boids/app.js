@@ -1,24 +1,52 @@
 import createTick from "./tick.js"
-import createFlock from "./flock.js"
+import flock from "./flock.js"
+import vec2 from "./vec2.js"
 
-function createBoidsApp(canvas) {
+function boidsApp(canvas) {
   canvas.style.transform = "scaleY(-1)" // flip y axis
-  const flock = createFlock(canvas)
+
+  let flocks = []
   const tick = createTick(update)
+  tick.start()
+
+  const app = {
+    canvas,
+    getFlocks,
+    addFlock,
+    removeFlock,
+    tick,
+    getSceneSize,
+  }
 
   function update(deltatime) {
     const ctx = canvas.getContext("2d")
     ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-    flock.update(deltatime)
-    flock.draw(canvas)
+    flocks.forEach((flock) => {
+      flock.update(deltatime)
+      flock.draw(canvas)
+    })
   }
 
-  return {
-    canvas,
-    flock,
-    tick,
+  function addFlock(cfg) {
+    const f = flock(app, cfg)
+    flocks = [...flocks, f]
+    return f
   }
+
+  function removeFlock(flock) {
+    flocks = flocks.filter((f) => f !== flock)
+  }
+
+  function getFlocks() {
+    return flocks
+  }
+
+  function getSceneSize() {
+    return vec2(canvas.width, canvas.height)
+  }
+
+  return app
 }
 
-export default createBoidsApp
+export default boidsApp

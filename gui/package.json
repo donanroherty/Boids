@@ -21,6 +21,8 @@
     "babel": "^6.23.0",
     "babel-preset-solid": "^1.4.4",
     "postcss": "^8.4.14",
+    "prettier": "^2.7.1",
+    "prettier-plugin-tailwindcss": "^0.1.11",
     "rollup": "^2.75.7",
     "rollup-plugin-babel": "^4.4.0",
     "rollup-plugin-node": "^0.1.5",

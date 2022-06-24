@@ -1,43 +1,61 @@
 import vec2 from "./vec2.js"
 
-function createBoid(pos, vel, canvas) {
+function boid(pos, vel, flock, app) {
   let position = pos
   let velocity = vel
 
-  let config = {
-    size: 5,
-    detectionRange: 50,
-    cohesionFactor: 0.2,
-    alignmentMaxStrength: 0.3,
-    separationMaxStrength: 10,
-    separationRange: 30,
-    dragFactor: 0.01,
-    minSpeed: 50,
-    maxSpeed: 150,
+  let config = flock.getConfig()
+
+  const self = {
+    update,
+    draw,
+    getPosition,
+    getVelocity,
+    getConfig,
+    setConfig,
+    getFlock,
   }
 
-  function update(dt, boids) {
-    const boidsInRange = boids.filter(
-      (b) =>
-        position !== b.getPosition() &&
-        position.sub(b.getPosition()).lenSq() < config.detectionRange * config.detectionRange
-    )
+  function update(dt) {
+    const boids = getBoidsInRange()
 
-    if (boidsInRange.length > 0) {
-      addForce(cohesion(boidsInRange))
-      addForce(alignment(boidsInRange))
-      addForce(separation(boidsInRange))
+    // update forces
+    {
+      if (boids.length > 0) {
+        addForce(cohesion(filterRelevantBoids(boids, config.coheseWithOtherFlocks)))
+        addForce(alignment(filterRelevantBoids(boids, config.alignWithOtherFlocks)))
+        addForce(separation(filterRelevantBoids(boids, config.separateFromOtherFlocks)))
+      }
+      velocity = velocity.clampedLen(config.minSpeed, config.maxSpeed)
+      addForce(drag())
     }
-
-    velocity = velocity.clampedLen(config.minSpeed, config.maxSpeed)
-    addForce(drag())
 
     position = position.add(velocity.scale(dt))
 
     mirrorOutOfBounds()
   }
 
+  function getBoidsInRange() {
+    const allBoids = app.getFlocks().reduce((acc, f) => acc.concat(f.getBoids()), [])
+    const relevantBoids = allBoids.filter(
+      (b) =>
+        b !== self &&
+        position.sub(b.getPosition()).lenSq() < config.detectionRange * config.detectionRange
+    )
+    return relevantBoids
+  }
+
+  function filterRelevantBoids(boids, filter) {
+    return boids.filter((b) => {
+      if (getFlock() === b.getFlock()) return true
+      if (filter) return true
+      return false
+    })
+  }
+
   function cohesion(boids) {
+    if (boids.length === 0) return vec2()
+
     const avgPos = boids
       .reduce((acc, b) => {
         acc = acc.add(b.getPosition())
@@ -50,6 +68,8 @@ function createBoid(pos, vel, canvas) {
   }
 
   function alignment(boids) {
+    if (boids.length === 0) return vec2()
+
     const avgVel = boids
       .reduce((acc, b) => {
         acc = acc.add(b.getVelocity())
@@ -62,6 +82,8 @@ function createBoid(pos, vel, canvas) {
   }
 
   function separation(boids) {
+    if (boids.length === 0) return vec2()
+
     const boidsTooClose = boids.filter(
       (b) => position.sub(b.getPosition()).lenSq() < config.separationRange * config.separationRange
     )
@@ -84,7 +106,7 @@ function createBoid(pos, vel, canvas) {
   }
 
   function mirrorOutOfBounds() {
-    const { width: x, height: y } = canvas
+    const { x, y } = app.getSceneSize()
 
     if (position.y > y) {
       position.y = position.y - y
@@ -120,8 +142,8 @@ function createBoid(pos, vel, canvas) {
     ctx.lineTo(p1.x, p1.y)
     ctx.lineTo(p2.x, p2.y)
     ctx.closePath()
-    ctx.fillStyle = "black"
-    ctx.fill()
+    ctx.strokeStyle = config.color
+    ctx.stroke()
     ctx.restore()
   }
 
@@ -141,14 +163,11 @@ function createBoid(pos, vel, canvas) {
     config = cfg
   }
 
-  return {
-    update,
-    draw,
-    getPosition,
-    getVelocity,
-    getConfig,
-    setConfig,
+  function getFlock() {
+    return flock
   }
+
+  return self
 }
 
-export default createBoid
+export default boid

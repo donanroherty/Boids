@@ -11,7 +11,21 @@
 
     <script type="module">
       import createBoidsApp from "/boids/app.js"
-      createBoidsApp(document.getElementById("cvs"))
+      const app = createBoidsApp(document.getElementById("cvs"))
+      app.addFlock(app, {
+        color: "blue",
+        numBoids: 40,
+        coheseWithOtherFlocks: true,
+        alignWithOtherFlocks: true,
+        separateFromOtherFlocks: true,
+      })
+      app.addFlock(app, {
+        color: "black",
+        numBoids: 40,
+        coheseWithOtherFlocks: false,
+        alignWithOtherFlocks: false,
+        separateFromOtherFlocks: false,
+      })
     </script>
   </body>
 </html>

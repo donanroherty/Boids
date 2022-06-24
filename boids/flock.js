@@ -14,6 +14,9 @@ function flock(app, initialConfig = {}) {
     dragFactor: 0.01,
     minSpeed: 50,
     maxSpeed: 150,
+    coheseWithOtherFlocks: false,
+    alignWithOtherFlocks: false,
+    separateFromOtherFlocks: false,
     ...initialConfig,
   }
 

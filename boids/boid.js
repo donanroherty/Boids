@@ -17,31 +17,45 @@ function boid(pos, vel, flock, app) {
   }
 
   function update(dt) {
-    const boids = app
-      .getFlocks()
-      .reduce((acc, f) => acc.concat(f.getBoids()), [])
-      .filter(
-        (b) =>
-          b !== self &&
-          position.sub(b.getPosition()).lenSq() < config.detectionRange * config.detectionRange
-      )
+    const boids = getBoidsInRange()
 
     // update forces
     {
       if (boids.length > 0) {
-        addForce(cohesion(boids))
-        addForce(alignment(boids))
-        addForce(separation(boids))
+        addForce(cohesion(filterRelevantBoids(boids, config.coheseWithOtherFlocks)))
+        addForce(alignment(filterRelevantBoids(boids, config.alignWithOtherFlocks)))
+        addForce(separation(filterRelevantBoids(boids, config.separateFromOtherFlocks)))
       }
       velocity = velocity.clampedLen(config.minSpeed, config.maxSpeed)
       addForce(drag())
     }
 
     position = position.add(velocity.scale(dt))
+
     mirrorOutOfBounds()
   }
 
+  function getBoidsInRange() {
+    const allBoids = app.getFlocks().reduce((acc, f) => acc.concat(f.getBoids()), [])
+    const relevantBoids = allBoids.filter(
+      (b) =>
+        b !== self &&
+        position.sub(b.getPosition()).lenSq() < config.detectionRange * config.detectionRange
+    )
+    return relevantBoids
+  }
+
+  function filterRelevantBoids(boids, filter) {
+    return boids.filter((b) => {
+      if (getFlock() === b.getFlock()) return true
+      if (filter) return true
+      return false
+    })
+  }
+
   function cohesion(boids) {
+    if (boids.length === 0) return vec2()
+
     const avgPos = boids
       .reduce((acc, b) => {
         acc = acc.add(b.getPosition())
@@ -54,6 +68,8 @@ function boid(pos, vel, flock, app) {
   }
 
   function alignment(boids) {
+    if (boids.length === 0) return vec2()
+
     const avgVel = boids
       .reduce((acc, b) => {
         acc = acc.add(b.getVelocity())
@@ -66,6 +82,8 @@ function boid(pos, vel, flock, app) {
   }
 
   function separation(boids) {
+    if (boids.length === 0) return vec2()
+
     const boidsTooClose = boids.filter(
       (b) => position.sub(b.getPosition()).lenSq() < config.separationRange * config.separationRange
     )

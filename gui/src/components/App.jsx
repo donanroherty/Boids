@@ -53,7 +53,7 @@ function App(props) {
       detectionRange: 50,
       alignmentMaxStrength: 0.8,
       fov: 250,
-      minSpeed: 5,
+      minSpeed: 10,
       maxSpeed: 60,
       drag: 0.04,
       size: 12,

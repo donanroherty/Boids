@@ -101,12 +101,6 @@ function boid(pos, vel, flock, app) {
 
     if (!hasPrey) return vec2()
 
-    const prey = preyFlock.reduce((acc, o) => {
-      const dist = o.getPosition().sub(position).lenSq()
-      const accDist = acc.getPosition().sub(position).lenSq()
-      return dist < accDist ? o : acc
-    }, preyFlock[0])
-
     const avgPos = preyFlock
       .reduce((acc, b) => {
         acc = acc.add(b.getPosition())
@@ -114,8 +108,7 @@ function boid(pos, vel, flock, app) {
       }, vec2())
       .div(vec2(preyFlock.length, preyFlock.length))
 
-    // const toGroupCenter = avgPos.sub(position)
-    const toGroupCenter = prey.getPosition().sub(position)
+    const toGroupCenter = avgPos.sub(position)
     return toGroupCenter.scale(config.predatorAttack)
   }
 

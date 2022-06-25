@@ -51,7 +51,7 @@ function Controls(props) {
             label="Detection Range"
             min={0}
             max={300}
-            step={0.1}
+            step={1}
             value={props.config.detectionRange}
             setValue={(val) => setConfigProperty("detectionRange", val)}
             disabled={props.disabled}
@@ -69,7 +69,7 @@ function Controls(props) {
             label="Cohesion"
             min={0}
             max={0.5}
-            step={0.01}
+            step={0.001}
             value={props.config.cohesionFactor}
             setValue={(val) => setConfigProperty("cohesionFactor", val)}
             disabled={props.disabled}

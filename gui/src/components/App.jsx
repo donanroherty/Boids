@@ -15,47 +15,49 @@ function App(props) {
   const [boids, setBoids] = createSignal()
   const [canvasSize, setCanvasSize] = createSignal({ x: mergedProps.width, y: mergedProps.height })
 
-  /*
-  let config = {
-    color: "black",
-    numBoids: 50,
-    size: 5,
-    detectionRange: 50,
-    cohesionFactor: 0.2,
-    alignmentMaxStrength: 0.3,
-    separationMaxStrength: 10,
-    separationRange: 30,
-    dragFactor: 0.01,
-    minSpeed: 50,
-    maxSpeed: 150,
-    coheseWithOtherFlocks: false,
-    alignWithOtherFlocks: false,
-    separateFromOtherFlocks: false,
-    ...initialConfig,
-  }
-  */
-
   onMount(() => {
     const app = boidsApp(canvas)
+    // Prey
     app.addFlock({
       color: "black",
-      numBoids: 100,
-      detectionRange: 40,
+      numBoids: 50,
+      detectionRange: 50,
       alignmentMaxStrength: 1.0,
+      separationRange: 20,
+      minSpeed: 30,
+      maxSpeed: 200,
+      size: 3.5,
       coheseWithOtherFlocks: false,
       alignWithOtherFlocks: false,
       separateFromOtherFlocks: true,
     })
+    // Predator
     app.addFlock({
-      color: "blue",
-      numBoids: 5,
-      detectionRange: 140,
-      cohesionFactor: 0.4,
-      inSpeed: 90,
-      maxSpeed: 350,
-      separationMaxStrength: 5,
-      coheseWithOtherFlocks: true,
-      alignWithOtherFlocks: true,
+      color: "red",
+      numBoids: 1,
+      detectionRange: 90,
+      fov: 90,
+      minSpeed: 90,
+      maxSpeed: 200,
+      drag: 0.04,
+      size: 8,
+      predatorAttack: 0.3,
+      predatorAvoid: 50,
+      isPredator: true,
+      renderSolid: true,
+    })
+    // Whales
+    app.addFlock({
+      color: "orchid",
+      numBoids: 15,
+      detectionRange: 50,
+      alignmentMaxStrength: 0.8,
+      fov: 250,
+      minSpeed: 5,
+      maxSpeed: 60,
+      drag: 0.04,
+      size: 12,
+      isPredator: true,
       separateFromOtherFlocks: true,
     })
     setBoids(app)

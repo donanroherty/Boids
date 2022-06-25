@@ -14,16 +14,24 @@ function Controls(props) {
           label={"Cohesion"}
           value={props.config.coheseWithOtherFlocks}
           setValue={(val) => setConfigProperty("coheseWithOtherFlocks", val)}
+          disabled={props.config.isPredator}
         />
         <Checkbox
           label={"Alignment"}
           value={props.config.alignWithOtherFlocks}
           setValue={(val) => setConfigProperty("alignWithOtherFlocks", val)}
+          disabled={props.config.isPredator}
         />
         <Checkbox
           label={"Separation"}
           value={props.config.separateFromOtherFlocks}
           setValue={(val) => setConfigProperty("separateFromOtherFlocks", val)}
+          disabled={props.config.isPredator}
+        />
+        <Checkbox
+          label={"Predator"}
+          value={props.config.isPredator}
+          setValue={(val) => setConfigProperty("isPredator", val)}
         />
       </div>
 
@@ -33,7 +41,7 @@ function Controls(props) {
           <RangeSlider
             label="Num Boids"
             min={0}
-            max={500}
+            max={300}
             step={1}
             value={props.config.numBoids}
             setValue={(val) => setConfigProperty("numBoids", val)}
@@ -49,7 +57,16 @@ function Controls(props) {
             disabled={props.disabled}
           />
           <RangeSlider
-            label="Cohesion Factor"
+            label="Field Of View"
+            min={0}
+            max={360}
+            step={1}
+            value={props.config.fov}
+            setValue={(val) => setConfigProperty("fov", val)}
+            disabled={props.disabled}
+          />
+          <RangeSlider
+            label="Cohesion"
             min={0}
             max={0.5}
             step={0.01}
@@ -58,7 +75,7 @@ function Controls(props) {
             disabled={props.disabled}
           />
           <RangeSlider
-            label="Alignment Force"
+            label="Alignment"
             min={0}
             max={2}
             step={0.01}
@@ -67,7 +84,7 @@ function Controls(props) {
             disabled={props.disabled}
           />
           <RangeSlider
-            label="Separation Force"
+            label="Separation"
             min={0}
             max={20}
             step={0.1}
@@ -86,6 +103,24 @@ function Controls(props) {
           />
         </div>
         <div class="flex flex-col sm:pl-2">
+          <RangeSlider
+            label="Predator Attack"
+            min={0}
+            max={1.5}
+            step={0.1}
+            value={props.config.predatorAttack}
+            setValue={(val) => setConfigProperty("predatorAttack", val)}
+            disabled={props.disabled || !props.config.isPredator}
+          />
+          <RangeSlider
+            label="Predator Avoid"
+            min={0}
+            max={60}
+            step={0.1}
+            value={props.config.predatorAvoid}
+            setValue={(val) => setConfigProperty("predatorAvoid", val)}
+            disabled={props.disabled}
+          />
           <RangeSlider
             label="Drag"
             min={0}
@@ -123,7 +158,7 @@ function Controls(props) {
             setValue={(val) => setConfigProperty("size", val)}
             disabled={props.disabled}
           />
-          <div class="h-full w-full pt-2 pb-1">
+          <div class="h-full w-full pb-1">
             <button
               onClick={props.resetConfig}
               class="h-full w-full rounded-md border-[1px] border-solid border-gray-500 bg-gray-400 font-bold text-white hover:bg-gray-300"

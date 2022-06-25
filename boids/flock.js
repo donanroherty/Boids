@@ -6,18 +6,28 @@ function flock(app, initialConfig = {}) {
     color: "black",
     numBoids: 50,
     size: 5,
+    fov: 340,
     detectionRange: 50,
     cohesionFactor: 0.2,
     alignmentMaxStrength: 0.3,
     separationMaxStrength: 10,
     separationRange: 30,
+    predatorAttack: 0.9,
+    predatorAvoid: 40,
     dragFactor: 0.01,
     minSpeed: 50,
     maxSpeed: 150,
     coheseWithOtherFlocks: false,
     alignWithOtherFlocks: false,
     separateFromOtherFlocks: false,
+    isPredator: false,
     ...initialConfig,
+  }
+
+  if (config.isPredator) {
+    config.coheseWithOtherFlocks = false
+    config.alignWithOtherFlocks = false
+    config.separateFromOtherFlocks = false
   }
 
   const defaultConfig = { ...config }

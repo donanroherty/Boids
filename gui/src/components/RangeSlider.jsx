@@ -8,24 +8,55 @@ function RangeSlider(props = defaultProps) {
     props.setValue(parseFloat(e.target.value))
   }
 
+  function onDecrement() {
+    props.setValue(props.value - props.step)
+  }
+  function onIncrement() {
+    props.setValue(props.value + props.step)
+  }
+
   return (
     <div
-      class={`flex h-7 w-full select-none flex-row py-1 text-xs ${
+      class={`flex h-5 w-full select-none items-center py-0.5 text-xs ${
         props.disabled && "text-gray-400"
       }`}
     >
-      <label class="my-auto w-64">{props.label}</label>
-      <input
-        disabled={props.disabled}
-        type="range"
-        min={props.min}
-        max={props.max}
-        value={props.disabled ? 0 : props.value}
-        step={props.step}
-        onInput={onInput}
-        class="slider-thumb my-auto ml-auto h-full w-full  appearance-none rounded-sm border-[1px] border-solid border-gray-300 bg-gray-200"
-      ></input>
-      <div class="ml-2 h-full w-16 text-right">{parseFloat(props.value).toFixed(decimals)}</div>
+      <label class="w-64">{props.label}</label>
+
+      <div class="flex h-full w-full">
+        {/* Decrement */}
+        <div
+          class="w-4 rounded-l-sm border-[1px] border-r-0 border-transparent px-1 text-center hover:border-gray-300 hover:bg-gray-200"
+          onClick={onDecrement}
+        >
+          <div class="relative -top-[.1rem]">-</div>
+        </div>
+
+        {/* Slider */}
+        <input
+          disabled={props.disabled}
+          type="range"
+          min={props.min}
+          max={props.max}
+          value={props.disabled ? 0 : props.value}
+          step={props.step}
+          onInput={onInput}
+          class={`${
+            props.disabled ? "slider-thumb-disabled" : "slider-thumb"
+          } my-auto ml-auto h-full w-full  appearance-none rounded-sm border-[1px] border-solid border-gray-300 bg-gray-200`}
+        ></input>
+        {/* Increment */}
+        <div
+          class="flex w-4 justify-center rounded-r-sm border-[1px] border-l-0 border-transparent px-1 pl-1 text-center align-middle hover:border-gray-300 hover:bg-gray-200 "
+          onClick={onIncrement}
+        >
+          <div class="relative -top-[.1rem]">+</div>
+        </div>
+      </div>
+
+      <div class="ml-2 h-full w-16 text-right">
+        {props.disabled ? "0" : parseFloat(props.value).toFixed(decimals)}
+      </div>
     </div>
   )
 }

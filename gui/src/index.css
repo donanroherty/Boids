@@ -7,6 +7,10 @@
   @apply appearance-none bg-gray-400 w-4 h-4 rounded-sm border-[1px] border-gray-500 border-solid cursor-pointer;
 }
 
+.slider-thumb-disabled::-webkit-slider-thumb {
+  @apply w-4 h-4 appearance-none;
+}
+
 .slider-thumb::-webkit-slider-thumb:hover {
   @apply bg-gray-300;
 }

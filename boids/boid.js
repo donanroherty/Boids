@@ -6,6 +6,8 @@ function boid(pos, vel, flock, app) {
 
   let config = flock.getConfig()
 
+  let hasPrey = false
+
   const self = {
     update,
     draw,
@@ -17,15 +19,15 @@ function boid(pos, vel, flock, app) {
   }
 
   function update(dt) {
-    const boids = getBoidsInRange()
+    const boids = getBoidsInRange().filter((o) => canSee(o))
 
     // update forces
     {
-      if (boids.length > 0) {
-        addForce(cohesion(filterRelevantBoids(boids, config.coheseWithOtherFlocks)))
-        addForce(alignment(filterRelevantBoids(boids, config.alignWithOtherFlocks)))
-        addForce(separation(filterRelevantBoids(boids, config.separateFromOtherFlocks)))
-      }
+      addForce(cohesion(boids))
+      addForce(alignment(boids))
+      addForce(separation(boids))
+      addForce(avoidPredator(boids))
+      addForce(chasePrey(boids))
       velocity = velocity.clampedLen(config.minSpeed, config.maxSpeed)
       addForce(drag())
     }
@@ -33,6 +35,89 @@ function boid(pos, vel, flock, app) {
     position = position.add(velocity.scale(dt))
 
     mirrorOutOfBounds()
+  }
+
+  function cohesion(boids) {
+    const flockmates = boids.filter((o) => config.coheseWithOtherFlocks || sameFlock(o))
+
+    if (flockmates.length === 0) return vec2()
+
+    const avgPos = flockmates
+      .reduce((acc, b) => {
+        acc = acc.add(b.getPosition())
+        return acc
+      }, vec2())
+      .div(vec2(flockmates.length, flockmates.length))
+
+    const toGroupCenter = avgPos.sub(position)
+    return toGroupCenter.scale(config.cohesionFactor)
+  }
+
+  function alignment(boids) {
+    const flockmates = boids.filter((o) => config.alignWithOtherFlocks || sameFlock(o))
+    if (flockmates.length === 0) return vec2()
+
+    const avgVel = flockmates
+      .reduce((acc, b) => {
+        acc = acc.add(b.getVelocity())
+        return acc
+      }, vec2())
+      .div(vec2(flockmates.length, flockmates.length))
+
+    const diff = avgVel.sub(velocity)
+    return diff.clampedLen(0, config.alignmentMaxStrength)
+  }
+
+  function separation(boids) {
+    const flockmates = boids.filter((o) => {
+      if (!(sameFlock(o) || config.separateFromOtherFlocks)) return false
+      const otherPos = o.getPosition()
+      const distSq = position.sub(otherPos).lenSq()
+      return distSq < config.separationRange * config.separationRange
+    })
+
+    return flockmates.reduce((acc, o) => {
+      const ba = getPosition().sub(o.getPosition())
+      const dist = ba.len()
+      const perc = 1 - dist / config.separationRange
+      return acc.add(ba.norm().scale(config.separationMaxStrength * perc))
+    }, vec2())
+  }
+
+  function avoidPredator(boids) {
+    const predators = boids.filter((o) => isPrey(self, o))
+
+    return predators.reduce((acc, other) => {
+      const ba = getPosition().sub(other.getPosition())
+      const dist = ba.len()
+      const perc = 1 - dist / config.detectionRange
+      return acc.add(ba.norm().scale(config.predatorAvoid * perc))
+    }, vec2())
+  }
+
+  function chasePrey(boids) {
+    const preyFlock = boids.filter((o) => canPreyOn(self, o))
+    hasPrey = preyFlock.length > 0
+
+    if (!hasPrey) return vec2()
+
+    const avgPos = preyFlock
+      .reduce((acc, b) => {
+        acc = acc.add(b.getPosition())
+        return acc
+      }, vec2())
+      .div(vec2(preyFlock.length, preyFlock.length))
+
+    const toGroupCenter = avgPos.sub(position)
+    return toGroupCenter.scale(config.predatorAttack)
+  }
+
+  function drag() {
+    return velocity.scale(-config.dragFactor)
+  }
+
+  function addForce(force) {
+    velocity = velocity.add(force)
   }
 
   function getBoidsInRange() {
@@ -45,64 +130,25 @@ function boid(pos, vel, flock, app) {
     return relevantBoids
   }
 
-  function filterRelevantBoids(boids, filter) {
-    return boids.filter((b) => {
-      if (getFlock() === b.getFlock()) return true
-      if (filter) return true
-      return false
-    })
+  function sameFlock(other) {
+    return flock === other.getFlock()
   }
 
-  function cohesion(boids) {
-    if (boids.length === 0) return vec2()
-
-    const avgPos = boids
-      .reduce((acc, b) => {
-        acc = acc.add(b.getPosition())
-        return acc
-      }, vec2())
-      .div(vec2(boids.length, boids.length))
-
-    const toGroupCenter = avgPos.sub(position)
-    return toGroupCenter.scale(config.cohesionFactor)
+  function canSee(other) {
+    const toOther = other.getPosition().sub(position).norm()
+    const dir = velocity.norm()
+    const dot = dir.dot(toOther)
+    const perc = (config.fov * 0.5) / 180
+    const mapped = 1 - 2 * perc
+    return dot > mapped
   }
 
-  function alignment(boids) {
-    if (boids.length === 0) return vec2()
-
-    const avgVel = boids
-      .reduce((acc, b) => {
-        acc = acc.add(b.getVelocity())
-        return acc
-      }, vec2())
-      .div(vec2(boids.length, boids.length))
-
-    const diff = avgVel.sub(velocity)
-    return diff.clampedLen(0, config.alignmentMaxStrength)
+  function canPreyOn(a, b) {
+    return a.getConfig().isPredator && b.getConfig().size < a.getConfig().size
   }
 
-  function separation(boids) {
-    if (boids.length === 0) return vec2()
-
-    const boidsTooClose = boids.filter(
-      (b) => position.sub(b.getPosition()).lenSq() < config.separationRange * config.separationRange
-    )
-
-    return boidsTooClose.reduce((acc, other) => {
-      const ba = getPosition().sub(other.getPosition())
-      const dist = ba.len()
-
-      const perc = 1 - dist / config.separationRange
-      return acc.add(ba.norm().scale(config.separationMaxStrength * perc))
-    }, vec2())
-  }
-
-  function drag() {
-    return velocity.scale(-config.dragFactor)
-  }
-
-  function addForce(force) {
-    velocity = velocity.add(force)
+  function isPrey(a, b) {
+    return b.getConfig().isPredator && b.getConfig().size > a.getConfig().size
   }
 
   function mirrorOutOfBounds() {
@@ -144,6 +190,11 @@ function boid(pos, vel, flock, app) {
     ctx.closePath()
     ctx.strokeStyle = config.color
     ctx.stroke()
+
+    if (hasPrey) {
+      ctx.fillStyle = config.color
+      ctx.fill()
+    }
     ctx.restore()
   }
 

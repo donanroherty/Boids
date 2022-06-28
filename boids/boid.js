@@ -129,16 +129,6 @@ function boid(pos, vel, flock, app) {
     velocity = velocity.add(force)
   }
 
-  function getBoidsInRange() {
-    const allBoids = app.getFlocks().reduce((acc, f) => acc.concat(f.getBoids()), [])
-    const relevantBoids = allBoids.filter(
-      (b) =>
-        b !== self &&
-        position.sub(b.getPosition()).lenSq() < config.detectionRange * config.detectionRange
-    )
-    return relevantBoids
-  }
-
   function sameFlock(other) {
     return flock === other.getFlock()
   }

@@ -17,7 +17,7 @@ function RangeSlider(props = defaultProps) {
 
   return (
     <div
-      class={`flex h-5 w-full select-none items-center py-0.5 text-xs ${
+      class={`flex h-4 w-full select-none items-center py-0.5 text-xs ${
         props.disabled && "text-gray-400"
       }`}
     >

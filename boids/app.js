@@ -33,8 +33,8 @@ function boidsApp(canvas) {
   function update(deltatime) {
     {
       // clear canvas
-    const ctx = canvas.getContext("2d")
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
+      const ctx = canvas.getContext("2d")
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
     }
 
     if (bUseQuadTree) {
@@ -90,6 +90,25 @@ function boidsApp(canvas) {
   function getCanvas() {
     return canvas
   }
+
+  function getUseQuadTree() {
+    return bUseQuadTree
+  }
+
+  function toggleUseQuadTree() {
+    bUseQuadTree = !bUseQuadTree
+    return bUseQuadTree
+  }
+
+  function getRenderQuadTree() {
+    return bRenderQuadTree
+  }
+
+  function toggleRenderQuadTree(val) {
+    bRenderQuadTree = !bRenderQuadTree
+    return bRenderQuadTree
+  }
+
   return app
 }
 

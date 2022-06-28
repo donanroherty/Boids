@@ -4,7 +4,7 @@
 @tailwind utilities;
 
 .slider-thumb::-webkit-slider-thumb {
-  @apply appearance-none bg-gray-400 w-4 h-4 rounded-sm border-[1px] border-gray-500 border-solid cursor-pointer;
+  @apply appearance-none bg-gray-400 w-3 h-3 rounded-sm border-[1px] border-gray-500 border-solid cursor-pointer;
 }
 
 .slider-thumb-disabled::-webkit-slider-thumb {

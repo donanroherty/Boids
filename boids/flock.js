@@ -22,6 +22,7 @@ function flock(app, initialConfig = {}) {
     alignWithOtherFlocks: false,
     separateFromOtherFlocks: false,
     isPredator: false,
+    drawDebug: true,
     ...initialConfig,
   }
 

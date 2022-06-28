@@ -1,3 +1,4 @@
+import { drawArcCone, drawCircle } from "./rendering.js"
 import vec2 from "./vec2.js"
 
 function boid(pos, vel, flock, app) {
@@ -27,7 +28,7 @@ function boid(pos, vel, flock, app) {
   }
 
   function update(dt) {
-    const boids = getBoidsInRange().filter((o) => canSee(o))
+    if (config.drawDebug) drawDebug(app.getCanvas())
 
     // update forces
     {
@@ -204,6 +205,25 @@ function boid(pos, vel, flock, app) {
       ctx.fill()
     }
     ctx.restore()
+  }
+
+  function drawDebug(canvas) {
+    if (getFlock().getBoids()[0] !== self) return
+    const ctx = canvas.getContext("2d")
+
+    boidsInRange.forEach((b) => {
+      if (b !== self) drawCircle(b.getPosition(), b.getConfig().size, canvas, config.color, 0.15)
+    })
+
+    drawArcCone(
+      canvas,
+      position,
+      velocity.norm(),
+      getConfig().fov,
+      config.detectionRange,
+      config.color,
+      0.03
+    )
   }
 
   function getPosition() {

@@ -17,7 +17,7 @@ function boidsApp(canvas) {
   tick.start()
 
   const app = {
-    canvas,
+    getCanvas,
     getFlocks,
     addFlock,
     removeFlock,
@@ -87,6 +87,9 @@ function boidsApp(canvas) {
     return vec2(canvas.width, canvas.height)
   }
 
+  function getCanvas() {
+    return canvas
+  }
   return app
 }
 

@@ -7,6 +7,7 @@ function boid(pos, vel, flock, app) {
   let config = flock.getConfig()
 
   let hasPrey = false
+  let boidsInRange = []
 
   const self = {
     update,
@@ -16,6 +17,13 @@ function boid(pos, vel, flock, app) {
     getConfig,
     setConfig,
     getFlock,
+    updateBoidsInRange,
+  }
+
+  function updateBoidsInRange() {
+    boidsInRange = app
+      .getBoidsInRange(position, config.detectionRange)
+      .filter((o) => o !== self && canSee(o))
   }
 
   function update(dt) {
@@ -23,11 +31,11 @@ function boid(pos, vel, flock, app) {
 
     // update forces
     {
-      addForce(cohesion(boids))
-      addForce(alignment(boids))
-      addForce(separation(boids))
-      addForce(avoidPredator(boids))
-      addForce(chasePrey(boids))
+      addForce(cohesion(boidsInRange))
+      addForce(alignment(boidsInRange))
+      addForce(separation(boidsInRange))
+      addForce(avoidPredator(boidsInRange))
+      addForce(chasePrey(boidsInRange))
       velocity = velocity.clampedLen(config.minSpeed, config.maxSpeed)
       addForce(drag())
     }

@@ -1,4 +1,5 @@
 import boid from "./boid.js"
+import { clamp } from "./utils.js"
 import vec2 from "./vec2.js"
 
 function flock(app, initialConfig = {}) {
@@ -88,6 +89,7 @@ function flock(app, initialConfig = {}) {
 
   function setConfig(cfg) {
     config = { ...config, ...cfg }
+    config.fov = clamp(config.fov, 1, 360)
     initialize()
     boids.forEach((b) => b.setConfig(cfg))
   }

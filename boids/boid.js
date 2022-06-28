@@ -1,4 +1,4 @@
-import { drawArcCone, drawCircle } from "./rendering.js"
+import { drawArcCone, drawBoid, drawCircle } from "./rendering.js"
 import vec2 from "./vec2.js"
 
 function boid(pos, vel, flock, app) {
@@ -28,8 +28,6 @@ function boid(pos, vel, flock, app) {
   }
 
   function update(dt) {
-    if (config.drawDebug) drawDebug(app.getCanvas())
-
     // update forces
     {
       addForce(cohesion(boidsInRange))
@@ -167,42 +165,15 @@ function boid(pos, vel, flock, app) {
   }
 
   function draw(canvas) {
-    const ctx = canvas.getContext("2d")
-
-    const hei = config.size
-    const wid = config.size * 0.7
-
-    const p0 = vec2(-wid * 0.5, -hei * 0.5)
-    const p1 = vec2(0, hei * 0.5)
-    const p2 = vec2(wid * 0.5, -hei * 0.5)
-
-    ctx.save()
-
-    const direction = velocity.norm()
-
-    ctx.translate(position.x, position.y)
-    ctx.rotate(Math.atan2(direction.y, direction.x) - Math.PI / 2)
-    ctx.beginPath()
-    ctx.moveTo(p0.x, p0.y)
-    ctx.lineTo(p1.x, p1.y)
-    ctx.lineTo(p2.x, p2.y)
-    ctx.closePath()
-    ctx.strokeStyle = config.color
-    ctx.stroke()
-
-    if (hasPrey) {
-      ctx.fillStyle = config.color
-      ctx.fill()
-    }
-    ctx.restore()
+    drawBoid(canvas, position, velocity.norm(), config.size, config.color, hasPrey)
+    drawDebug(canvas)
   }
 
   function drawDebug(canvas) {
     if (getFlock().getBoids()[0] !== self) return
-    const ctx = canvas.getContext("2d")
 
     boidsInRange.forEach((b) => {
-      if (b !== self) drawCircle(b.getPosition(), b.getConfig().size, canvas, config.color, 0.15)
+      if (b !== self) drawCircle(b.getPosition(), b.getConfig().size, canvas, config.color, 0.4)
     })
 
     drawArcCone(

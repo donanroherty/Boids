@@ -1,3 +1,34 @@
+import vec2 from "./vec2"
+
+function drawBoid(canvas, pos, dir, size, color, isSolid) {
+  const ctx = canvas.getContext("2d")
+
+  const hei = size
+  const wid = size * 0.7
+
+  const p0 = vec2(-wid * 0.5, -hei * 0.5)
+  const p1 = vec2(0, hei * 0.5)
+  const p2 = vec2(wid * 0.5, -hei * 0.5)
+
+  ctx.save()
+
+  ctx.translate(pos.x, pos.y)
+  ctx.rotate(Math.atan2(dir.y, dir.x) - Math.PI / 2)
+  ctx.beginPath()
+  ctx.moveTo(p0.x, p0.y)
+  ctx.lineTo(p1.x, p1.y)
+  ctx.lineTo(p2.x, p2.y)
+  ctx.closePath()
+  ctx.strokeStyle = color
+  ctx.stroke()
+
+  if (isSolid) {
+    ctx.fillStyle = color
+    ctx.fill()
+  }
+  ctx.restore()
+}
+
 function drawCircle(loc, rad, canvas, color, alpha = 1) {
   const ctx = canvas.getContext("2d")
   ctx.globalAlpha = alpha
@@ -67,4 +98,4 @@ function renderQuadTree(quadTree, canvas) {
   }
 }
 
-export { drawCircle, renderQuadTree, drawArcCone }
+export { drawBoid, drawCircle, renderQuadTree, drawArcCone }

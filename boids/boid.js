@@ -1,3 +1,4 @@
+import { drawArcCone, drawBoid, drawCircle } from "./rendering.js"
 import vec2 from "./vec2.js"
 
 function boid(pos, vel, flock, app) {
@@ -7,6 +8,7 @@ function boid(pos, vel, flock, app) {
   let config = flock.getConfig()
 
   let hasPrey = false
+  let boidsInRange = []
 
   const self = {
     update,
@@ -16,18 +18,23 @@ function boid(pos, vel, flock, app) {
     getConfig,
     setConfig,
     getFlock,
+    updateBoidsInRange,
+  }
+
+  function updateBoidsInRange() {
+    boidsInRange = app
+      .getBoidsInRange(position, config.detectionRange)
+      .filter((o) => o !== self && canSee(o))
   }
 
   function update(dt) {
-    const boids = getBoidsInRange().filter((o) => canSee(o))
-
     // update forces
     {
-      addForce(cohesion(boids))
-      addForce(alignment(boids))
-      addForce(separation(boids))
-      addForce(avoidPredator(boids))
-      addForce(chasePrey(boids))
+      addForce(cohesion(boidsInRange))
+      addForce(alignment(boidsInRange))
+      addForce(separation(boidsInRange))
+      addForce(avoidPredator(boidsInRange))
+      addForce(chasePrey(boidsInRange))
       velocity = velocity.clampedLen(config.minSpeed, config.maxSpeed)
       addForce(drag())
     }
@@ -120,16 +127,6 @@ function boid(pos, vel, flock, app) {
     velocity = velocity.add(force)
   }
 
-  function getBoidsInRange() {
-    const allBoids = app.getFlocks().reduce((acc, f) => acc.concat(f.getBoids()), [])
-    const relevantBoids = allBoids.filter(
-      (b) =>
-        b !== self &&
-        position.sub(b.getPosition()).lenSq() < config.detectionRange * config.detectionRange
-    )
-    return relevantBoids
-  }
-
   function sameFlock(other) {
     return flock === other.getFlock()
   }
@@ -168,34 +165,26 @@ function boid(pos, vel, flock, app) {
   }
 
   function draw(canvas) {
-    const ctx = canvas.getContext("2d")
+    drawBoid(canvas, position, velocity.norm(), config.size, config.color, hasPrey)
+    drawDebug(canvas)
+  }
 
-    const hei = config.size
-    const wid = config.size * 0.7
+  function drawDebug(canvas) {
+    if (getFlock().getBoids()[0] !== self) return
 
-    const p0 = vec2(-wid * 0.5, -hei * 0.5)
-    const p1 = vec2(0, hei * 0.5)
-    const p2 = vec2(wid * 0.5, -hei * 0.5)
+    boidsInRange.forEach((b) => {
+      if (b !== self) drawCircle(b.getPosition(), b.getConfig().size, canvas, config.color, 0.4)
+    })
 
-    ctx.save()
-
-    const direction = velocity.norm()
-
-    ctx.translate(position.x, position.y)
-    ctx.rotate(Math.atan2(direction.y, direction.x) - Math.PI / 2)
-    ctx.beginPath()
-    ctx.moveTo(p0.x, p0.y)
-    ctx.lineTo(p1.x, p1.y)
-    ctx.lineTo(p2.x, p2.y)
-    ctx.closePath()
-    ctx.strokeStyle = config.color
-    ctx.stroke()
-
-    if (hasPrey) {
-      ctx.fillStyle = config.color
-      ctx.fill()
-    }
-    ctx.restore()
+    drawArcCone(
+      canvas,
+      position,
+      velocity.norm(),
+      getConfig().fov,
+      config.detectionRange,
+      config.color,
+      0.03
+    )
   }
 
   function getPosition() {

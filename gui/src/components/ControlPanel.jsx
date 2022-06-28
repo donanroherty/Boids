@@ -8,6 +8,9 @@ function ControlPanel(props) {
   const [activeFlock, setActiveFlock] = createSignal(flocks()[0])
   const [config, setConfig] = createSignal(flocks()[0].getConfig())
 
+  const [useQuadTree, setUseQuadTree] = createSignal(props.boidsApp.getUseQuadTree())
+  const [renderQuadTree, setRenderQuadTree] = createSignal(props.boidsApp.getRenderQuadTree())
+
   createEffect((prev) => {
     if (prev === activeFlock()) {
       activeFlock().setConfig(config())
@@ -29,6 +32,16 @@ function ControlPanel(props) {
   function resetConfig() {
     activeFlock().setConfig(activeFlock().getDefaultConfig())
     setConfig(activeFlock().getConfig())
+  }
+
+  function toggleUseQuadTree() {
+    const val = props.boidsApp.toggleUseQuadTree()
+    setUseQuadTree(val)
+  }
+
+  function toggleRenderQuadTree() {
+    const val = props.boidsApp.toggleRenderQuadTree()
+    setRenderQuadTree(val)
   }
 
   function addFlock() {
@@ -62,6 +75,9 @@ function ControlPanel(props) {
         config={config()}
         setConfig={updateConfig}
         resetConfig={resetConfig}
+        useQuadTree={useQuadTree()}
+        toggleUseQuadTree={toggleUseQuadTree}
+        toggleRenderQuadTree={toggleRenderQuadTree}
         disabled={!activeFlock()}
       />
     </div>

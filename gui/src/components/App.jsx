@@ -20,7 +20,7 @@ function App(props) {
     // Prey
     app.addFlock({
       color: "black",
-      numBoids: 50,
+      numBoids: 100,
       detectionRange: 50,
       alignmentMaxStrength: 1.0,
       separationRange: 20,
@@ -45,20 +45,6 @@ function App(props) {
       predatorAvoid: 50,
       isPredator: true,
       renderSolid: true,
-    })
-    // Whales
-    app.addFlock({
-      color: "orchid",
-      numBoids: 15,
-      detectionRange: 50,
-      alignmentMaxStrength: 0.8,
-      fov: 250,
-      minSpeed: 10,
-      maxSpeed: 60,
-      drag: 0.04,
-      size: 12,
-      isPredator: true,
-      separateFromOtherFlocks: true,
     })
     setBoids(app)
   })

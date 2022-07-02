@@ -1,8 +1,8 @@
-import boid from "./boid.js"
+import { createBoid } from "./boid.js"
 import { clamp } from "./utils.js"
 import vec2 from "./vec2.js"
 
-function flock(app, initialConfig = {}) {
+function createFlock(app, initialConfig = {}, id) {
   let config = {
     color: "black",
     numBoids: 50,
@@ -54,18 +54,19 @@ function flock(app, initialConfig = {}) {
       boids = boids.concat(
         Array(config.numBoids - boids.length)
           .fill(undefined)
-          .map((_) => createBoid())
+          .map((_, i) => createNewBoid(boids.length + i))
       )
     }
   }
 
-  function createBoid() {
+  function createNewBoid(idx) {
     const sceneSize = app.getSceneSize()
     const pos = sceneSize.mul(vec2(Math.random(), Math.random()))
     const vel = vec2(-Math.random() + Math.random(), -Math.random() + Math.random())
       .norm()
       .scale(config.minSpeed)
-    return boid(pos, vel, self, app)
+
+    return createBoid(pos, vel, id, idx, config)
   }
 
   function update(dt) {
@@ -102,4 +103,4 @@ function flock(app, initialConfig = {}) {
   return self
 }
 
-export default flock
+export default createFlock

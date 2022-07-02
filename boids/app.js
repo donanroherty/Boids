@@ -1,13 +1,14 @@
 import createTick from "./tick.js"
-import flock from "./flock.js"
+import createFlock from "./flock.js"
 import vec2 from "./vec2.js"
 import { pointQuadTree } from "./pointQuadTree.js"
 import { sphericalRegionQuery } from "./sphericalRegionQuery.js"
 import { renderQuadTree } from "./rendering.js"
+import { renderBoid, updateBoid, updateBoidsInRange } from "./boid.js"
 
 function boidsApp(canvas) {
   canvas.style.transform = "scaleY(-1)" // flip y axis
-
+  let lastFlockID = 0
   let flocks = []
   let quadTree
   let bUseQuadTree = true
@@ -41,19 +42,16 @@ function boidsApp(canvas) {
       // update quadtree
       const sceneSize = getSceneSize()
       const boids = getAllBoids()
-      const boidPositions = boids.map((b) => b.getPosition())
+      const boidPositions = boids.map((b) => b.position)
       quadTree = pointQuadTree({ x: 0, y: 0, w: sceneSize.x, h: sceneSize.y }, 20, boidPositions)
 
       if (bRenderQuadTree) renderQuadTree(quadTree, canvas)
     }
 
-    getAllBoids().forEach((b) => b.updateBoidsInRange()) // range check before boids update position
-
-    // update simulation and render
-    flocks.forEach((flock) => {
-      flock.update(deltatime)
-      flock.draw(canvas)
-    })
+    const boids = getAllBoids()
+    boids.forEach((b) => updateBoidsInRange(b, app))
+    boids.forEach((b) => updateBoid(b, deltatime, getSceneSize()))
+    boids.forEach((b) => renderBoid(b, canvas))
   }
 
   function getAllBoids() {
@@ -63,15 +61,15 @@ function boidsApp(canvas) {
   function getBoidsInRange(pos, range) {
     if (bUseQuadTree) {
       let positions = sphericalRegionQuery(quadTree, pos, range)
-      return getAllBoids().filter((b) => positions.find((p) => p === b.getPosition()) !== undefined)
+      return getAllBoids().filter((b) => positions.find((p) => p.isEqual(b.position)) !== undefined)
     } else {
-      return getAllBoids().filter((b) => pos.sub(b.getPosition()).lenSq() < range * range)
+      return getAllBoids().filter((b) => pos.sub(b.position).lenSq() < range * range)
     }
   }
 
   function addFlock(cfg) {
-    const f = flock(app, cfg)
-    flocks = [...flocks, f]
+    const f = createFlock(app, cfg, ++lastFlockID)
+    flocks.push(f)
     return f
   }
 

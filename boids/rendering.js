@@ -1,4 +1,4 @@
-import vec2 from "./vec2"
+import vec2 from "./vec2.js"
 
 function drawBoid(canvas, pos, dir, size, color, isSolid) {
   const ctx = canvas.getContext("2d")

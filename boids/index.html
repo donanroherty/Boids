@@ -9,23 +9,10 @@
   <body>
     <canvas id="cvs" width="480" height="480" style="border: 1px solid black"></canvas>
 
-    <script type="module">
+    <script type="module" defer>
       import createBoidsApp from "/boids/app.js"
       const app = createBoidsApp(document.getElementById("cvs"))
-      app.addFlock(app, {
-        color: "blue",
-        numBoids: 40,
-        coheseWithOtherFlocks: true,
-        alignWithOtherFlocks: true,
-        separateFromOtherFlocks: true,
-      })
-      app.addFlock(app, {
-        color: "black",
-        numBoids: 40,
-        coheseWithOtherFlocks: false,
-        alignWithOtherFlocks: false,
-        separateFromOtherFlocks: false,
-      })
+      app.init()
     </script>
   </body>
 </html>

@@ -1,6 +1,31 @@
 import { drawArcCone, drawBoid, drawCircle } from "./rendering.js"
 import vec2 from "./vec2.js"
 
+function createConfig(override = {}) {
+  return {
+    color: "black",
+    numBoids: 50,
+    size: 5,
+    fov: 340,
+    detectionRange: 50,
+    cohesionFactor: 0.2,
+    alignmentMaxStrength: 0.3,
+    separationMaxStrength: 10,
+    separationRange: 30,
+    predatorAttack: 0.9,
+    predatorAvoid: 40,
+    dragFactor: 0.01,
+    minSpeed: 50,
+    maxSpeed: 150,
+    coheseWithOtherFlocks: false,
+    alignWithOtherFlocks: false,
+    separateFromOtherFlocks: false,
+    isPredator: false,
+    drawDebug: true,
+    ...override,
+  }
+}
+
 function createBoid(position, velocity, flock, index, config) {
   return {
     position,
@@ -15,35 +40,35 @@ function createBoid(position, velocity, flock, index, config) {
 
 function updateBoidsInRange(b, app) {
   b.boidsInRange = app
-    .getBoidsInRange(b.position, b.config.detectionRange)
+    .getBoidsInRange(vec2(b.position.x, b.position.y), b.config.detectionRange)
     .filter((o) => o !== b && canSee(b, o))
 }
 
 function updateBoid(b, dt, sceneSize) {
   // update forces
   {
-    const newVel = b.velocity
+    const newVel = vec2(b.velocity.x, b.velocity.y)
       .add(cohesion(b, b.boidsInRange))
       .add(alignment(b, b.boidsInRange))
       .add(separation(b, b.boidsInRange))
       .add(avoidPredator(b, b.boidsInRange))
       .add(chasePrey(b, b.boidsInRange))
       .clampedLen(b.config.minSpeed, b.config.maxSpeed)
-      .add(drag(b, b.velocity))
+      .add(drag(b, vec2(b.velocity.x, b.velocity.y)))
 
     b.velocity.x = newVel.x
     b.velocity.y = newVel.y
   }
 
-  const newPos = b.position.add(b.velocity.scale(dt))
+  const newPos = vec2(b.position.x, b.position.y).add(vec2(b.velocity.x, b.velocity.y).scale(dt))
   const OOBFix = mirrorOutOfBounds(newPos, sceneSize)
   b.position.x = OOBFix.x
   b.position.y = OOBFix.y
 }
 
 function canSee(b, other) {
-  const toOther = other.position.sub(b.position).norm()
-  const dir = b.velocity.norm()
+  const toOther = vec2(other.position.x, other.position.y).sub(b.position).norm()
+  const dir = vec2(b.velocity.x, b.velocity.y).norm()
   const dot = dir.dot(toOther)
   const perc = (b.config.fov * 0.5) / 180
   const mapped = 1 - 2 * perc
@@ -77,7 +102,14 @@ function mirrorOutOfBounds(pos, sceneSize) {
 }
 
 function renderBoid(b, canvas) {
-  drawBoid(canvas, b.position, b.velocity.norm(), b.config.size, b.config.color, b.hasPrey)
+  drawBoid(
+    canvas,
+    b.position,
+    vec2(b.velocity.x, b.velocity.y).norm(),
+    b.config.size,
+    b.config.color,
+    b.hasPrey
+  )
   drawDebug(b, canvas)
 }
 
@@ -91,7 +123,7 @@ function drawDebug(b, canvas) {
   drawArcCone(
     canvas,
     b.position,
-    b.velocity.norm(),
+    vec2(b.velocity.x, b.velocity.y).norm(),
     b.config.fov,
     b.config.detectionRange,
     b.config.color,
@@ -134,12 +166,12 @@ function separation(b, others) {
   const flockmates = others.filter((o) => {
     if (!(sameFlock(b, o) || b.config.separateFromOtherFlocks)) return false
     const otherPos = o.position
-    const distSq = b.position.sub(otherPos).lenSq()
+    const distSq = vec2(b.position.x, b.position.y).sub(otherPos).lenSq()
     return distSq < b.config.separationRange * b.config.separationRange
   })
 
   return flockmates.reduce((acc, o) => {
-    const ba = b.position.sub(o.position)
+    const ba = vec2(b.position.x, b.position.y).sub(o.position)
     const dist = ba.len()
     const perc = 1 - dist / b.config.separationRange
     return acc.add(ba.norm().scale(b.config.separationMaxStrength * perc))
@@ -188,4 +220,4 @@ function sameFlock(a, b) {
   return a.flock === b.flock
 }
 
-export { createBoid, updateBoidsInRange, updateBoid, renderBoid }
+export { createBoid, updateBoidsInRange, updateBoid, renderBoid, createConfig }

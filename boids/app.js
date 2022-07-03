@@ -1,8 +1,7 @@
 import createTick from "./tick.js"
 import { createFlockHandler } from "./flockHandler.js"
 import vec2 from "./vec2.js"
-import { pointQuadTree } from "./pointQuadTree.js"
-import { sphericalRegionQuery } from "./sphericalRegionQuery.js"
+import { pointQuadTree, circleQuery } from "./pointQuadTree.js"
 import { renderQuadTree } from "./rendering.js"
 import { renderBoid, updateBoid, updateBoidsInRange } from "./boid.js"
 
@@ -14,8 +13,9 @@ function boidsApp(canvas) {
   let useQuadTree = true
   let bRenderQuadTree = false
 
-  const tick = createTick(update)
   const flockHandler = createFlockHandler(entities, getSceneSize)
+  const tick = createTick(update)
+  tick.start()
 
   const app = {
     flockHandler,
@@ -24,11 +24,6 @@ function boidsApp(canvas) {
     getBoidsInRange,
     useQuadTree,
     bRenderQuadTree,
-    init,
-  }
-
-  function init() {
-    tick.start()
   }
 
   function update(deltatime) {
@@ -54,7 +49,7 @@ function boidsApp(canvas) {
 
   function getBoidsInRange(pos, range) {
     if (useQuadTree) {
-      let positions = sphericalRegionQuery(quadTree, pos, range)
+      let positions = circleQuery(quadTree, pos, range)
       return Array.from(entities).filter(
         (b) => positions.find((p) => p.x === b.position.x && p.y === b.position.y) !== undefined
       )

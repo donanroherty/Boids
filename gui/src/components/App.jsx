@@ -47,7 +47,6 @@ function App(props) {
       renderSolid: true,
     })
     setBoids(app)
-    app.init()
   })
 
   return (

@@ -18,9 +18,9 @@ function App(props) {
   onMount(() => {
     const app = boidsApp(canvas)
     // Prey
-    app.addFlock({
+    app.flockHandler.addFlock({
       color: "black",
-      numBoids: 100,
+      numBoids: 50,
       detectionRange: 50,
       alignmentMaxStrength: 1.0,
       separationRange: 20,
@@ -32,7 +32,7 @@ function App(props) {
       separateFromOtherFlocks: true,
     })
     // Predator
-    app.addFlock({
+    app.flockHandler.addFlock({
       color: "red",
       numBoids: 1,
       detectionRange: 90,
@@ -47,6 +47,7 @@ function App(props) {
       renderSolid: true,
     })
     setBoids(app)
+    app.init()
   })
 
   return (

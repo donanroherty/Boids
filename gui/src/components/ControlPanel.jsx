@@ -4,73 +4,95 @@ import TabBar from "./TabBar"
 import { randColor } from "../utils"
 
 function ControlPanel(props) {
-  const [flocks, setFlocks] = createSignal(props.boidsApp.getFlocks())
-  const [activeFlock, setActiveFlock] = createSignal(flocks()[0])
-  const [config, setConfig] = createSignal(flocks()[0].getConfig())
+  const [flocks, setFlocks] = createSignal(props.boidsApp.flockHandler.getAllFlockIDs())
+  const [selectedFlockID, setSelectedFlockID] = createSignal(flocks()[0])
+  const [config, setConfig] = createSignal(
+    props.boidsApp.flockHandler.getFlockConfig(selectedFlockID())
+  )
 
-  const [useQuadTree, setUseQuadTree] = createSignal(props.boidsApp.getUseQuadTree())
-  const [renderQuadTree, setRenderQuadTree] = createSignal(props.boidsApp.getRenderQuadTree())
+  const [useQuadTree, setUseQuadTree] = createSignal(props.boidsApp.useQuadTree)
+  const [renderQuadTree, setRenderQuadTree] = createSignal(props.boidsApp.bRenderQuadTree)
+  const [tabData, setTabData] = createSignal(
+    props.boidsApp.flockHandler.getAllFlockConfigs().map((c) => ({ color: c.color }))
+  )
 
   createEffect((prev) => {
-    if (prev === activeFlock()) {
-      activeFlock().setConfig(config())
+    if (prev === selectedFlockID()) {
+      setFlockConfig(selectedFlockID(), config())
     }
-    return activeFlock()
+    return selectedFlockID()
   })
 
-  function selectFlock(idx) {
-    setActiveFlock(flocks()[idx])
-
-    if (activeFlock()) setConfig(flocks()[idx].getConfig())
+  function selectFlock(id) {
+    setSelectedFlockID(id)
+    if (selectedFlockID() !== null) setConfig(props.boidsApp.flockHandler.getFlockConfig(id))
   }
 
-  function updateConfig(val) {
-    activeFlock().setConfig(val)
-    setConfig(activeFlock().getConfig())
+  function updateConfig(cfg) {
+    props.boidsApp.flockHandler.setFlockConfig(selectedFlockID(), cfg)
+    setConfig(props.boidsApp.flockHandler.getFlockConfig(selectedFlockID()))
   }
 
   function resetConfig() {
-    activeFlock().setConfig(activeFlock().getDefaultConfig())
-    setConfig(activeFlock().getConfig())
+    selectedFlockID().setConfig(selectedFlockID().defaultConfig)
+    setConfig(props.boidsApp.getFlockConfig(selectedFlockID()))
   }
 
   function toggleUseQuadTree() {
-    const val = props.boidsApp.toggleUseQuadTree()
-    setUseQuadTree(val)
+    props.boidsApp.useQuadTree = !props.boidsApp.useQuadTree
+    setUseQuadTree(props.boidsApp.useQuadTree)
   }
 
   function toggleRenderQuadTree() {
-    const val = props.boidsApp.toggleRenderQuadTree()
-    setRenderQuadTree(val)
+    props.boidsApp.bRenderQuadTree = !props.boidsApp.bRenderQuadTree
+    setRenderQuadTree(props.boidsApp.bRenderQuadTree)
   }
 
   function addFlock() {
     if (flocks().length >= props.maxFlocks) return
 
-    const usedColors = flocks().reduce((acc, f) => acc.concat([f.getConfig().color]), [])
-    props.boidsApp.addFlock({ color: randColor(usedColors) })
-    setFlocks(props.boidsApp.getFlocks())
-    selectFlock(flocks().length - 1)
+    const usedColors = flocks().reduce(
+      (acc, fid) => acc.concat(props.boidsApp.flockHandler.getFlockConfig(fid).color),
+      []
+    )
+
+    props.boidsApp.flockHandler.addFlock({ color: randColor(usedColors) })
+    setFlocks(props.boidsApp.flockHandler.getAllFlockIDs())
+    selectFlock(flocks()[flocks().length - 1])
+    setTabData(props.boidsApp.flockHandler.getAllFlockConfigs().map((c) => ({ color: c.color })))
   }
 
-  function removeFlock(idx) {
-    const nextSelectIdx = idx > 0 ? idx - 1 : idx + 1 < flocks().length ? idx + 1 : null
-    selectFlock(nextSelectIdx)
+  function removeFlock(flockID) {
+    const outIdx = flocks().findIndex((f) => f === flockID)
+    const currIdx = flocks().findIndex((f) => f === selectedFlockID())
+    const nextSelectIdx =
+      outIdx > currIdx
+        ? currIdx
+        : outIdx < currIdx
+        ? currIdx - 1
+        : outIdx > 0
+        ? outIdx - 1
+        : outIdx + 1 < flocks().length
+        ? outIdx + 1
+        : null
 
-    props.boidsApp.removeFlock(flocks()[idx])
-    setFlocks(props.boidsApp.getFlocks())
+    props.boidsApp.flockHandler.removeFlock(flockID)
+    setFlocks(props.boidsApp.flockHandler.getAllFlockIDs())
+    setTabData(props.boidsApp.flockHandler.getAllFlockConfigs().map((c) => ({ color: c.color })))
+    selectFlock(nextSelectIdx !== null ? flocks()[nextSelectIdx] : null)
   }
 
   return (
     <div>
       <TabBar
-        flocks={flocks()}
-        selectFlock={selectFlock}
-        selectedFlock={activeFlock()}
-        addFlock={addFlock}
-        removeFlock={removeFlock}
+        tabData={tabData()}
+        selectTab={(tabIdx) => selectFlock(flocks()[tabIdx])}
+        selectedTab={flocks().findIndex((f) => f === selectedFlockID())}
+        addTab={() => flocks.length < props.maxFlocks && addFlock()}
+        closeTab={(tabIdx) => removeFlock(flocks()[tabIdx])}
         maxTabs={props.maxFlocks}
       />
+
       <FlockControls
         config={config()}
         setConfig={updateConfig}
@@ -78,7 +100,7 @@ function ControlPanel(props) {
         useQuadTree={useQuadTree()}
         toggleUseQuadTree={toggleUseQuadTree}
         toggleRenderQuadTree={toggleRenderQuadTree}
-        disabled={!activeFlock()}
+        disabled={selectedFlockID() === null}
       />
     </div>
   )

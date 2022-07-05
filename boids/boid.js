@@ -1,3 +1,4 @@
+import { circleQuery } from "./pointQuadTree.js"
 import { drawArcCone, drawBoid, drawCircle } from "./rendering.js"
 import vec2 from "./vec2.js"
 
@@ -34,25 +35,35 @@ function createBoid(position, velocity, flock, index, config) {
     flock,
     index,
     hasPrey: false,
-    boidsInRange: [],
+    visibleBoids: [],
   }
 }
 
-function updateBoidsInRange(b, app) {
-  b.boidsInRange = app
-    .getBoidsInRange(vec2(b.position.x, b.position.y), b.config.detectionRange)
-    .filter((o) => o !== b && canSee(b, o))
+function updateVisibleBoids(b, app, quadTree) {
+  let inRange = []
+  if (quadTree) {
+    let positions = circleQuery(quadTree, b.position, b.detectionRange)
+    inRange = Array.from(app.entities).filter(
+      (b) => positions.find((p) => p.x === b.position.x && p.y === b.position.y) !== undefined
+    )
+  } else {
+    inRange = Array.from(app.entities).filter(
+      (b) => b.position.sub(b.position).lenSq() < b.detectionRange * b.detectionRange
+    )
+  }
+
+  b.visibleBoids = inRange.filter((o) => o !== b && canSee(b, o))
 }
 
 function updateBoid(b, dt, sceneSize) {
   // update forces
   {
     const newVel = vec2(b.velocity.x, b.velocity.y)
-      .add(cohesion(b, b.boidsInRange))
-      .add(alignment(b, b.boidsInRange))
-      .add(separation(b, b.boidsInRange))
-      .add(avoidPredator(b, b.boidsInRange))
-      .add(chasePrey(b, b.boidsInRange))
+      .add(cohesion(b, b.visibleBoids))
+      .add(alignment(b, b.visibleBoids))
+      .add(separation(b, b.visibleBoids))
+      .add(avoidPredator(b, b.visibleBoids))
+      .add(chasePrey(b, b.visibleBoids))
       .clampedLen(b.config.minSpeed, b.config.maxSpeed)
       .add(drag(b, vec2(b.velocity.x, b.velocity.y)))
 
@@ -116,7 +127,7 @@ function renderBoid(b, canvas) {
 function drawDebug(b, canvas) {
   if (b.index !== 0) return
 
-  b.boidsInRange.forEach((o) => {
+  b.visibleBoids.forEach((o) => {
     if (o !== b) drawCircle(o.position, o.config.size, canvas, o.config.color, 0.4)
   })
 
@@ -220,4 +231,4 @@ function sameFlock(a, b) {
   return a.flock === b.flock
 }
 
-export { createBoid, updateBoidsInRange, updateBoid, renderBoid, createConfig }
+export { createBoid, updateVisibleBoids, updateBoid, renderBoid, createConfig }

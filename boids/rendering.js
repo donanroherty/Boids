@@ -79,7 +79,7 @@ function drawArcCone(canvas, pos, dir, fov, radius, color, alpha = 0.05) {
   ctx.restore()
 }
 
-function renderQuadTree(quadTree, canvas) {
+function drawQuadTree(quadTree, canvas) {
   const ctx = canvas.getContext("2d")
   ctx.beginPath()
   ctx.rect(quadTree.bounds.x, quadTree.bounds.y, quadTree.bounds.w, quadTree.bounds.h)
@@ -91,11 +91,11 @@ function renderQuadTree(quadTree, canvas) {
   if (subdivs) {
     const { bottomLeft, topLeft, topRight, bottomRight } = subdivs
 
-    renderQuadTree(bottomLeft, canvas)
-    renderQuadTree(topLeft, canvas)
-    renderQuadTree(topRight, canvas)
-    renderQuadTree(bottomRight, canvas)
+    drawQuadTree(bottomLeft, canvas)
+    drawQuadTree(topLeft, canvas)
+    drawQuadTree(topRight, canvas)
+    drawQuadTree(bottomRight, canvas)
   }
 }
 
-export { drawBoid, drawCircle, renderQuadTree, drawArcCone }
+export { drawBoid, drawCircle, drawQuadTree, drawArcCone }

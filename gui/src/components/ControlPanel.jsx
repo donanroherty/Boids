@@ -98,6 +98,7 @@ function ControlPanel(props) {
         setConfig={updateConfig}
         resetConfig={resetConfig}
         useQuadTree={useQuadTree()}
+        renderQuadTree={renderQuadTree()}
         toggleUseQuadTree={toggleUseQuadTree}
         toggleRenderQuadTree={toggleRenderQuadTree}
         disabled={selectedFlockID() === null}

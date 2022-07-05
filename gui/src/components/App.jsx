@@ -17,6 +17,7 @@ function App(props) {
 
   onMount(() => {
     const app = boidsApp(canvas)
+    setBoids(app)
     // Prey
     app.flockHandler.addFlock({
       color: "black",
@@ -46,7 +47,6 @@ function App(props) {
       isPredator: true,
       renderSolid: true,
     })
-    setBoids(app)
   })
 
   return (

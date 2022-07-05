@@ -21,10 +21,11 @@ function boidsApp(canvas) {
     flockHandler,
     tick,
     getSceneSize,
-    getBoidsInRange,
-    useQuadTree,
-    bRenderQuadTree,
+    useQuadTree: true,
+    bRenderQuadTree: false,
   }
+
+  tick.start()
 
   function update(deltatime) {
     {
@@ -33,13 +34,12 @@ function boidsApp(canvas) {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
     }
 
-    if (useQuadTree) {
+    if (app.useQuadTree) {
       // update quadtree
       const sceneSize = getSceneSize()
       const positions = Array.from(entities).map((b) => b.position)
       quadTree = pointQuadTree({ x: 0, y: 0, w: sceneSize.x, h: sceneSize.y }, 8, positions)
-
-      if (bRenderQuadTree) renderQuadTree(quadTree, canvas)
+      if (app.bRenderQuadTree) renderQuadTree(quadTree, canvas)
     }
 
     entities.forEach((b) => updateBoidsInRange(b, app))

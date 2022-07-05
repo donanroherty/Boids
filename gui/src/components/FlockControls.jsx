@@ -49,8 +49,9 @@ function Controls(props) {
           />
           <Checkbox
             label={"Render QT"}
-            value={props.config.renderQuadTree}
+            value={props.renderQuadTree}
             setValue={props.toggleRenderQuadTree}
+            disabled={!props.useQuadTree}
           />
           <Checkbox
             label={"Draw Debug"}

@@ -20,6 +20,7 @@ function drawBoid(canvas, pos, dir, size, color, isSolid) {
   ctx.lineTo(p2.x, p2.y)
   ctx.closePath()
   ctx.strokeStyle = color
+  ctx.lineWidth = 1
   ctx.stroke()
 
   if (isSolid) {
@@ -29,12 +30,19 @@ function drawBoid(canvas, pos, dir, size, color, isSolid) {
   ctx.restore()
 }
 
-function drawCircle(loc, rad, canvas, color, alpha = 1) {
+function drawCircle(canvas, position, radius, options) {
+  const opts = {
+    color: "red",
+    lineWidth: 1,
+    alpha: 1,
+    ...options,
+  }
   const ctx = canvas.getContext("2d")
-  ctx.globalAlpha = alpha
+  ctx.globalAlpha = opts.alpha
   ctx.beginPath()
-  ctx.arc(loc.x, loc.y, rad, 0, 2 * Math.PI)
-  ctx.strokeStyle = color
+  ctx.arc(position.x, position.y, radius, 0, 2 * Math.PI)
+  ctx.strokeStyle = opts.color
+  ctx.lineWidth = opts.lineWidth
   ctx.stroke()
   ctx.globalAlpha = 1
 }
@@ -72,6 +80,7 @@ function drawArcCone(canvas, pos, dir, fov, radius, color, alpha = 0.05) {
     ctx.beginPath()
     ctx.arc(0, 0, radius, arcStart, arcEnd, true)
     ctx.strokeStyle = color
+    ctx.lineWidth = 1
     ctx.stroke()
   }
 
@@ -98,4 +107,93 @@ function drawQuadTree(quadTree, canvas) {
   }
 }
 
-export { drawBoid, drawCircle, drawQuadTree, drawArcCone }
+function drawPolygon(canvas, edges, options, drawNormal = false) {
+  const opts = {
+    color: "black",
+    lineWidth: 1,
+    ...options,
+  }
+
+  const ctx = canvas.getContext("2d")
+  ctx.beginPath()
+
+  edges.forEach((l) => l.draw(canvas, drawNormal))
+
+  ctx.lineWidth = opts.lineWidth
+  ctx.strokeStyle = opts.color
+  ctx.stroke()
+  if (opts.fill) {
+    ctx.fillStyle = opts.color
+    ctx.fill()
+  }
+
+  ctx.closePath()
+}
+
+function drawLine(canvas, start, end, normal, options, openClosePath = true, drawNormal = false) {
+  const opts = {
+    color: "black",
+    lineWidth: 1,
+    ...options,
+  }
+
+  const ctx = canvas.getContext("2d")
+
+  const v = end.sub(start)
+
+  if (openClosePath) {
+    ctx.beginPath()
+    ctx.moveTo(start.x, start.y)
+  } else {
+    ctx.lineTo(start.x, start.y)
+  }
+
+  if (drawNormal) {
+    const normalLen = 5
+    const normalStart = start.add(v.scale(0.5))
+    const normalEnd = normalStart.add(normal.scale(normalLen))
+
+    const ctx = canvas.getContext("2d")
+    ctx.lineTo(normalStart.x, normalStart.y)
+    ctx.lineTo(normalEnd.x, normalEnd.y)
+    ctx.lineTo(normalStart.x, normalStart.y)
+  }
+
+  ctx.lineTo(end.x, end.y)
+  ctx.lineWidth = opts.lineWidth
+  ctx.strokeStyle = opts.color
+
+  ctx.stroke()
+
+  if (openClosePath) {
+    ctx.closePath()
+  }
+}
+
+function drawCapsule(canvas, start, end, radius, options) {
+  const opts = {
+    color: "black",
+    lineWidth: 1,
+    ...options,
+  }
+
+  const dir = end.sub(start).norm()
+  const rot = Math.atan2(dir.y, dir.x) - Math.PI / 2
+
+  const ctx = canvas.getContext("2d")
+  ctx.save()
+
+  ctx.beginPath()
+  ctx.arc(start.x, start.y, radius, Math.PI * 2 + rot, Math.PI * 3 + rot, true) // bottom arc
+  ctx.arc(end.x, end.y, radius, Math.PI + rot, Math.PI * 2 + rot, true) // top arc
+  ctx.closePath()
+
+  // style
+  ctx.lineWidth = opts.lineWidth
+  ctx.strokeStyle = opts.color
+  ctx.stroke()
+
+  ctx.restore()
+}
+
+export { drawBoid, drawCircle, drawQuadTree, drawArcCone, drawLine, drawPolygon, drawCapsule }

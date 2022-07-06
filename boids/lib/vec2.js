@@ -10,12 +10,10 @@
  * @returns Vec2
  */
 function vec2(inX = 0, inY = 0) {
-  const x = inX
-  const y = inY
-
   const self = {
-    x,
-    y,
+    x: inX,
+    y: inY,
+    set,
     add,
     scale,
     mul,
@@ -33,6 +31,11 @@ function vec2(inX = 0, inY = 0) {
     angle,
     reflect,
     lerp,
+  }
+
+  function set(b) {
+    self.x = b.x
+    self.y = b.y
   }
 
   /**
@@ -93,11 +96,11 @@ function vec2(inX = 0, inY = 0) {
   }
 
   function perpCW() {
-    return vec2(y, -x)
+    return vec2(self.y, -self.x)
   }
 
   function perpCCW() {
-    return vec2(-y, x)
+    return vec2(-self.y, self.x)
   }
 
   function lenSq() {

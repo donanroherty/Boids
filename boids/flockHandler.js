@@ -1,6 +1,5 @@
 import { createBoid, createConfig } from "./boid.js"
-import { clamp } from "./utils.js"
-import vec2 from "./vec2.js"
+import vec2 from "./lib/vec2.js"
 
 function createFlockHandler(entities, getSceneSize) {
   let lastFlockID = -1
@@ -49,7 +48,8 @@ function createFlockHandler(entities, getSceneSize) {
   }
 
   function getFlockConfig(flockID) {
-    return Array.from(entities).find((e) => e.flock === flockID).config
+    const member = Array.from(entities).find((e) => e.flock === flockID)
+    return member ? member.config : null
   }
 
   function getAllFlockConfigs() {

@@ -1,6 +1,6 @@
-import { circleQuery } from "./pointQuadTree.js"
-import { drawArcCone, drawBoid, drawCircle } from "./rendering.js"
-import vec2 from "./vec2.js"
+import { circleQuery } from "./lib/pointQuadTree.js"
+import { drawArcCone, drawBoid, drawCircle } from "./lib/rendering.js"
+import vec2 from "./lib/vec2.js"
 
 function createConfig(override = {}) {
   return {
@@ -31,6 +31,7 @@ function createBoid(position, velocity, flock, index, config) {
   return {
     position,
     velocity,
+    direction: velocity.norm(),
     config,
     flock,
     index,
@@ -39,23 +40,32 @@ function createBoid(position, velocity, flock, index, config) {
   }
 }
 
-function updateVisibleBoids(b, app, quadTree) {
+function updateVisibleBoids(b, entities, quadTree) {
+  b.visibleBoids = []
   let inRange = []
   if (quadTree) {
-    let positions = circleQuery(quadTree, b.position, b.detectionRange)
-    inRange = Array.from(app.entities).filter(
-      (b) => positions.find((p) => p.x === b.position.x && p.y === b.position.y) !== undefined
+    let positions = circleQuery(quadTree, b.position, b.config.detectionRange)
+    inRange = Array.from(entities).filter(
+      (o) => positions.find((p) => p.x === o.position.x && p.y === o.position.y) !== undefined
     )
   } else {
-    inRange = Array.from(app.entities).filter(
-      (b) => b.position.sub(b.position).lenSq() < b.detectionRange * b.detectionRange
+    inRange = Array.from(entities).filter(
+      (o) =>
+        vec2(o.position.x, o.position.y).sub(b.position).lenSq() <
+        b.config.detectionRange * b.config.detectionRange
+    )
+  }
+  b.visibleBoids = inRange.filter((o) => o !== b && canSee(b, o))
+}
+
     )
   }
 
   b.visibleBoids = inRange.filter((o) => o !== b && canSee(b, o))
 }
 
-function updateBoid(b, dt, sceneSize) {
+  if (isPaused) return
+
   // update forces
   {
     const newVel = vec2(b.velocity.x, b.velocity.y)
@@ -67,14 +77,15 @@ function updateBoid(b, dt, sceneSize) {
       .clampedLen(b.config.minSpeed, b.config.maxSpeed)
       .add(drag(b, vec2(b.velocity.x, b.velocity.y)))
 
-    b.velocity.x = newVel.x
-    b.velocity.y = newVel.y
+    b.velocity.set(newVel)
+
+    const newDir = newVel.norm()
+    b.direction.set(newDir)
   }
 
   const newPos = vec2(b.position.x, b.position.y).add(vec2(b.velocity.x, b.velocity.y).scale(dt))
   const OOBFix = mirrorOutOfBounds(newPos, sceneSize)
-  b.position.x = OOBFix.x
-  b.position.y = OOBFix.y
+  b.position.set(OOBFix)
 }
 
 function canSee(b, other) {
@@ -112,7 +123,7 @@ function mirrorOutOfBounds(pos, sceneSize) {
   return pos
 }
 
-function renderBoid(b, canvas) {
+function renderBoid(b, canvas, debugHelper) {
   drawBoid(
     canvas,
     b.position,
@@ -121,14 +132,16 @@ function renderBoid(b, canvas) {
     b.config.color,
     b.hasPrey
   )
-  drawDebug(b, canvas)
+
+  if (b.index === 0) drawDebug(b, canvas)
 }
 
 function drawDebug(b, canvas) {
   if (b.index !== 0) return
 
   b.visibleBoids.forEach((o) => {
-    if (o !== b) drawCircle(o.position, o.config.size, canvas, o.config.color, 0.4)
+    if (o !== b)
+      drawCircle(canvas, o.position, o.config.size, { color: o.config.color, alpha: 0.4 })
   })
 
   drawArcCone(

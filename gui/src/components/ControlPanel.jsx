@@ -1,4 +1,4 @@
-import { createSignal, createEffect } from "solid-js"
+import { createSignal, createEffect, onMount, onCleanup } from "solid-js"
 import FlockControls from "./FlockControls"
 import TabBar from "./TabBar"
 import { randColor } from "../utils"
@@ -15,12 +15,28 @@ function ControlPanel(props) {
   const [tabData, setTabData] = createSignal(
     props.boidsApp.flockHandler.getAllFlockConfigs().map((c) => ({ color: c.color }))
   )
+  const [isPaused, setIsPaused] = createSignal(props.boidsApp.isPaused)
 
   createEffect((prev) => {
     if (prev === selectedFlockID()) {
       setFlockConfig(selectedFlockID(), config())
     }
     return selectedFlockID()
+  })
+
+  onMount(() => {
+    document.addEventListener("keypress", onKeyPress)
+
+    onCleanup(() => {
+      document.removeEventListener("keypress", onKeyPress)
+    })
+
+    function onKeyPress(event) {
+      if (event.code === "Space") {
+        event.preventDefault()
+        togglePause()
+      }
+    }
   })
 
   function selectFlock(id) {
@@ -46,6 +62,11 @@ function ControlPanel(props) {
   function toggleRenderQuadTree() {
     props.boidsApp.bRenderQuadTree = !props.boidsApp.bRenderQuadTree
     setRenderQuadTree(props.boidsApp.bRenderQuadTree)
+  }
+
+  function togglePause() {
+    props.boidsApp.isPaused = !props.boidsApp.isPaused
+    setIsPaused(props.boidsApp.isPaused)
   }
 
   function addFlock() {
@@ -97,7 +118,10 @@ function ControlPanel(props) {
         config={config()}
         setConfig={updateConfig}
         resetConfig={resetConfig}
+        togglePause={togglePause}
+        isPaused={isPaused()}
         useQuadTree={useQuadTree()}
+        renderQuadTree={renderQuadTree()}
         toggleUseQuadTree={toggleUseQuadTree}
         toggleRenderQuadTree={toggleRenderQuadTree}
         disabled={selectedFlockID() === null}

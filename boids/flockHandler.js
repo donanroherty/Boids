@@ -1,16 +1,15 @@
 import { createBoid, createConfig } from "./boid.js"
-import { clamp } from "./utils.js"
-import vec2 from "./vec2.js"
+import vec2 from "./lib/vec2.js"
 
 function createFlockHandler(entities, getSceneSize) {
   let lastFlockID = -1
 
-  function addFlock(cfg) {
+  function addFlock(cfg, spawnPos = undefined) {
     const flock = ++lastFlockID
     const config = createConfig(cfg)
 
     const newBoids = Array.from(Array(config.numBoids), (_, index) => {
-      const pos = getSceneSize().mul(vec2(Math.random(), Math.random()))
+      const pos = spawnPos || getSceneSize().mul(vec2(Math.random(), Math.random()))
       const vel = vec2(-Math.random() + Math.random(), -Math.random() + Math.random())
         .norm()
         .scale(config.minSpeed)
@@ -49,7 +48,8 @@ function createFlockHandler(entities, getSceneSize) {
   }
 
   function getFlockConfig(flockID) {
-    return Array.from(entities).find((e) => e.flock === flockID).config
+    const member = Array.from(entities).find((e) => e.flock === flockID)
+    return member ? member.config : null
   }
 
   function getAllFlockConfigs() {

@@ -1,65 +1,60 @@
-import createTick from "./tick.js"
+import createTick from "./lib/tick.js"
 import { createFlockHandler } from "./flockHandler.js"
-import vec2 from "./vec2.js"
-import { pointQuadTree, circleQuery } from "./pointQuadTree.js"
-import { renderQuadTree } from "./rendering.js"
-import { renderBoid, updateBoid, updateBoidsInRange } from "./boid.js"
+import { pointQuadTree } from "./lib/pointQuadTree.js"
+import { drawQuadTree } from "./lib/rendering.js"
+import createDebugHelper from "./debugHelper.js"
+import { createManualBoidController } from "./manualBoidController.js"
+import { createScene } from "./scene.js"
 
 function boidsApp(canvas) {
-  canvas.style.transform = "scaleY(-1)" // flip y axis
+  // canvas.style.transform = "scaleY(-1)" // flip y axis
+  scaleCanvasToPixelRatio(canvas)
 
-  let entities = new Set()
-  let quadTree
-  let useQuadTree = true
-  let bRenderQuadTree = false
-
-  const flockHandler = createFlockHandler(entities, getSceneSize)
+  let quadTree = null
+  const scene = createScene(canvas)
+  const debugHelper = createDebugHelper(canvas)
+  const manualBoidController = createManualBoidController()
+  const flockHandler = createFlockHandler(scene.entities, scene.getSceneSize)
   const tick = createTick(update)
-  tick.start()
 
   const app = {
     flockHandler,
     tick,
-    getSceneSize,
-    getBoidsInRange,
-    useQuadTree,
-    bRenderQuadTree,
+    useQuadTree: false,
+    bRenderQuadTree: false,
+    isPaused: false,
   }
+
+  tick.start()
 
   function update(deltatime) {
-    {
-      // clear canvas
-      const ctx = canvas.getContext("2d")
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-    }
+    clearCanvas()
+    updateQuadTree()
+    manualBoidController.update(canvas, scene.entities, debugHelper, app.isPaused)
+    scene.update(deltatime, quadTree, debugHelper, app.isPaused)
+  }
 
-    if (useQuadTree) {
-      // update quadtree
-      const sceneSize = getSceneSize()
-      const positions = Array.from(entities).map((b) => b.position)
+  function clearCanvas() {
+    const ctx = canvas.getContext("2d")
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+  }
+
+  function updateQuadTree() {
+    if (app.useQuadTree) {
+      const sceneSize = scene.getSceneSize()
+      const positions = Array.from(scene.entities).map((b) => b.position)
       quadTree = pointQuadTree({ x: 0, y: 0, w: sceneSize.x, h: sceneSize.y }, 8, positions)
-
-      if (bRenderQuadTree) renderQuadTree(quadTree, canvas)
-    }
-
-    entities.forEach((b) => updateBoidsInRange(b, app))
-    entities.forEach((b) => updateBoid(b, deltatime, getSceneSize()))
-    entities.forEach((b) => renderBoid(b, canvas))
+      if (app.bRenderQuadTree) drawQuadTree(quadTree, canvas)
+    } else quadTree = null
   }
 
-  function getBoidsInRange(pos, range) {
-    if (useQuadTree) {
-      let positions = circleQuery(quadTree, pos, range)
-      return Array.from(entities).filter(
-        (b) => positions.find((p) => p.x === b.position.x && p.y === b.position.y) !== undefined
-      )
-    } else {
-      return Array.from(entities).filter((b) => pos.sub(b.position).lenSq() < range * range)
-    }
-  }
-
-  function getSceneSize() {
-    return vec2(canvas.width, canvas.height)
+  function scaleCanvasToPixelRatio(canvas) {
+    const pixelRatio = window.devicePixelRatio || 1
+    const rect = canvas.getBoundingClientRect()
+    canvas.width = Math.round(pixelRatio * rect.right) - Math.round(pixelRatio * rect.left)
+    canvas.height = Math.round(pixelRatio * rect.bottom) - Math.round(pixelRatio * rect.top)
+    const ctx = canvas.getContext("2d")
+    ctx.scale(pixelRatio, pixelRatio)
   }
 
   return app

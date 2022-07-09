@@ -19,7 +19,6 @@ const colors = [
   "fuchsia",
   "green",
   "olive",
-  "yellow",
   "navy",
   "blue",
   "teal",

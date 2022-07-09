@@ -7,7 +7,37 @@ function Controls(props) {
   }
 
   return (
-    <div class="flex flex-col gap-3 rounded-bl-md rounded-br-md border-l-[1px] border-b-[1px] border-r-[1px] border-solid border-black border-t-inherit bg-gray-100 px-2 py-2">
+    <div class="flex w-full flex-col gap-3 rounded-bl-md rounded-br-md border-l-[1px] border-b-[1px] border-r-[1px] border-solid border-black border-t-inherit bg-gray-100 px-2 py-2">
+      {/* System */}
+
+      <div class="flex w-full justify-items-center gap-4 rounded-sm border-[1px] border-solid border-gray-300 bg-gray-200 p-1 align-middle">
+        <div class="my-auto text-xs font-bold">System:</div>
+        <div class="flex w-full gap-4">
+          <Checkbox
+            label={"Use Quadtree"}
+            value={props.useQuadTree}
+            setValue={props.toggleUseQuadTree}
+          />
+          <Checkbox
+            label={"Render QT"}
+            value={props.renderQuadTree}
+            setValue={props.toggleRenderQuadTree}
+            disabled={!props.useQuadTree}
+          />
+          <Checkbox
+            label={"Draw Debug"}
+            value={props.config.drawDebug}
+            setValue={(val) => setConfigProperty("drawDebug", val)}
+          />
+
+          <button
+            onClick={props.togglePause}
+            class="ml-auto h-full w-32 rounded-md border-[1px] border-solid border-gray-500 bg-gray-400 font-bold text-white hover:bg-gray-300"
+          >
+            {props.isPaused ? "Play" : "Pause"}
+          </button>
+        </div>
+      </div>
       {/* Interactions */}
       <div class="flex gap-4">
         <div class="text-xs font-bold">Flock interactions:</div>
@@ -37,29 +67,6 @@ function Controls(props) {
           />
         </div>
       </div>
-
-      {/* System */}
-      <div class="flex gap-4">
-        <div class="text-xs font-bold">System:</div>
-        <div class="flex gap-4">
-          <Checkbox
-            label={"Use Quadtree"}
-            value={props.useQuadTree}
-            setValue={props.toggleUseQuadTree}
-          />
-          <Checkbox
-            label={"Render QT"}
-            value={props.config.renderQuadTree}
-            setValue={props.toggleRenderQuadTree}
-          />
-          <Checkbox
-            label={"Draw Debug"}
-            value={props.config.drawDebug}
-            setValue={(val) => setConfigProperty("drawDebug", val)}
-          />
-        </div>
-      </div>
-
       {/* Controls */}
       <div class="flex flex-col">
         <div class="text-xs font-bold">Flock controls:</div>

@@ -14,6 +14,7 @@ function vec2(inX = 0, inY = 0) {
     x: inX,
     y: inY,
     set,
+    clone,
     add,
     scale,
     mul,
@@ -36,6 +37,10 @@ function vec2(inX = 0, inY = 0) {
   function set(b) {
     self.x = b.x
     self.y = b.y
+  }
+
+  function clone() {
+    return vec2(self.x, self.y)
   }
 
   /**

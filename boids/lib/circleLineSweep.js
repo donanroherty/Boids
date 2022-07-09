@@ -1,66 +1,74 @@
 import { lineLineIntersection, pointInCapsule } from "./math"
 
-function circleLineSweep(from, to, rad, l1, l2, debugHelper, drawDebug = false) {
+function circleLineSweep(from, to, rad, edge, debugHelper, drawDebug = false) {
   const sweepVec = to.sub(from)
 
-  const lineCastSweep = lineCastTest(from, to, rad, l1, l2, debugHelper, drawDebug) // infinite line test
-  if (lineCastSweep) {
-    if (lineCastSweep.location.sub(from).lenSq() > sweepVec.lenSq()) return undefined
-    return lineCastSweep
+  const parallelLineHit = parallelLineTest(from, to, rad, edge, debugHelper, drawDebug) // infinite line test
+  if (parallelLineHit) {
+    if (parallelLineHit.location.sub(from).lenSq() > sweepVec.lenSq()) return undefined
+    return parallelLineHit
   }
 
-  const glancingLineSweep = glancingLinePtTest(from, to, rad, l1, l2, debugHelper, drawDebug)
-  if (glancingLineSweep) {
-    return glancingLineSweep
+  const lineEndPointHit = lineEndPointTest(from, to, rad, edge, debugHelper, drawDebug)
+  if (lineEndPointHit) {
+    return lineEndPointHit
   }
 
   return undefined
 }
 
-function lineCastTest(from, to, rad, l1, l2, debugHelper, drawDebug = false) {
+function parallelLineTest(from, to, rad, edge, debugHelper, drawDebug = false) {
+  const { start: l1, end: l2 } = edge
   const overlap = spansLine(from, to, rad, l1, l2)
   if (overlap) return undefined
 
   const sweepVec = to.sub(from)
-  const vec = l2.sub(l1)
-  const dir = vec.norm()
-  const normal = vec.norm().perpCCW()
+  const colVec = l2.sub(l1)
+  const colDir = colVec.norm()
+  const colNormal = colVec.norm().perpCCW()
 
-  const perpOut = l1.add(normal.scale(rad))
-  const paralellStart = perpOut.sub(dir.scale(100))
-  const paralellEnd = perpOut.add(dir.scale(100))
+  const perpOut = l1.add(colNormal.scale(rad))
+  const paralellStart = perpOut.sub(colDir.scale(100))
+  const paralellEnd = perpOut.add(colDir.scale(100))
 
   const sweepPos = lineLineIntersection(from, to, paralellStart, paralellEnd, true)
+  if (!sweepPos) return undefined
 
   const dist = sweepPos.sub(from).lenSq()
   if (dist > sweepVec.lenSq()) return undefined
 
+  const sweepDir = sweepVec.norm()
+
   // Filter out intersections behind circle move direction
-  const isBehind = sweepVec.norm().dot(sweepPos.sub(from).norm()) < 0
+  const isBehind = sweepDir.dot(sweepPos.sub(from).norm()) < 0
   if (isBehind) return undefined
 
   // Collision is only valid if it occurs within the length of the line
-  const limitA = l1.add(normal.scale(rad))
-  const limitB = l2.add(normal.scale(rad))
+  const limitA = l1.add(colNormal.scale(rad))
+  const limitB = l2.add(colNormal.scale(rad))
   const ab = limitA.sub(limitB).lenSq()
   const ac = limitA.sub(sweepPos).lenSq()
   const bc = limitB.sub(sweepPos).lenSq()
   if (ac > ab || bc > ab) return undefined
 
   if (drawDebug) {
-    debugHelper.drawDebugPoint(limitA, 2)
-    debugHelper.drawDebugPoint(limitB, 2)
     debugHelper.drawDebugLine(limitA, limitB, { color: "green", lineWidth: 0.5 })
     debugHelper.drawDebugPoint(sweepPos, rad, { color: "red" })
+    debugHelper.drawDebugCapsule(from, to, rad, { color: "green" })
   }
 
   return {
     location: sweepPos,
+    hitLocation: sweepPos.add(colDir.scale(-1 * rad)),
+    hitNormal: sweepDir,
+    colliderNormal: colNormal,
     t: from.sub(sweepPos).lenSq() / to.sub(from).lenSq(),
+    edge,
   }
 }
 
-function glancingLinePtTest(from, to, rad, l1, l2, debugHelper, drawDebug = false) {
+function lineEndPointTest(from, to, rad, edge, debugHelper, drawDebug = false) {
+  const { start: l1, end: l2 } = edge
   // test if the lines points are within the capsule
   const p1InCap = pointInCapsule(l1, from, to, rad)
   const p2InCap = pointInCapsule(l2, from, to, rad)
@@ -77,15 +85,15 @@ function glancingLinePtTest(from, to, rad, l1, l2, debugHelper, drawDebug = fals
   // Now we begin testing the point for collision
   const sweepVec = to.sub(from)
   const dir = sweepVec.norm()
-  const velPerp = dir.perpCW()
+  const dirPerp = dir.perpCW()
   const speed = sweepVec.len()
 
   if (drawDebug) {
     debugHelper.drawDebugPoint(linePt, 4, "red")
   }
 
-  const dia1 = from.add(velPerp.scale(rad))
-  const dia2 = dia1.add(velPerp.scale(-1 * rad * 2))
+  const dia1 = from.add(dirPerp.scale(rad))
+  const dia2 = dia1.add(dirPerp.scale(-1 * rad * 2))
   // point projected from line point along inverse velocity vector
   const p2 = linePt.add(dir.scale(-1).scale(speed + rad))
   // intersection between linePt->p2 and circle diameter
@@ -101,6 +109,9 @@ function glancingLinePtTest(from, to, rad, l1, l2, debugHelper, drawDebug = fals
   const diff = linePt.sub(circumIntersect)
   const sweepPos = from.add(diff) // swept circle position
 
+  // colliderNormal
+  const colliderNormal = sweepPos.sub(linePt).norm()
+
   if (drawDebug) {
     debugHelper.drawDebugPoint(sweepPos, rad, { color: "red" })
     debugHelper.drawDebugCapsule(from, to, rad, { color: "green" })
@@ -108,7 +119,11 @@ function glancingLinePtTest(from, to, rad, l1, l2, debugHelper, drawDebug = fals
 
   return {
     location: sweepPos,
+    hitLocation: linePt,
+    hitNormal: dir,
+    colliderNormal,
     t: from.sub(sweepPos).lenSq() / to.sub(from).lenSq(),
+    edge,
   }
 }
 

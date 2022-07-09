@@ -1,4 +1,4 @@
-import { createSignal, createEffect } from "solid-js"
+import { createSignal, createEffect, onMount, onCleanup } from "solid-js"
 import FlockControls from "./FlockControls"
 import TabBar from "./TabBar"
 import { randColor } from "../utils"
@@ -22,6 +22,21 @@ function ControlPanel(props) {
       setFlockConfig(selectedFlockID(), config())
     }
     return selectedFlockID()
+  })
+
+  onMount(() => {
+    document.addEventListener("keypress", onKeyPress)
+
+    onCleanup(() => {
+      document.removeEventListener("keypress", onKeyPress)
+    })
+
+    function onKeyPress(event) {
+      if (event.code === "Space") {
+        event.preventDefault()
+        togglePause()
+      }
+    }
   })
 
   function selectFlock(id) {

@@ -42,6 +42,8 @@ function lineLineIntersection(aStart, aEnd, bStart, bEnd, bInfiniteLines = false
   const t =
     (s2.x * (aStart.y - bStart.y) - s2.y * (aStart.x - bStart.x)) / (-s2.x * s1.y + s1.x * s2.y)
 
+  if (isNaN(s) || isNaN(t) || !isFinite(s) || !isFinite(t)) return undefined
+
   const intersection = aStart.add(s1.scale(t))
 
   if (bInfiniteLines) return intersection

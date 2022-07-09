@@ -4,23 +4,28 @@ import vec2 from "./lib/vec2"
 
 function createScene(canvas) {
   let entities = new Set()
-  let colliders = new Set()
+  let shapes = new Set()
 
-  createShapes(colliders, getSceneSize())
+  createShapes(shapes, getSceneSize())
+
+  let collisionEdges = Array.from(shapes).reduce((acc, collider) => acc.concat(collider.edges), [])
 
   return {
     entities,
-    colliders,
+    shapes,
     getSceneSize,
     update,
   }
 
   function update(deltatime, quadTree, debugHelper, isPaused) {
-    colliders.forEach((s) => s.draw(canvas))
+    // debugHelper.draw(canvas)
     entities.forEach((b) => updateVisibleBoids(b, entities, quadTree ? quadTree : null))
+
     entities.forEach((b) =>
-      updateBoid(b, deltatime, getSceneSize(), colliders, debugHelper, isPaused)
+      updateBoid(b, deltatime, getSceneSize(), collisionEdges, debugHelper, isPaused)
     )
+
+    shapes.forEach((s) => s.draw(canvas))
     entities.forEach((b) => renderBoid(b, canvas, debugHelper))
   }
 
@@ -30,12 +35,12 @@ function createScene(canvas) {
   }
 }
 
-function createShapes(colliders, sceneSize) {
+function createShapes(shapes, sceneSize) {
   const sceneBox = boxCollider(vec2(), sceneSize, { color: "purple", lineWidth: 1 }, true, true)
-  colliders.add(sceneBox)
+  shapes.add(sceneBox)
 
   const b = boxCollider(vec2(150, 100), vec2(100, 150), {}, false, true)
-  colliders.add(b)
+  shapes.add(b)
 
   const pts = [
     vec2(350, 50),
@@ -52,7 +57,7 @@ function createShapes(colliders, sceneSize) {
     vec2(400, 110),
   ]
   const p = polygonCollider(pts, {}, true)
-  colliders.add(p)
+  shapes.add(p)
 }
 
 export { createScene }

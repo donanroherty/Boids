@@ -12,7 +12,7 @@ function boidsApp(canvas) {
 
   let quadTree = null
   const scene = createScene(canvas)
-  const debugHelper = createDebugHelper()
+  const debugHelper = createDebugHelper(canvas)
   const manualBoidController = createManualBoidController()
   const flockHandler = createFlockHandler(scene.entities, scene.getSceneSize)
   const tick = createTick(update)
@@ -27,18 +27,11 @@ function boidsApp(canvas) {
 
   tick.start()
 
-  document.addEventListener("keypress", (event) => {
-    if (event.key === "p") {
-      app.isPaused = !app.isPaused
-    }
-  })
-
   function update(deltatime) {
     clearCanvas()
     updateQuadTree()
     manualBoidController.update(canvas, scene.entities, debugHelper, app.isPaused)
     scene.update(deltatime, quadTree, debugHelper, app.isPaused)
-    debugHelper.draw(canvas)
   }
 
   function clearCanvas() {
@@ -63,8 +56,6 @@ function boidsApp(canvas) {
     const ctx = canvas.getContext("2d")
     ctx.scale(pixelRatio, pixelRatio)
   }
-
-  function pause() {}
 
   return app
 }

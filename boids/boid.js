@@ -20,6 +20,7 @@ function createConfig(override = {}) {
     dragFactor: 0.01,
     minSpeed: 50,
     maxSpeed: 150,
+    obstacleAvoid: 20,
     coheseWithOtherFlocks: false,
     alignWithOtherFlocks: false,
     separateFromOtherFlocks: false,
@@ -68,6 +69,7 @@ function updateBoid(b, deltatime, sceneSize, edges, debugHelper, isPaused) {
   vel = vel.add(separation(b, b.visibleBoids))
   vel = vel.add(avoidPredator(b, b.visibleBoids))
   vel = vel.add(chasePrey(b, b.visibleBoids))
+  vel = vel.add(avoidObstacles(b, edges))
   vel = vel.add(drag(b, vel))
   vel = vel.clampedLen(b.config.minSpeed, b.config.maxSpeed)
 
@@ -224,6 +226,31 @@ function chasePrey(b, others) {
 
   const toTarget = target.sub(b.position)
   return toTarget.scale(b.config.predatorAttack)
+}
+
+// todo: this should pick a safe path away from collisions, not just push away from them
+function avoidObstacles(b, edges) {
+  const collisionGeo = getCollisionGeometry(b.position, b.config.detectionRange, edges)
+
+  const headingTollerance = 0.1
+
+  const out = collisionGeo.reduce((acc, edge) => {
+    const closest = closestPointOnLine(b.position, edge.start, edge.end, true)
+    if (!closest) return acc
+
+    const dir = b.velocity.norm()
+
+    const toPt = b.position.sub(closest)
+    if (dir.dot(toPt.norm()) > headingTollerance) return acc
+
+    const dist = toPt.len()
+    const alpha = 1 - dist / (b.config.detectionRange + b.config.size * 0.5)
+    const vel = toPt.norm().scale(b.config.obstacleAvoid * alpha)
+
+    return acc.add(vel)
+  }, vec2())
+
+  return out
 }
 
 function drag(b, vel) {

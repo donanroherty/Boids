@@ -93,8 +93,8 @@ function updateBoid(b, deltatime, sceneSize, edges, debugHelper, isPaused) {
 }
 
 function canSee(b, other) {
-  const toOther = vec2(other.position.x, other.position.y).sub(b.position).norm()
-  const dir = vec2(b.velocity.x, b.velocity.y).norm()
+  const toOther = other.position.sub(b.position).norm()
+  const dir = b.velocity.norm()
   const dot = dir.dot(toOther)
   const perc = (b.config.fov * 0.5) / 180
   const mapped = 1 - 2 * perc
@@ -229,26 +229,34 @@ function chasePrey(b, others) {
 }
 
 // todo: this should pick a safe path away from collisions, not just push away from them
-function avoidObstacles(b, edges) {
-  const collisionGeo = getCollisionGeometry(b.position, b.config.detectionRange, edges)
+function avoidObstacles(b, allEdges) {
+  const edges = getCollisionGeometry(b.position, b.config.detectionRange, allEdges)
+  const hits = raycastCone(
+    b.position,
+    b.direction,
+    b.config.fov,
+    b.config.detectionRange,
+    5,
+    edges,
+    false
+  )
 
   const headingTollerance = 0.1
 
-  const out = collisionGeo.reduce((acc, edge) => {
-    const closest = closestPointOnLine(b.position, edge.start, edge.end, true)
-    if (!closest) return acc
-
+  const out = hits
+    .map((hit) => {
+      const { location } = hit
     const dir = b.velocity.norm()
-
-    const toPt = b.position.sub(closest)
-    if (dir.dot(toPt.norm()) > headingTollerance) return acc
+      const toPt = b.position.sub(location)
+      if (dir.dot(toPt.norm()) > headingTollerance) return vec2()
 
     const dist = toPt.len()
     const alpha = 1 - dist / (b.config.detectionRange + b.config.size * 0.5)
     const vel = toPt.norm().scale(b.config.obstacleAvoid * alpha)
 
-    return acc.add(vel)
-  }, vec2())
+      return vel
+    })
+    .reduce((acc, v) => acc.add(v), vec2())
 
   return out
 }

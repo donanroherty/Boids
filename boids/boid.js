@@ -1,7 +1,7 @@
 import circleLineSweep from "./lib/circleLineSweep.js"
 import { circleQuery } from "./lib/pointQuadTree.js"
 import { drawArcCone, drawBoid, drawCircle } from "./lib/rendering.js"
-import { closestPointOnLine, lineLineIntersection, rayCast } from "./lib/utils.js"
+import { closestPointOnLine, raycastCone } from "./lib/utils.js"
 import vec2 from "./lib/vec2.js"
 
 function createConfig(override = {}) {
@@ -20,7 +20,7 @@ function createConfig(override = {}) {
     dragFactor: 0.01,
     minSpeed: 50,
     maxSpeed: 150,
-    obstacleAvoid: 20,
+    obstacleAvoid: 5,
     coheseWithOtherFlocks: false,
     alignWithOtherFlocks: false,
     separateFromOtherFlocks: false,
@@ -61,7 +61,7 @@ function updateVisibleBoids(b, entities, quadTree) {
   b.visibleBoids = inRange.filter((o) => o !== b && canSee(b, o))
 }
 
-function updateBoid(b, deltatime, sceneSize, edges, debugHelper, isPaused) {
+function updateBoid(b, deltatime, sceneSize, edges, isPaused) {
   // update forces
   let vel = vec2(b.velocity.x, b.velocity.y)
   vel = vel.add(cohesion(b, b.visibleBoids))
@@ -93,8 +93,8 @@ function updateBoid(b, deltatime, sceneSize, edges, debugHelper, isPaused) {
 }
 
 function canSee(b, other) {
-  const toOther = vec2(other.position.x, other.position.y).sub(b.position).norm()
-  const dir = vec2(b.velocity.x, b.velocity.y).norm()
+  const toOther = other.position.sub(b.position).norm()
+  const dir = b.velocity.norm()
   const dot = dir.dot(toOther)
   const perc = (b.config.fov * 0.5) / 180
   const mapped = 1 - 2 * perc
@@ -127,7 +127,7 @@ function mirrorOutOfBounds(pos, sceneSize) {
   return pos
 }
 
-function renderBoid(b, canvas, debugHelper) {
+function renderBoid(b, canvas) {
   drawBoid(
     canvas,
     b.position,
@@ -137,10 +137,10 @@ function renderBoid(b, canvas, debugHelper) {
     b.hasPrey
   )
 
-  if (b.index === 0) drawDebug(b, canvas, debugHelper)
+  if (b.index === 0 && b.config.drawDebug) drawDebug(b, canvas)
 }
 
-function drawDebug(b, canvas, debugHelper) {
+function drawDebug(b, canvas) {
   b.visibleBoids.forEach((o) => {
     if (o !== b)
       drawCircle(canvas, o.position, o.config.size, { color: o.config.color, alpha: 0.4 })
@@ -229,26 +229,34 @@ function chasePrey(b, others) {
 }
 
 // todo: this should pick a safe path away from collisions, not just push away from them
-function avoidObstacles(b, edges) {
-  const collisionGeo = getCollisionGeometry(b.position, b.config.detectionRange, edges)
+function avoidObstacles(b, allEdges) {
+  const edges = getCollisionGeometry(b.position, b.config.detectionRange, allEdges)
+  const hits = raycastCone(
+    b.position,
+    b.direction,
+    b.config.fov,
+    b.config.detectionRange,
+    5,
+    edges,
+    false
+  )
 
   const headingTollerance = 0.1
 
-  const out = collisionGeo.reduce((acc, edge) => {
-    const closest = closestPointOnLine(b.position, edge.start, edge.end, true)
-    if (!closest) return acc
+  const out = hits
+    .map((hit) => {
+      const { location } = hit
+      const dir = b.velocity.norm()
+      const toPt = b.position.sub(location)
+      if (dir.dot(toPt.norm()) > headingTollerance) return vec2()
 
-    const dir = b.velocity.norm()
+      const dist = toPt.len()
+      const alpha = 1 - dist / (b.config.detectionRange + b.config.size * 0.5)
+      const vel = toPt.norm().scale(b.config.obstacleAvoid * alpha)
 
-    const toPt = b.position.sub(closest)
-    if (dir.dot(toPt.norm()) > headingTollerance) return acc
-
-    const dist = toPt.len()
-    const alpha = 1 - dist / (b.config.detectionRange + b.config.size * 0.5)
-    const vel = toPt.norm().scale(b.config.obstacleAvoid * alpha)
-
-    return acc.add(vel)
-  }, vec2())
+      return vel
+    })
+    .reduce((acc, v) => acc.add(v), vec2())
 
   return out
 }
@@ -314,6 +322,7 @@ function sweepAndSlidePosition(start, velocity, deltatime, rad, range, edges, pa
 
 function getCollisionGeometry(pos, range, edges) {
   // filter edges to viable hit targets
+
   const viableEdges = edges.filter((edge) => {
     // boid is on the colliding side of the edge
     {

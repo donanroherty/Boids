@@ -1,8 +1,14 @@
 import { drawLine, drawCircle, drawCapsule } from "./lib/rendering.js"
 import vec2 from "./lib/vec2.js"
 
-function createDebugHelper(canvas) {
-  return { drawDebugLine, drawDebugPoint, drawDebugCapsule }
+function createDebugHelper() {
+  let canvas
+
+  return { init, drawDebugLine, drawDebugPoint, drawDebugCapsule }
+
+  function init(cvs) {
+    canvas = cvs
+  }
 
   function drawDebugLine(start, end, options = {}) {
     const opts = {
@@ -11,10 +17,7 @@ function createDebugHelper(canvas) {
       ...options,
     }
 
-    const line = {
-      draw: (canvas) => drawLine(canvas, start, end, vec2(), opts, true, false),
-    }
-    line.draw(canvas)
+    drawLine(canvas, start, end, vec2(), opts, true, false)
   }
 
   function drawDebugPoint(point, radius, options = {}) {
@@ -24,10 +27,7 @@ function createDebugHelper(canvas) {
       ...options,
     }
 
-    const pt = {
-      draw: (canvas) => drawCircle(canvas, point, radius, opts),
-    }
-    pt.draw(canvas)
+    drawCircle(canvas, point, radius, opts)
   }
 
   function drawDebugCapsule(start, end, radius, options) {
@@ -37,11 +37,8 @@ function createDebugHelper(canvas) {
       ...options,
     }
 
-    const cap = {
-      draw: (canvas) => drawCapsule(canvas, start, end, radius, opts),
-    }
-    cap.draw(canvas)
+    drawCapsule(canvas, start, end, radius, opts)
   }
 }
 
-export default createDebugHelper
+export default createDebugHelper()

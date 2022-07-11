@@ -18,12 +18,11 @@ function edgeCollider(start, end, options = {}) {
     start,
     end,
     normal: normal,
-    draw: (canvas, drawNormal = false) =>
-      drawLine(canvas, start, end, normal, opts, true, drawNormal),
+    draw: (canvas) => drawLine(canvas, start, end, normal, opts, true),
   }
 }
 
-function polygonCollider(pts, options = {}, drawNormals = false) {
+function polygonCollider(pts, options = {}) {
   const opts = {
     color: "black",
     lineWidth: 1,
@@ -44,28 +43,28 @@ function polygonCollider(pts, options = {}, drawNormals = false) {
       start: pt,
       end: next,
       normal,
-      draw: (canvas, drawNormal = false) =>
-        drawLine(canvas, pt, next, normal, opts, false, drawNormal),
+      draw: (canvas) => drawLine(canvas, pt, next, normal, opts, false),
     }
   })
 
   return {
     edges,
-    draw: (canvas) => drawPolygon(canvas, edges, opts, true),
+    draw: (canvas) => drawPolygon(canvas, edges, opts),
   }
 }
 
-function boxCollider(pos, size, options = {}, normalCW = false, drawNormals = false) {
+function boxCollider(pos, size, options = {}, normalCW = false) {
   const opts = {
     color: "black",
     lineWidth: 1,
     fill: false,
+    drawNormal: false,
     ...options,
   }
   let pts = [pos, pos.add(vec2(0, size.y)), pos.add(size), pos.add(vec2(size.x, 0))]
   if (normalCW) pts.reverse()
 
-  return { ...polygonCollider(pts, opts, drawNormals), type: "box" }
+  return { ...polygonCollider(pts, opts), type: "box" }
 }
 
 export { boxCollider, polygonCollider, edgeCollider }

@@ -1,5 +1,14 @@
 import vec2 from "./vec2.js"
 
+function scaleCanvasToPixelRatio(canvas) {
+  const pixelRatio = window.devicePixelRatio || 1
+  const rect = canvas.getBoundingClientRect()
+  canvas.width = Math.round(pixelRatio * rect.right) - Math.round(pixelRatio * rect.left)
+  canvas.height = Math.round(pixelRatio * rect.bottom) - Math.round(pixelRatio * rect.top)
+  const ctx = canvas.getContext("2d")
+  ctx.scale(pixelRatio, pixelRatio)
+}
+
 function drawBoid(canvas, pos, dir, size, color, isSolid) {
   const ctx = canvas.getContext("2d")
 
@@ -196,4 +205,13 @@ function drawCapsule(canvas, start, end, radius, options) {
   ctx.restore()
 }
 
-export { drawBoid, drawCircle, drawQuadTree, drawArcCone, drawLine, drawPolygon, drawCapsule }
+export {
+  scaleCanvasToPixelRatio,
+  drawBoid,
+  drawCircle,
+  drawQuadTree,
+  drawArcCone,
+  drawLine,
+  drawPolygon,
+  drawCapsule,
+}

@@ -1,28 +1,49 @@
+import debugHelper from "../debugHelper"
 import { clamp } from "./math"
+import vec2 from "./vec2"
 
-function rayCast(from, to, cols) {
-  const hits = cols.reduce((acc, collider) => {
-    const lineHits = collider.edges.reduce((acc, l) => {
-      const hitLoc = lineLineIntersection(from, to, l.start, l.end)
+function rayCast(from, to, edges) {
+  const hits = edges.reduce((acc, l) => {
+    const hitLoc = lineLineIntersection(from, to, l.start, l.end)
+    if (!hitLoc) return acc
 
-      if (hitLoc) {
-        const rayLen = to.sub(from).lenSq()
-        const hitDist = hitLoc.sub(from).lenSq()
-        const hit = {
-          collider,
-          location: hitLoc,
-          t: hitDist / rayLen,
-        }
-        acc.push(hit)
-      }
-      return acc
-    }, [])
+    const rayLen = to.sub(from).lenSq()
+    const hitDist = hitLoc.sub(from).lenSq()
+    const hit = {
+      location: hitLoc,
+      t: hitDist / rayLen,
+    }
 
-    acc = acc.concat(lineHits)
-    return acc
+    return acc.concat(hit)
   }, [])
 
-  hits.sort((a, b) => b.t - a.t)
+  hits.sort((a, b) => a.t - b.t)
+
+  return hits
+}
+
+function raycastCone(from, dir, angle, rad, numRays, edges, drawDebug = false) {
+  const fov = (angle / 360) * Math.PI * 2
+  const segAngle = fov / (numRays - 1)
+  const ang = dir.angle()
+
+  const targets = Array(numRays)
+    .fill()
+    .map((_, i) => {
+      const theta = fov * 0.5 + segAngle * i
+      const x = from.x + rad * Math.cos(theta - ang)
+      const y = from.y + rad * Math.sin(theta - ang)
+      return vec2(x, y)
+    })
+
+  const hits = targets
+    .map((target) => {
+      if (drawDebug) debugHelper.drawDebugLine(from, target, { lineWidth: 0.2 })
+      const rayHits = rayCast(from, target, edges)
+      return rayHits.length === 0 ? undefined : rayHits[0]
+    })
+    .filter((hit) => hit !== undefined)
+  if (drawDebug) hits.forEach((hit) => debugHelper.drawDebugPoint(hit.location, 4))
 
   return hits
 }
@@ -67,4 +88,4 @@ function closestPointOnLine(pt, l1, l2, bEndpointFallback = false) {
   return undefined
 }
 
-export { clamp, lineLineIntersection, closestPointOnLine, rayCast }
+export { raycastCone, lineLineIntersection, closestPointOnLine, rayCast }

@@ -1,3 +1,4 @@
+import debugHelper from "./debugHelper"
 import vec2 from "./lib/vec2"
 
 function createManualBoidController() {
@@ -17,7 +18,7 @@ function createManualBoidController() {
   window.addEventListener("pointerup", onPointerUp)
   window.addEventListener("pointermove", onPointerMove)
 
-  function update(canvas, entities, debugHelper, isPaused) {
+  function update(canvas, entities) {
     const { drawDebugPoint } = debugHelper
     const pointerPos = vec2(mouseX - canvas.offsetLeft, mouseY - canvas.offsetTop)
 

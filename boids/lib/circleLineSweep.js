@@ -1,15 +1,16 @@
+import debugHelper from "../debugHelper"
 import { lineLineIntersection, pointInCapsule } from "./math"
 
-function circleLineSweep(from, to, rad, edge, debugHelper, drawDebug = false) {
+function circleLineSweep(from, to, rad, edge, drawDebug = false) {
   const sweepVec = to.sub(from)
 
-  const parallelLineHit = parallelLineTest(from, to, rad, edge, debugHelper, drawDebug) // infinite line test
+  const parallelLineHit = parallelLineTest(from, to, rad, edge, drawDebug) // infinite line test
   if (parallelLineHit) {
     if (parallelLineHit.location.sub(from).lenSq() > sweepVec.lenSq()) return undefined
     return parallelLineHit
   }
 
-  const lineEndPointHit = lineEndPointTest(from, to, rad, edge, debugHelper, drawDebug)
+  const lineEndPointHit = lineEndPointTest(from, to, rad, edge, drawDebug)
   if (lineEndPointHit) {
     return lineEndPointHit
   }
@@ -17,7 +18,7 @@ function circleLineSweep(from, to, rad, edge, debugHelper, drawDebug = false) {
   return undefined
 }
 
-function parallelLineTest(from, to, rad, edge, debugHelper, drawDebug = false) {
+function parallelLineTest(from, to, rad, edge, drawDebug = false) {
   const { start: l1, end: l2 } = edge
   const overlap = spansLine(from, to, rad, l1, l2)
   if (overlap) return undefined
@@ -67,7 +68,7 @@ function parallelLineTest(from, to, rad, edge, debugHelper, drawDebug = false) {
   }
 }
 
-function lineEndPointTest(from, to, rad, edge, debugHelper, drawDebug = false) {
+function lineEndPointTest(from, to, rad, edge, drawDebug = false) {
   const { start: l1, end: l2 } = edge
   // test if the lines points are within the capsule
   const p1InCap = pointInCapsule(l1, from, to, rad)

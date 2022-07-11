@@ -18,16 +18,13 @@ function createScene(canvas) {
     update,
   }
 
-  function update(deltatime, quadTree, debugHelper, isPaused) {
-    // debugHelper.draw(canvas)
+  function update(deltatime, quadTree, isPaused) {
     entities.forEach((b) => updateVisibleBoids(b, entities, quadTree ? quadTree : null))
 
-    entities.forEach((b) =>
-      updateBoid(b, deltatime, getSceneSize(), collisionEdges, debugHelper, isPaused)
-    )
+    entities.forEach((b) => updateBoid(b, deltatime, getSceneSize(), collisionEdges, isPaused))
 
     shapes.forEach((s) => s.draw(canvas))
-    entities.forEach((b) => renderBoid(b, canvas, debugHelper))
+    entities.forEach((b) => renderBoid(b, canvas))
   }
 
   function getSceneSize() {

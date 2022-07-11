@@ -1,20 +1,21 @@
+import debugHelper from "../debugHelper"
 import { clamp } from "./math"
 import vec2 from "./vec2"
 
 function rayCast(from, to, edges) {
   const hits = edges.reduce((acc, l) => {
-      const hitLoc = lineLineIntersection(from, to, l.start, l.end)
+    const hitLoc = lineLineIntersection(from, to, l.start, l.end)
     if (!hitLoc) return acc
 
-        const rayLen = to.sub(from).lenSq()
-        const hitDist = hitLoc.sub(from).lenSq()
-        const hit = {
-          location: hitLoc,
-          t: hitDist / rayLen,
-        }
+    const rayLen = to.sub(from).lenSq()
+    const hitDist = hitLoc.sub(from).lenSq()
+    const hit = {
+      location: hitLoc,
+      t: hitDist / rayLen,
+    }
 
     return acc.concat(hit)
-    }, [])
+  }, [])
 
   hits.sort((a, b) => a.t - b.t)
 

@@ -1,7 +1,7 @@
 import circleLineSweep from "./lib/circleLineSweep.js"
 import { circleQuery } from "./lib/pointQuadTree.js"
 import { drawArcCone, drawBoid, drawCircle } from "./lib/rendering.js"
-import { closestPointOnLine, lineLineIntersection, rayCast } from "./lib/utils.js"
+import { closestPointOnLine, raycastCone } from "./lib/utils.js"
 import vec2 from "./lib/vec2.js"
 
 function createConfig(override = {}) {
@@ -20,7 +20,7 @@ function createConfig(override = {}) {
     dragFactor: 0.01,
     minSpeed: 50,
     maxSpeed: 150,
-    obstacleAvoid: 20,
+    obstacleAvoid: 5,
     coheseWithOtherFlocks: false,
     alignWithOtherFlocks: false,
     separateFromOtherFlocks: false,
@@ -61,7 +61,7 @@ function updateVisibleBoids(b, entities, quadTree) {
   b.visibleBoids = inRange.filter((o) => o !== b && canSee(b, o))
 }
 
-function updateBoid(b, deltatime, sceneSize, edges, debugHelper, isPaused) {
+function updateBoid(b, deltatime, sceneSize, edges, isPaused) {
   // update forces
   let vel = vec2(b.velocity.x, b.velocity.y)
   vel = vel.add(cohesion(b, b.visibleBoids))
@@ -127,7 +127,7 @@ function mirrorOutOfBounds(pos, sceneSize) {
   return pos
 }
 
-function renderBoid(b, canvas, debugHelper) {
+function renderBoid(b, canvas) {
   drawBoid(
     canvas,
     b.position,
@@ -137,10 +137,10 @@ function renderBoid(b, canvas, debugHelper) {
     b.hasPrey
   )
 
-  if (b.index === 0) drawDebug(b, canvas, debugHelper)
+  if (b.index === 0) drawDebug(b, canvas)
 }
 
-function drawDebug(b, canvas, debugHelper) {
+function drawDebug(b, canvas) {
   b.visibleBoids.forEach((o) => {
     if (o !== b)
       drawCircle(canvas, o.position, o.config.size, { color: o.config.color, alpha: 0.4 })
@@ -246,13 +246,13 @@ function avoidObstacles(b, allEdges) {
   const out = hits
     .map((hit) => {
       const { location } = hit
-    const dir = b.velocity.norm()
+      const dir = b.velocity.norm()
       const toPt = b.position.sub(location)
       if (dir.dot(toPt.norm()) > headingTollerance) return vec2()
 
-    const dist = toPt.len()
-    const alpha = 1 - dist / (b.config.detectionRange + b.config.size * 0.5)
-    const vel = toPt.norm().scale(b.config.obstacleAvoid * alpha)
+      const dist = toPt.len()
+      const alpha = 1 - dist / (b.config.detectionRange + b.config.size * 0.5)
+      const vel = toPt.norm().scale(b.config.obstacleAvoid * alpha)
 
       return vel
     })
@@ -322,6 +322,7 @@ function sweepAndSlidePosition(start, velocity, deltatime, rad, range, edges, pa
 
 function getCollisionGeometry(pos, range, edges) {
   // filter edges to viable hit targets
+
   const viableEdges = edges.filter((edge) => {
     // boid is on the colliding side of the edge
     {

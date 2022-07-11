@@ -26,7 +26,7 @@ function closestPointOnLine(pt, l1, l2, bEndpointFallback = false) {
   if (bEndpointFallback) {
     const l1p = pt.sub(l1)
     const l2p = pt.sub(l2)
-    return l1p.mag() < l2p.mag() ? l1 : l2
+    return l1p.lenSq() < l2p.lenSq() ? l1 : l2
   }
 
   return undefined
@@ -56,41 +56,11 @@ function lineLineIntersection(aStart, aEnd, bStart, bEnd, bInfiniteLines = false
 
 function pointInCapsule(pt, start, end, rad) {
   const closestPt = closestPointOnLine(pt, start, end)
-  if (closestPt && pt.sub(closestPt).len() < rad) return true
-  if (pt.sub(end).len() < rad) return true
-  if (pt.sub(start).len() < rad) return true
+  if (closestPt && pt.sub(closestPt).lenSq() < rad * rad) return true
+  if (pt.sub(end).lenSq() < rad * rad) return true
+  if (pt.sub(start).lenSq() < rad * rad) return true
 
   return false
 }
 
-function pointInBox(pt, p0, p1, p2, p3) {
-  return pointInTriangle(pt, p0, p1, p2) || pointInTriangle(pt, p0, p2, p3)
-}
-
-function pointInTriangle(pt, p0, p1, p2) {
-  const denom = (p1.y - p2.y) * (p0.x - p2.y) + (p2.y - p1.x) * (p0.y - p2.y)
-  const a = ((p1.y - p2.y) * (pt.x - p2.y) + (p2.y - p1.x) * (pt.y - p2.y)) / denom
-  const b = ((p2.y - p0.y) * (pt.x - p2.y) + (p0.x - p2.y) * (pt.y - p2.y)) / denom
-  const c = 1 - a - b
-
-  return a >= 0 && a <= 1 && b >= 0 && b <= 1 && c >= 0 && c <= 1
-}
-
-function angleBetweenNormVectors(v1, v2) {
-  const mid = v1.add(v2.sub(v1).scale(0.5))
-  const opp = v1.sub(mid).len()
-  const adj = mid.len()
-  return Math.atan(opp / adj)
-}
-
-export {
-  radToDeg,
-  degToRad,
-  clamp,
-  closestPointOnLine,
-  lineLineIntersection,
-  pointInTriangle,
-  pointInBox,
-  pointInCapsule,
-  angleBetweenNormVectors as angleBetweenNormalizedVectors,
-}
+export { radToDeg, degToRad, clamp, closestPointOnLine, lineLineIntersection, pointInCapsule }

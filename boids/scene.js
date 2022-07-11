@@ -1,5 +1,5 @@
 import { renderBoid, updateBoid, updateVisibleBoids } from "./boid"
-import { boxCollider, polygonCollider } from "./lib/shapes"
+import { boxCollider, polygonCollider } from "./lib/colliders"
 import vec2 from "./lib/vec2"
 import * as geo from "./geo/scene-geo.js"
 

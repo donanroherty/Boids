@@ -35,7 +35,7 @@ function createScene(canvas) {
 
 function createShapes(shapes, sceneSize) {
   geo.positivesShapes.forEach((ps) => {
-    const shape = polygonCollider(ps, { fill: true })
+    const shape = polygonCollider(ps, { fill: false })
     shapes.add(shape)
   })
 

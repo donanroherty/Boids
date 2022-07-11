@@ -137,7 +137,7 @@ function renderBoid(b, canvas) {
     b.hasPrey
   )
 
-  if (b.index === 0) drawDebug(b, canvas)
+  if (b.index === 0 && b.config.drawDebug) drawDebug(b, canvas)
 }
 
 function drawDebug(b, canvas) {

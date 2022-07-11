@@ -1,6 +1,7 @@
 import { renderBoid, updateBoid, updateVisibleBoids } from "./boid"
 import { boxCollider, polygonCollider } from "./lib/shapes"
 import vec2 from "./lib/vec2"
+import * as geo from "./geo/scene-geo.js"
 
 function createScene(canvas) {
   let entities = new Set()
@@ -36,28 +37,13 @@ function createScene(canvas) {
 }
 
 function createShapes(shapes, sceneSize) {
-  const sceneBox = boxCollider(vec2(), sceneSize, { color: "purple", lineWidth: 1 }, true, true)
+  geo.positivesShapes.forEach((ps) => {
+    const shape = polygonCollider(ps, { fill: true })
+    shapes.add(shape)
+  })
+
+  const sceneBox = boxCollider(vec2(), sceneSize, { color: "purple", lineWidth: 1 }, true)
   shapes.add(sceneBox)
-
-  const b = boxCollider(vec2(150, 100), vec2(100, 150), {}, false, true)
-  shapes.add(b)
-
-  const pts = [
-    vec2(350, 50),
-    vec2(330, 130),
-    vec2(300, 230),
-    vec2(350, 230),
-    vec2(350, 150),
-    vec2(400, 230),
-    vec2(450, 150),
-    vec2(350, 130),
-    vec2(450, 120),
-    vec2(450, 80),
-    vec2(450, 30),
-    vec2(400, 110),
-  ]
-  const p = polygonCollider(pts, {}, true)
-  shapes.add(p)
 }
 
 export { createScene }

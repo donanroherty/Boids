@@ -1,10 +1,10 @@
-import { createBoid, createConfig } from "./boid.js"
-import vec2 from "./lib/vec2.js"
+import { Boid, BoidConfig, createBoid, createConfig } from "./boid"
+import vec2, { Vec2 } from "./lib/vec2.js"
 
-function createFlockHandler(entities, getSceneSize) {
+function createFlockHandler(entities: Set<Boid>, getSceneSize: () => Vec2) {
   let lastFlockID = -1
 
-  function addFlock(cfg, spawnPos = undefined) {
+  function addFlock(cfg: Partial<BoidConfig>, spawnPos = undefined) {
     const flock = ++lastFlockID
     const config = createConfig(cfg)
 
@@ -20,7 +20,7 @@ function createFlockHandler(entities, getSceneSize) {
     newBoids.forEach((b) => entities.add(b))
   }
 
-  function onChangeNumBoids(flockID, cfg) {
+  function onChangeNumBoids(flockID: number, cfg: BoidConfig) {
     const boidEntities = getFlockEntities(flockID)
     const len = boidEntities.length
 
@@ -43,32 +43,37 @@ function createFlockHandler(entities, getSceneSize) {
     return Array.from(new Set(Array.from(entities).map((e) => e.flock)))
   }
 
-  function getFlockEntities(flockID) {
+  function getFlockEntities(flockID: number) {
     return Array.from(entities).filter((e) => e.flock === flockID, [])
   }
 
-  function getFlockConfig(flockID) {
+  function getFlockConfig(flockID: number): BoidConfig | undefined {
     const member = Array.from(entities).find((e) => e.flock === flockID)
-    return member ? member.config : null
+    return member ? member.config : undefined
+  }
+
+  function getFlockDefaultConfig(flockID: number): BoidConfig | undefined {
+    const member = Array.from(entities).find((e) => e.flock === flockID)
+    return member ? member.defaultConfig : undefined
   }
 
   function getAllFlockConfigs() {
     return getAllFlockIDs().map((fid) => getFlockConfig(fid))
   }
 
-  function setFlockConfig(flockID, cfg) {
+  function setFlockConfig(flockID: number, cfg: BoidConfig) {
     const prevCfg = getFlockConfig(flockID)
     const newCfg = { ...prevCfg, ...cfg }
     if (newCfg.numBoids === 0) newCfg.numBoids = 1
 
     getFlockEntities(flockID).forEach((e) => (e.config = newCfg))
 
-    if (prevCfg.numBoids !== newCfg.numBoids) {
+    if (prevCfg && prevCfg.numBoids !== newCfg.numBoids) {
       onChangeNumBoids(flockID, newCfg)
     }
   }
 
-  function removeFlock(flockID) {
+  function removeFlock(flockID: number) {
     entities.forEach((e) => {
       if (e.flock === flockID) entities.delete(e)
     })
@@ -79,6 +84,7 @@ function createFlockHandler(entities, getSceneSize) {
     removeFlock,
     getAllFlockIDs,
     getFlockConfig,
+    getFlockDefaultConfig,
     getAllFlockConfigs,
     setFlockConfig,
   }

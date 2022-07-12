@@ -1,24 +1,25 @@
-import debugHelper from "./debugHelper"
-import vec2 from "./lib/vec2"
+import { Boid } from "./boid"
+import debugHelper from "./lib/debugHelper"
+import vec2, { Vec2 } from "./lib/vec2.js"
 
-function createManualBoidController() {
+function createBoidController(canvas: HTMLCanvasElement) {
   let pointerDown = false
   let mouseX = 0
   let mouseY = 0
   let dragging = false
   let draggingSelection = false
-  let hoveredBoid
-  let selected
+  let hoveredBoid: Boid | null = null
+  let selected: Boid | null = null
 
   const inputHandler = {
     update,
   }
 
-  window.addEventListener("pointerdown", onPointerDown)
-  window.addEventListener("pointerup", onPointerUp)
-  window.addEventListener("pointermove", onPointerMove)
+  canvas.addEventListener("pointerdown", onPointerDown)
+  canvas.addEventListener("pointerup", onPointerUp)
+  canvas.addEventListener("pointermove", onPointerMove)
 
-  function update(canvas, entities) {
+  function update(entities: Set<Boid>) {
     const { drawDebugPoint } = debugHelper
     const pointerPos = vec2(mouseX - canvas.offsetLeft, mouseY - canvas.offsetTop)
 
@@ -52,11 +53,13 @@ function createManualBoidController() {
     }
   }
 
-  function dragSelection(pointerPos) {
-    selected.position = pointerPos
+  function dragSelection(pointerPos: Vec2) {
+    if (selected) selected.position = pointerPos
   }
 
-  function aimSelected(pointerPos) {
+  function aimSelected(pointerPos: Vec2) {
+    if (!selected) return
+
     // drag boid target
     const vel = selected.velocity
     const speed = vel.len()
@@ -76,27 +79,28 @@ function createManualBoidController() {
     draggingSelection = false
   }
 
-  function onPointerDown(event) {
+  function onPointerDown(event: PointerEvent) {
     pointerDown = true
     if (!dragging && hoveredBoid) {
       startDrag()
     }
   }
 
-  function onPointerUp(event) {
+  function onPointerUp(event: PointerEvent) {
     pointerDown = false
     endDrag()
   }
 
-  function getEntityAtPosition(entities, pos) {
-    return Array.from(entities).find((e) => {
+  function getEntityAtPosition(entities: Set<Boid>, pos: Vec2): Boid | null {
+    const boid = Array.from(entities).find((e) => {
       const rad = e.config.size
       const dist = vec2(e.position.x, e.position.y).sub(pos).lenSq()
       return dist < rad * rad
     })
+    return boid || null
   }
 
-  function onPointerMove(event) {
+  function onPointerMove(event: PointerEvent) {
     mouseX = event.pageX
     mouseY = event.pageY
   }
@@ -104,4 +108,4 @@ function createManualBoidController() {
   return inputHandler
 }
 
-export { createManualBoidController }
+export { createBoidController }

@@ -1,17 +1,13 @@
-/**
- * @param {{ (dt: number): void }} tickFn
- */
-
-function createTick(tickFn) {
+function createTick(tickFn: (dt: number) => void) {
   const targetFPS = 60
-  let timeout
-  let lastRealDelta
+  let timeout: number
+  let lastRealDelta: number
 
   function start() {
     doTick_R(performance.now())
   }
 
-  function doTick_R(timestamp) {
+  function doTick_R(timestamp: number) {
     const now = performance.now()
 
     tickFn(1 / targetFPS)

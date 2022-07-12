@@ -1,16 +1,18 @@
-function radToDeg(radians) {
+import { Vec2 } from "./vec2"
+
+function radToDeg(radians: number) {
   return radians * (180 / Math.PI)
 }
 
-function degToRad(degrees) {
+function degToRad(degrees: number) {
   return degrees * (Math.PI / 180)
 }
 
-function clamp(val, min, max) {
+function clamp(val: number, min: number, max: number) {
   return Math.min(Math.max(val, min), max)
 }
 
-function closestPointOnLine(pt, l1, l2, bEndpointFallback = false) {
+function closestPointOnLine(pt: Vec2, l1: Vec2, l2: Vec2, bEndpointFallback = false) {
   const dl = l2.sub(l1)
   const dp = pt.sub(l1)
   const dotL = dp.dot(dl)
@@ -32,7 +34,13 @@ function closestPointOnLine(pt, l1, l2, bEndpointFallback = false) {
   return undefined
 }
 
-function lineLineIntersection(aStart, aEnd, bStart, bEnd, bInfiniteLines = false) {
+function lineLineIntersection(
+  aStart: Vec2,
+  aEnd: Vec2,
+  bStart: Vec2,
+  bEnd: Vec2,
+  bInfiniteLines = false
+) {
   const s1 = aEnd.sub(aStart)
   const s2 = bEnd.sub(bStart)
 
@@ -54,7 +62,7 @@ function lineLineIntersection(aStart, aEnd, bStart, bEnd, bInfiniteLines = false
   return undefined
 }
 
-function pointInCapsule(pt, start, end, rad) {
+function pointInCapsule(pt: Vec2, start: Vec2, end: Vec2, rad: number) {
   const closestPt = closestPointOnLine(pt, start, end)
   if (closestPt && pt.sub(closestPt).lenSq() < rad * rad) return true
   if (pt.sub(end).lenSq() < rad * rad) return true

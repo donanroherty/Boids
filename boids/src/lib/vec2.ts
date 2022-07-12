@@ -1,18 +1,10 @@
-/**
- * Vec2 type
- * @typedef { typeof vec2 extends (...args: any[]) => infer U ? U : any } Vec2
- */
+type Vec2 = ReturnType<typeof vec2>
 
-/**
- * Creates a vector 2 object with utility functions
- * @param {number} inX
- * @param {number} inY
- * @returns Vec2
- */
 function vec2(inX = 0, inY = 0) {
   const self = {
     x: inX,
     y: inY,
+    toPoint,
     set,
     clone,
     add,
@@ -34,7 +26,11 @@ function vec2(inX = 0, inY = 0) {
     lerp,
   }
 
-  function set(b) {
+  function toPoint() {
+    return { x: self.x, y: self.y }
+  }
+
+  function set(b: Vec2) {
     self.x = b.x
     self.y = b.y
   }
@@ -43,60 +39,35 @@ function vec2(inX = 0, inY = 0) {
     return vec2(self.x, self.y)
   }
 
-  /**
-   * @param {number} s
-   */
-  function scale(s) {
+  function scale(s: number) {
     return vec2(self.x * s, self.y * s)
   }
 
-  /**
-   * @param {Vec2} b
-   */
-  function add(b) {
+  function add(b: Vec2) {
     return vec2(self.x + b.x, self.y + b.y)
   }
 
-  /**
-   * @param {Vec2} b
-   */
-  function sub(b) {
+  function sub(b: Vec2) {
     return vec2(self.x - b.x, self.y - b.y)
   }
 
-  /**
-   * @param {Vec2} b
-   */
-  function mul(b) {
+  function mul(b: Vec2) {
     return vec2(self.x * b.x, self.y * b.y)
   }
 
-  /**
-   * @param {Vec2} b
-   */
-  function div(b) {
+  function div(b: Vec2) {
     return vec2(self.x / b.x, self.y / b.y)
   }
 
-  /**
-   * @param {Vec2} b
-   * @param {number} tol
-   */
-  function isEqual(b, tol = 0.000001) {
+  function isEqual(b: Vec2, tol = 0.000001) {
     return Math.abs(self.x - b.x) < tol && Math.abs(self.y - b.y) < tol
   }
 
-  /**
-   * @param {Vec2} v
-   */
-  function dot(v) {
+  function dot(v: Vec2) {
     return self.x * v.x + self.y * v.y
   }
 
-  /**
-   * @param {Vec2} b
-   */
-  function cross(b) {
+  function cross(b: Vec2) {
     return self.x * b.y - self.y * b.x
   }
 
@@ -116,11 +87,7 @@ function vec2(inX = 0, inY = 0) {
     return Math.sqrt(lenSq())
   }
 
-  /**
-   * @param {number} min
-   * @param {number} max
-   */
-  function clampedLen(min, max) {
+  function clampedLen(min: number, max: number) {
     const length = self.len()
     return length < min
       ? self.norm().scale(min)
@@ -144,18 +111,11 @@ function vec2(inX = 0, inY = 0) {
     return adj
   }
 
-  /**
-   * @param {Vec2} refN
-   */
-  function reflect(refN) {
+  function reflect(refN: Vec2) {
     return self.sub(refN.scale(refN.dot(self) * 2))
   }
 
-  /**
-   * @param {Vec2} to
-   * @param {any} t
-   */
-  function lerp(to, t) {
+  function lerp(to: Vec2, t: number) {
     const diff = to.sub(self)
     return self.add(diff.scale(t))
   }
@@ -164,3 +124,4 @@ function vec2(inX = 0, inY = 0) {
 }
 
 export default vec2
+export type { Vec2 }

@@ -1,16 +1,30 @@
-import vec2 from "./vec2.js"
+import { Edge, ShapeRenderOptions } from "./colliders"
+import { QuadTreeNode } from "./pointQuadTree"
+import vec2, { Vec2 } from "./vec2"
 
-function scaleCanvasToPixelRatio(canvas) {
-  const pixelRatio = window.devicePixelRatio || 1
+function scaleCanvasToPixelRatio(canvas: HTMLCanvasElement) {
+  const { width, height } = canvas
   const rect = canvas.getBoundingClientRect()
+  const pixelRatio = window.devicePixelRatio || 1
+
   canvas.width = Math.round(pixelRatio * rect.right) - Math.round(pixelRatio * rect.left)
   canvas.height = Math.round(pixelRatio * rect.bottom) - Math.round(pixelRatio * rect.top)
+  canvas.style.width = `${width}px`
+  canvas.style.height = `${height}px`
   const ctx = canvas.getContext("2d")
-  ctx.scale(pixelRatio, pixelRatio)
+  if (ctx) ctx.scale(pixelRatio, pixelRatio)
 }
 
-function drawBoid(canvas, pos, dir, size, color, isSolid) {
+function drawBoid(
+  canvas: HTMLCanvasElement,
+  pos: Vec2,
+  dir: Vec2,
+  size: number,
+  color: string,
+  isSolid: boolean
+) {
   const ctx = canvas.getContext("2d")
+  if (!ctx) return
 
   const hei = size
   const wid = size * 0.7
@@ -39,7 +53,7 @@ function drawBoid(canvas, pos, dir, size, color, isSolid) {
   ctx.restore()
 }
 
-function drawCircle(canvas, position, radius, options) {
+function drawCircle(canvas: HTMLCanvasElement, position: Vec2, radius: number, options: Object) {
   const opts = {
     color: "red",
     lineWidth: 1,
@@ -47,6 +61,7 @@ function drawCircle(canvas, position, radius, options) {
     ...options,
   }
   const ctx = canvas.getContext("2d")
+  if (!ctx) return
   ctx.globalAlpha = opts.alpha
   ctx.beginPath()
   ctx.arc(position.x, position.y, radius, 0, 2 * Math.PI)
@@ -56,10 +71,19 @@ function drawCircle(canvas, position, radius, options) {
   ctx.globalAlpha = 1
 }
 
-function drawArcCone(canvas, pos, dir, fov, radius, color, alpha = 0.05) {
+function drawArcCone(
+  canvas: HTMLCanvasElement,
+  pos: Vec2,
+  dir: Vec2,
+  fov: number,
+  radius: number,
+  color: string,
+  alpha = 0.05
+) {
   const ctx = canvas.getContext("2d")
-  const fovRads = fov * (Math.PI / 180)
+  if (!ctx) return
 
+  const fovRads = fov * (Math.PI / 180)
   const arcStart = Math.PI * 0.5 + fovRads * 0.5
   const arcEnd = arcStart - fovRads
 
@@ -97,8 +121,9 @@ function drawArcCone(canvas, pos, dir, fov, radius, color, alpha = 0.05) {
   ctx.restore()
 }
 
-function drawQuadTree(quadTree, canvas) {
+function drawQuadTree(quadTree: QuadTreeNode, canvas: HTMLCanvasElement) {
   const ctx = canvas.getContext("2d")
+  if (!ctx) return
   ctx.beginPath()
   ctx.rect(quadTree.bounds.x, quadTree.bounds.y, quadTree.bounds.w, quadTree.bounds.h)
   ctx.strokeStyle = "blue"
@@ -116,17 +141,20 @@ function drawQuadTree(quadTree, canvas) {
   }
 }
 
-function drawPolygon(canvas, edges, options, drawNormal = false) {
+function drawPolygon(canvas: HTMLCanvasElement, edges: Edge[], options: Object) {
   const opts = {
     color: "black",
     lineWidth: 1,
+    fill: false,
     ...options,
   }
 
   const ctx = canvas.getContext("2d")
+  if (!ctx) return
+
   ctx.beginPath()
 
-  edges.forEach((l) => l.draw(canvas, drawNormal))
+  edges.forEach((edge) => drawLine(canvas, edge.start, edge.end, edge.normal, opts))
 
   ctx.lineWidth = opts.lineWidth
   ctx.strokeStyle = opts.color
@@ -139,18 +167,26 @@ function drawPolygon(canvas, edges, options, drawNormal = false) {
   ctx.closePath()
 }
 
-function drawLine(canvas, start, end, normal, options, openClosePath = true, drawNormal = false) {
-  const opts = {
+function drawLine(
+  canvas: HTMLCanvasElement,
+  start: Vec2,
+  end: Vec2,
+  normal: Vec2,
+  options: ShapeRenderOptions,
+  drawNormal = false
+) {
+  const opts: ShapeRenderOptions = {
     color: "black",
     lineWidth: 1,
     ...options,
   }
 
   const ctx = canvas.getContext("2d")
+  if (!ctx) return
 
   const v = end.sub(start)
 
-  if (openClosePath) {
+  if (opts.openClosePath) {
     ctx.beginPath()
     ctx.moveTo(start.x, start.y)
   } else {
@@ -162,24 +198,29 @@ function drawLine(canvas, start, end, normal, options, openClosePath = true, dra
     const normalStart = start.add(v.scale(0.5))
     const normalEnd = normalStart.add(normal.scale(normalLen))
 
-    const ctx = canvas.getContext("2d")
     ctx.lineTo(normalStart.x, normalStart.y)
     ctx.lineTo(normalEnd.x, normalEnd.y)
     ctx.lineTo(normalStart.x, normalStart.y)
   }
 
   ctx.lineTo(end.x, end.y)
-  ctx.lineWidth = opts.lineWidth
-  ctx.strokeStyle = opts.color
+  ctx.lineWidth = opts.lineWidth!
+  ctx.strokeStyle = opts.color!
 
   ctx.stroke()
 
-  if (openClosePath) {
+  if (opts.openClosePath) {
     ctx.closePath()
   }
 }
 
-function drawCapsule(canvas, start, end, radius, options) {
+function drawCapsule(
+  canvas: HTMLCanvasElement,
+  start: Vec2,
+  end: Vec2,
+  radius: number,
+  options: Object
+) {
   const opts = {
     color: "black",
     lineWidth: 1,
@@ -190,6 +231,8 @@ function drawCapsule(canvas, start, end, radius, options) {
   const rot = Math.atan2(dir.y, dir.x) - Math.PI / 2
 
   const ctx = canvas.getContext("2d")
+  if (!ctx) return
+
   ctx.save()
 
   ctx.beginPath()

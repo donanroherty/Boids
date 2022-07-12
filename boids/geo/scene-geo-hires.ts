@@ -1,4 +1,4 @@
-import vec2 from "../lib/vec2.js"
+import vec2 from "../src/lib/vec2.js"
 
 const b_1 = [
   vec2(152.651, 177.708),

@@ -1,20 +1,23 @@
-import createTick from "./lib/tick.js"
-import { createFlockHandler } from "./flockHandler.js"
-import { pointQuadTree } from "./lib/pointQuadTree.js"
-import { drawQuadTree, scaleCanvasToPixelRatio } from "./lib/rendering.js"
-import debugHelper from "./debugHelper.js"
-import { createManualBoidController } from "./manualBoidController.js"
+import createTick from "./lib/tick"
+import { createFlockHandler } from "./flockHandler"
+import { pointQuadTree, QuadTreeNode } from "./lib/pointQuadTree.js"
+import { drawQuadTree, scaleCanvasToPixelRatio } from "./lib/rendering"
+import debugHelper from "./lib/debugHelper"
+import { createBoidController } from "./boidController"
 import { createScene } from "./scene.js"
+import { Boid } from "./boid"
 
-function boidsApp(canvas) {
+type BoidsApp = ReturnType<typeof createBoidsApp>
+
+function createBoidsApp(canvas: HTMLCanvasElement) {
   debugHelper.init(canvas)
 
   scaleCanvasToPixelRatio(canvas)
 
-  let quadTree = null
+  let quadTree: QuadTreeNode | null = null
   const scene = createScene(canvas)
 
-  const manualBoidController = createManualBoidController()
+  const manualBoidController = createBoidController(canvas)
   const flockHandler = createFlockHandler(scene.entities, scene.getSceneSize)
   const tick = createTick(update)
 
@@ -28,22 +31,22 @@ function boidsApp(canvas) {
 
   tick.start()
 
-  function update(deltatime) {
+  function update(deltatime: number) {
     clearCanvas()
     updateQuadTree()
-    manualBoidController.update(canvas, scene.entities)
+    manualBoidController.update(scene.entities)
     scene.update(deltatime, quadTree, app.isPaused)
   }
 
   function clearCanvas() {
     const ctx = canvas.getContext("2d")
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height)
   }
 
   function updateQuadTree() {
     if (app.useQuadTree) {
       const sceneSize = scene.getSceneSize()
-      const positions = Array.from(scene.entities).map((b) => b.position)
+      const positions = Array.from(scene.entities).map((b: Boid) => b.position.toPoint())
       quadTree = pointQuadTree({ x: 0, y: 0, w: sceneSize.x, h: sceneSize.y }, 8, positions)
       if (app.bRenderQuadTree) drawQuadTree(quadTree, canvas)
     } else quadTree = null
@@ -52,4 +55,5 @@ function boidsApp(canvas) {
   return app
 }
 
-export default boidsApp
+export default createBoidsApp
+export type { BoidsApp }

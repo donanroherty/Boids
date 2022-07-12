@@ -1,7 +1,10 @@
-import debugHelper from "../debugHelper"
+import { Hit } from "../types"
+import { Edge } from "./colliders"
+import debugHelper from "./debugHelper"
 import { lineLineIntersection, pointInCapsule } from "./math"
+import { Vec2 } from "./vec2"
 
-function circleLineSweep(from, to, rad, edge, drawDebug = false) {
+function circleLineSweep(from: Vec2, to: Vec2, rad: number, edge: Edge, drawDebug = false) {
   const sweepVec = to.sub(from)
 
   const parallelLineHit = parallelLineTest(from, to, rad, edge, drawDebug) // infinite line test
@@ -18,7 +21,13 @@ function circleLineSweep(from, to, rad, edge, drawDebug = false) {
   return undefined
 }
 
-function parallelLineTest(from, to, rad, edge, drawDebug = false) {
+function parallelLineTest(
+  from: Vec2,
+  to: Vec2,
+  rad: number,
+  edge: Edge,
+  drawDebug = false
+): Hit | undefined {
   const { start: l1, end: l2 } = edge
   const overlap = spansLine(from, to, rad, l1, l2)
   if (overlap) return undefined
@@ -64,11 +73,17 @@ function parallelLineTest(from, to, rad, edge, drawDebug = false) {
     hitNormal: sweepDir,
     colliderNormal: colNormal,
     t: from.sub(sweepPos).lenSq() / to.sub(from).lenSq(),
-    edge,
+    other: edge,
   }
 }
 
-function lineEndPointTest(from, to, rad, edge, drawDebug = false) {
+function lineEndPointTest(
+  from: Vec2,
+  to: Vec2,
+  rad: number,
+  edge: Edge,
+  drawDebug = false
+): Hit | undefined {
   const { start: l1, end: l2 } = edge
   // test if the lines points are within the capsule
   const p1InCap = pointInCapsule(l1, from, to, rad)
@@ -124,11 +139,11 @@ function lineEndPointTest(from, to, rad, edge, drawDebug = false) {
     hitNormal: dir,
     colliderNormal,
     t: from.sub(sweepPos).lenSq() / to.sub(from).lenSq(),
-    edge,
+    other: edge,
   }
 }
 
-function spansLine(from, to, rad, l1, l2) {
+function spansLine(from: Vec2, to: Vec2, rad: number, l1: Vec2, l2: Vec2) {
   const dir = to.sub(from).norm()
   const c1 = from.add(dir.perpCW().scale(rad))
   const c2 = from.add(dir.perpCCW().scale(rad))

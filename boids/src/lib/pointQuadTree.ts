@@ -1,4 +1,35 @@
-function pointQuadTree(bounds, capacity, points) {
+type Rect = {
+  x: number
+  y: number
+  w: number
+  h: number
+}
+
+type Point = {
+  x: number
+  y: number
+}
+
+type Line = {
+  from: Point
+  to: Point
+}
+
+type QuadTreeNode = {
+  bounds: Rect
+  capacity: number
+  points: Point[]
+  subdivisions: NodeDivisions | null
+}
+
+type NodeDivisions = {
+  bottomLeft: QuadTreeNode
+  topLeft: QuadTreeNode
+  topRight: QuadTreeNode
+  bottomRight: QuadTreeNode
+}
+
+function pointQuadTree(bounds: Rect, capacity: number, points: Point[]) {
   const subdivisions = points.length > capacity ? subdivide(bounds, capacity, points) : null
 
   return {
@@ -9,12 +40,12 @@ function pointQuadTree(bounds, capacity, points) {
   }
 }
 
-function isInBounds(pt, bounds) {
+function isInBounds(pt: Point, bounds: Rect) {
   const { x, y, w, h } = bounds
   return pt.x >= x && pt.x <= x + w && pt.y >= y && pt.y <= y + h
 }
 
-function subdivide(bounds, cap, pts) {
+function subdivide(bounds: Rect, cap: number, pts: Point[]): NodeDivisions {
   const { x, y, w, h } = bounds
   const bl = { x: x, y: y, w: w * 0.5, h: h * 0.5 }
   const tl = { x: x, y: y + h * 0.5, w: w * 0.5, h: h * 0.5 }
@@ -23,7 +54,7 @@ function subdivide(bounds, cap, pts) {
 
   // Perform includes
   const divPts = pts.reduce(
-    (acc, pt) => {
+    (acc: { bl: Point[]; tl: Point[]; tr: Point[]; br: Point[] }, pt: Point) => {
       if (isInBounds(pt, bl)) acc.bl.push(pt)
       else if (isInBounds(pt, tl)) acc.tl.push(pt)
       else if (isInBounds(pt, tr)) acc.tr.push(pt)
@@ -33,7 +64,7 @@ function subdivide(bounds, cap, pts) {
     { bl: [], tl: [], tr: [], br: [] }
   )
 
-  const subdivs = {
+  const subdivs: NodeDivisions = {
     bottomLeft: pointQuadTree(bl, cap, divPts.bl),
     topLeft: pointQuadTree(tl, cap, divPts.tl),
     topRight: pointQuadTree(tr, cap, divPts.tr),
@@ -43,7 +74,7 @@ function subdivide(bounds, cap, pts) {
   return subdivs
 }
 
-function circleQuery(quadtree, position, radius) {
+function circleQuery(quadtree: QuadTreeNode, position: Point, radius: number) {
   const rect = {
     x: position.x - radius,
     y: position.y - radius,
@@ -53,7 +84,7 @@ function circleQuery(quadtree, position, radius) {
 
   return recurse(quadtree)
 
-  function recurse(node, inPoints = []) {
+  function recurse(node: QuadTreeNode, inPoints = []) {
     const pts = inPoints
 
     // if rect is fully contained in circle, return all points
@@ -64,10 +95,10 @@ function circleQuery(quadtree, position, radius) {
     if (rectIntersectsRect(rect, node.bounds)) {
       if (node.subdivisions) {
         // recurse on subdivs, return concatenated points
-        const blPts = recurse(node.subdivisions.bottomLeft, [])
-        const tlPts = recurse(node.subdivisions.topLeft, [])
-        const trPts = recurse(node.subdivisions.topRight, [])
-        const brPts = recurse(node.subdivisions.bottomRight, [])
+        const blPts: Point[] = recurse(node.subdivisions.bottomLeft, [])
+        const tlPts: Point[] = recurse(node.subdivisions.topLeft, [])
+        const trPts: Point[] = recurse(node.subdivisions.topRight, [])
+        const brPts: Point[] = recurse(node.subdivisions.bottomRight, [])
         return [...pts, ...blPts, ...tlPts, ...trPts, ...brPts]
       }
 
@@ -84,13 +115,13 @@ function circleQuery(quadtree, position, radius) {
   }
 }
 
-function circleContainsRect(rect, cPos, cRad) {
-  const dx = Math.max(cPos.x - rect.x, cPos.x - rect.x + rect.w)
-  const dy = Math.max(cPos.y - rect.y, cPos.y - rect.y + rect.h)
-  return dx <= cRad && dy <= cRad
+function circleContainsRect(rect: Rect, pos: Point, rad: number) {
+  const dx = Math.max(pos.x - rect.x, pos.x - rect.x + rect.w)
+  const dy = Math.max(pos.y - rect.y, pos.y - rect.y + rect.h)
+  return dx <= rad && dy <= rad
 }
 
-function rectIntersectsRect(rectA, rectB) {
+function rectIntersectsRect(rectA: Rect, rectB: Rect) {
   const aContainsB =
     rectContainsPoint({ x: rectB.x, y: rectB.y }, rectA) ||
     rectContainsPoint({ x: rectB.x, y: rectB.y + rectB.h }, rectA) ||
@@ -119,19 +150,19 @@ function rectIntersectsRect(rectA, rectB) {
     aaLinesIntersect(bLines[2], aLines[3])
   )
 
-  function getRectLines(r) {
+  function getRectLines(rect: Rect) {
     return [
-      { x: r.x, y: r.y },
-      { x: r.x, y: r.y + r.h },
-      { x: r.x + r.w, y: r.y + r.h },
-      { x: r.x + r.w, y: r.y },
+      { x: rect.x, y: rect.y },
+      { x: rect.x, y: rect.y + rect.h },
+      { x: rect.x + rect.w, y: rect.y + rect.h },
+      { x: rect.x + rect.w, y: rect.y },
     ].map((pt, i, arr) => {
       const next = i === arr.length - 1 ? 0 : i + 1
       return { from: pt, to: arr[next] }
     })
   }
 
-  function aaLinesIntersect(lineA, lineB) {
+  function aaLinesIntersect(lineA: Line, lineB: Line) {
     const pIsXAligned = lineA.from.y === lineA.to.y
     const qIsXAligned = lineB.from.y === lineB.to.y
 
@@ -148,9 +179,10 @@ function rectIntersectsRect(rectA, rectB) {
   }
 }
 
-function rectContainsPoint(pt, rect) {
+function rectContainsPoint(pt: Point, rect: Rect) {
   const res = pt.x >= rect.x && pt.y >= rect.y && pt.x <= rect.x + rect.w && pt.y <= rect.y + rect.h
   return res
 }
 
 export { pointQuadTree, circleQuery }
+export type { QuadTreeNode }

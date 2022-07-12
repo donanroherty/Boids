@@ -1,8 +1,23 @@
-import circleLineSweep from "./lib/circleLineSweep.js"
-import { circleQuery } from "./lib/pointQuadTree.js"
+import { Edge } from "./lib/colliders.js"
+import { circleQuery, QuadTreeNode } from "./lib/pointQuadTree.js"
 import { drawArcCone, drawBoid, drawCircle } from "./lib/rendering.js"
 import { closestPointOnLine, raycastCone } from "./lib/utils.js"
-import vec2 from "./lib/vec2.js"
+import { getFirstSweptHit } from "./lib/utils"
+import vec2, { Vec2 } from "./lib/vec2.js"
+import { Hit } from "./types.js"
+
+type BoidConfig = ReturnType<typeof createConfig>
+type Boid = {
+  position: Vec2
+  velocity: Vec2
+  direction: Vec2
+  config: BoidConfig
+  defaultConfig: BoidConfig
+  flock: number
+  index: number
+  hasPrey: boolean
+  visibleBoids: Boid[]
+}
 
 function createConfig(override = {}) {
   return {
@@ -30,12 +45,19 @@ function createConfig(override = {}) {
   }
 }
 
-function createBoid(position, velocity, flock, index, config) {
+function createBoid(
+  position: Vec2,
+  velocity: Vec2,
+  flock: number,
+  index: number,
+  config: BoidConfig
+): Boid {
   return {
     position,
     velocity,
     direction: velocity.norm(),
     config,
+    defaultConfig: config,
     flock,
     index,
     hasPrey: false,
@@ -43,7 +65,7 @@ function createBoid(position, velocity, flock, index, config) {
   }
 }
 
-function updateVisibleBoids(b, entities, quadTree) {
+function updateVisibleBoids(b: Boid, entities: Set<Boid>, quadTree: QuadTreeNode | null) {
   b.visibleBoids = []
   let inRange = []
   if (quadTree) {
@@ -61,7 +83,7 @@ function updateVisibleBoids(b, entities, quadTree) {
   b.visibleBoids = inRange.filter((o) => o !== b && canSee(b, o))
 }
 
-function updateBoid(b, deltatime, sceneSize, edges, isPaused) {
+function updateBoid(b: Boid, deltatime: number, sceneSize: Vec2, edges: Edge[], isPaused: boolean) {
   // update forces
   let vel = vec2(b.velocity.x, b.velocity.y)
   vel = vel.add(cohesion(b, b.visibleBoids))
@@ -92,7 +114,7 @@ function updateBoid(b, deltatime, sceneSize, edges, isPaused) {
   b.position.set(mirrorOutOfBounds(position, sceneSize))
 }
 
-function canSee(b, other) {
+function canSee(b: Boid, other: Boid) {
   const toOther = other.position.sub(b.position).norm()
   const dir = b.velocity.norm()
   const dot = dir.dot(toOther)
@@ -101,15 +123,15 @@ function canSee(b, other) {
   return dot > mapped
 }
 
-function canPreyOn(b, other) {
+function canPreyOn(b: Boid, other: Boid) {
   return b.config.isPredator && other.config.size < b.config.size
 }
 
-function isPrey(b, other) {
+function isPrey(b: Boid, other: Boid) {
   return other.config.isPredator && other.config.size > b.config.size
 }
 
-function mirrorOutOfBounds(pos, sceneSize) {
+function mirrorOutOfBounds(pos: Vec2, sceneSize: Vec2) {
   const { x, y } = sceneSize
 
   if (pos.y > y) {
@@ -127,7 +149,7 @@ function mirrorOutOfBounds(pos, sceneSize) {
   return pos
 }
 
-function renderBoid(b, canvas) {
+function renderBoid(b: Boid, canvas: HTMLCanvasElement) {
   drawBoid(
     canvas,
     b.position,
@@ -140,7 +162,7 @@ function renderBoid(b, canvas) {
   if (b.index === 0 && b.config.drawDebug) drawDebug(b, canvas)
 }
 
-function drawDebug(b, canvas) {
+function drawDebug(b: Boid, canvas: HTMLCanvasElement) {
   b.visibleBoids.forEach((o) => {
     if (o !== b)
       drawCircle(canvas, o.position, o.config.size, { color: o.config.color, alpha: 0.4 })
@@ -157,7 +179,7 @@ function drawDebug(b, canvas) {
   )
 }
 
-function cohesion(b, others) {
+function cohesion(b: Boid, others: Boid[]) {
   const flockmates = others.filter((o) => b.config.coheseWithOtherFlocks || sameFlock(b, o))
 
   if (flockmates.length === 0) return vec2()
@@ -173,19 +195,19 @@ function cohesion(b, others) {
   return toGroupCenter.scale(b.config.cohesionFactor)
 }
 
-function alignment(b, others) {
+function alignment(b: Boid, others: Boid[]) {
   const flockmates = others.filter((o) => b.config.alignWithOtherFlocks || sameFlock(b, o))
   if (flockmates.length === 0) return vec2()
 
   const avgVel = flockmates
-    .reduce((acc, o) => acc.add(o.velocity), vec2())
+    .reduce((acc: Vec2, o: Boid) => acc.add(o.velocity), vec2())
     .div(vec2(flockmates.length, flockmates.length))
 
   const diff = avgVel.sub(b.velocity)
   return diff.clampedLen(0, b.config.alignmentMaxStrength)
 }
 
-function separation(b, others) {
+function separation(b: Boid, others: Boid[]) {
   const flockmates = others.filter((o) => {
     if (!(sameFlock(b, o) || b.config.separateFromOtherFlocks)) return false
     const otherPos = o.position
@@ -193,7 +215,7 @@ function separation(b, others) {
     return distSq < b.config.separationRange * b.config.separationRange
   })
 
-  return flockmates.reduce((acc, o) => {
+  return flockmates.reduce((acc: Vec2, o: Boid) => {
     const ba = vec2(b.position.x, b.position.y).sub(o.position)
     const dist = ba.len()
     const perc = 1 - dist / b.config.separationRange
@@ -201,10 +223,10 @@ function separation(b, others) {
   }, vec2())
 }
 
-function avoidPredator(b, others) {
+function avoidPredator(b: Boid, others: Boid[]) {
   const predators = others.filter((o) => isPrey(b, o))
 
-  return predators.reduce((acc, other) => {
+  return predators.reduce((acc, other: Boid) => {
     const ba = b.position.sub(other.position)
     const dist = ba.len()
     const perc = 1 - dist / b.config.detectionRange
@@ -212,13 +234,13 @@ function avoidPredator(b, others) {
   }, vec2())
 }
 
-function chasePrey(b, others) {
+function chasePrey(b: Boid, others: Boid[]) {
   const prey = others.filter((o) => canPreyOn(b, o))
   b.hasPrey = prey.length > 0
 
   if (!b.hasPrey) return vec2()
 
-  const target = prey.reduce((target, o) => {
+  const target = prey.reduce((target, o: Boid) => {
     const toOther = b.position.sub(o.position).lenSq()
     const toTarget = b.position.sub(target).lenSq()
     return toOther < toTarget ? o.position : target
@@ -229,7 +251,7 @@ function chasePrey(b, others) {
 }
 
 // todo: this should pick a safe path away from collisions, not just push away from them
-function avoidObstacles(b, allEdges) {
+function avoidObstacles(b: Boid, allEdges: Edge[]) {
   const edges = getCollisionGeometry(b.position, b.config.detectionRange, allEdges)
   const hits = raycastCone(
     b.position,
@@ -261,15 +283,24 @@ function avoidObstacles(b, allEdges) {
   return out
 }
 
-function drag(b, vel) {
+function drag(b: Boid, vel: Vec2) {
   return vel.scale(-b.config.dragFactor)
 }
 
-function sameFlock(a, b) {
+function sameFlock(a: Boid, b: Boid) {
   return a.flock === b.flock
 }
 
-function sweepAndSlidePosition(start, velocity, deltatime, rad, range, edges, padding, maxBounces) {
+function sweepAndSlidePosition(
+  start: Vec2,
+  velocity: Vec2,
+  deltatime: number,
+  rad: number,
+  range: number,
+  edges: Edge[],
+  padding: number,
+  maxBounces: number
+) {
   let from = start.clone()
   let vel = velocity.clone()
   let to = from.add(vel.scale(deltatime))
@@ -283,10 +314,10 @@ function sweepAndSlidePosition(start, velocity, deltatime, rad, range, edges, pa
   for (let i = 0; i < maxBounces + 1; i++) {
     const collisionGeo = getCollisionGeometry(from, range, edges)
 
-    const hit = getFirstSweptHit(from, to, rad, collisionGeo)
+    const hit: Hit | undefined = getFirstSweptHit(from, to, rad, collisionGeo)
     if (!hit) break
 
-    const { location, hitNormal, colliderNormal, t } = hit
+    const { location: location, hitNormal, colliderNormal, t } = hit
 
     const paddingOffset = vel.norm().scale(padding)
     const safeLocation = location.sub(paddingOffset)
@@ -298,7 +329,7 @@ function sweepAndSlidePosition(start, velocity, deltatime, rad, range, edges, pa
     // raycast in slide dir to see if it is viable, else reverse
     if (prevHit) {
       const cPos = safeLocation.add(slideDir.scale(padding * 1.5))
-      const pt = closestPointOnLine(cPos, prevHit.edge.start, prevHit.edge.end)
+      const pt = closestPointOnLine(cPos, prevHit.other.start, prevHit.other.end)
       const moveWillCollide = pt && cPos.sub(pt).lenSq() < rad * rad
       if (moveWillCollide) slideDir = slideDir.scale(-1)
     }
@@ -320,7 +351,7 @@ function sweepAndSlidePosition(start, velocity, deltatime, rad, range, edges, pa
   return [to, outVelocity] // position, velocity
 }
 
-function getCollisionGeometry(pos, range, edges) {
+function getCollisionGeometry(pos: Vec2, range: number, edges: Edge[]) {
   // filter edges to viable hit targets
 
   const viableEdges = edges.filter((edge) => {
@@ -343,16 +374,5 @@ function getCollisionGeometry(pos, range, edges) {
   return viableEdges
 }
 
-function getFirstSweptHit(from, to, rad, edges) {
-  const hit = edges.reduce((nearHit, edge) => {
-    const hit = circleLineSweep(from, to, rad, edge)
-
-    if (!hit) return nearHit
-    if (nearHit && nearHit.t < hit.t) return nearHit
-    return hit
-  }, undefined)
-
-  return hit
-}
-
 export { createBoid, updateVisibleBoids, updateBoid, renderBoid, createConfig }
+export type { Boid, BoidConfig }

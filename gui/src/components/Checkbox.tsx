@@ -1,4 +1,9 @@
-function Checkbox(props) {
+function Checkbox(props: {
+  label: string
+  disabled?: boolean
+  value: boolean
+  setValue: (val: boolean) => void
+}) {
   function handleClick() {
     if (props.disabled) return
     props.setValue(!props.value)

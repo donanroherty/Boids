@@ -1,11 +1,23 @@
-import { createSignal } from "solid-js"
+import { createSignal, mergeProps } from "solid-js"
 
-function RangeSlider(props = defaultProps) {
+const defaultProps = {
+  label: "",
+  min: 0,
+  max: 1,
+  step: 0.001,
+  value: 0,
+  disabled: false,
+  setValue: (val: number) => {},
+}
+
+function RangeSlider(inProps = defaultProps) {
+  const props = mergeProps(defaultProps, inProps)
+
   const split = String(props.step).split(".")
   const decimals = split.length > 1 ? split[1].length : 0
 
-  function onInput(e) {
-    props.setValue(parseFloat(e.target.value))
+  function onInput(e: any) {
+    if (e.target && e.target.value) props.setValue(parseFloat(e.target.value))
   }
 
   function onDecrement() {
@@ -34,6 +46,7 @@ function RangeSlider(props = defaultProps) {
 
         {/* Slider */}
         <input
+          title={props.label}
           disabled={props.disabled}
           type="range"
           min={props.min}
@@ -55,19 +68,10 @@ function RangeSlider(props = defaultProps) {
       </div>
 
       <div class="ml-2 h-full w-16 text-right">
-        {props.disabled ? "0" : parseFloat(props.value).toFixed(decimals)}
+        {props.disabled ? "0" : props.value.toFixed(decimals)}
       </div>
     </div>
   )
-}
-
-const defaultProps = {
-  label: "",
-  min: 0,
-  max: 1,
-  step: 0.001,
-  value: 0,
-  setValue: (val) => {},
 }
 
 export default RangeSlider

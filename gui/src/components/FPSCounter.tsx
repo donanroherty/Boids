@@ -1,6 +1,6 @@
 import { createSignal } from "solid-js"
 
-function FPSCounter(props = defaultProps) {
+function FPSCounter(props: any) {
   const [fps, setFPS] = createSignal(0)
 
   setInterval(() => {
@@ -9,10 +9,6 @@ function FPSCounter(props = defaultProps) {
   }, 1000 / 5)
 
   return <div class="text-xs text-gray-400">{fps()} fps</div>
-}
-
-const defaultProps = {
-  valueGetter: 0,
 }
 
 export default FPSCounter

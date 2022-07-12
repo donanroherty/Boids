@@ -1,4 +1,4 @@
-import boidsApp from "../../../boids/app"
+import createBoidsApp, { BoidsApp } from "../../../boids/src/app"
 import { onMount, createSignal, mergeProps } from "solid-js"
 import FPSCounter from "./FpsCounter"
 
@@ -6,20 +6,18 @@ import "tailwindcss/tailwind.css"
 import styles from "../index.css"
 import ControlPanel from "./ControlPanel"
 
-import vec2 from "../../../boids/lib/vec2"
-
 const defaultProps = { width: 640, height: 300 }
 
-function App(props) {
-  const mergedProps = mergeProps(defaultProps, props)
-  let canvas
+function App(inProps: any) {
+  const props = mergeProps(defaultProps, inProps)
+  let canvas: HTMLCanvasElement | undefined
 
-  const [boids, setBoids] = createSignal()
-  const [canvasSize, setCanvasSize] = createSignal({ x: mergedProps.width, y: mergedProps.height })
+  const [boidsApp, setAppBoids] = createSignal<BoidsApp>()
+  const [canvasSize, setCanvasSize] = createSignal({ x: props.width, y: props.height })
 
   onMount(() => {
-    const app = boidsApp(canvas)
-    setBoids(app)
+    const app = createBoidsApp(canvas as HTMLCanvasElement)
+    setAppBoids(app)
 
     // Prey
     // app.flockHandler.addFlock({
@@ -36,23 +34,19 @@ function App(props) {
     //   separateFromOtherFlocks: true,
     // })
     // Predator
-    app.flockHandler.addFlock(
-      {
-        color: "red",
-        numBoids: 1,
-        detectionRange: 90,
-        fov: 90,
-        minSpeed: 90,
-        maxSpeed: 200,
-        drag: 0.04,
-        size: 8,
-        predatorAttack: 0.3,
-        predatorAvoid: 50,
-        isPredator: true,
-        renderSolid: true,
-      }
-      // vec2(200, 80)
-    )
+    app.flockHandler.addFlock({
+      color: "red",
+      numBoids: 1,
+      detectionRange: 90,
+      fov: 90,
+      minSpeed: 90,
+      maxSpeed: 200,
+      dragFactor: 0.04,
+      size: 8,
+      predatorAttack: 0.3,
+      predatorAvoid: 50,
+      isPredator: true,
+    })
   })
 
   return (
@@ -70,10 +64,10 @@ function App(props) {
         ></canvas>
 
         <div class="absolute top-0 right-0 z-10 mr-2 mt-2">
-          {boids() && <FPSCounter valueGetter={boids().tick.getLastRealDelta} />}
+          {boidsApp() && <FPSCounter valueGetter={boidsApp()!.tick.getLastRealDelta} />}
         </div>
 
-        {boids() && <ControlPanel boidsApp={boids()} maxFlocks={5} />}
+        {boidsApp() && <ControlPanel boidsApp={boidsApp()!} maxFlocks={5} />}
       </div>
     </div>
   )

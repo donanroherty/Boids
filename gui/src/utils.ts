@@ -1,7 +1,7 @@
-function randColor(exclude = []) {
+function randColor(exclude: string[] = []) {
   if (exclude.length === colors.length) return "black"
 
-  let color
+  let color: string = ""
 
   do {
     color = colors[Math.floor(colors.length * Math.random())]

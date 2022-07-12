@@ -1,10 +1,24 @@
+import { BoidConfig } from "../../../boids/src/boid"
 import Checkbox from "./Checkbox"
 import RangeSlider from "./RangeSlider"
 
-function Controls(props) {
-  function setConfigProperty(key, value) {
+function Controls(props: {
+  config: BoidConfig
+  disabled: boolean
+  isPaused: boolean
+  renderQuadTree: boolean
+  useQuadTree: boolean
+  resetConfig: () => void
+  setConfig: (cfg: BoidConfig) => void
+  togglePause: () => void
+  toggleRenderQuadTree: () => void
+  toggleUseQuadTree: () => void
+}) {
+  function setConfigProperty(key: string, value: String | number | boolean) {
     props.setConfig({ ...props.config, [key]: value })
   }
+
+  console.log(props)
 
   return (
     <div class="flex w-full flex-col gap-3 rounded-bl-md rounded-br-md border-l-[1px] border-b-[1px] border-r-[1px] border-solid border-black border-t-inherit bg-gray-100 px-2 py-2">
@@ -27,7 +41,7 @@ function Controls(props) {
           <Checkbox
             label={"Draw Debug"}
             value={props.config.drawDebug}
-            setValue={(val) => setConfigProperty("drawDebug", val)}
+            setValue={(val: boolean) => setConfigProperty("drawDebug", val)}
           />
 
           <button
@@ -45,25 +59,25 @@ function Controls(props) {
           <Checkbox
             label={"Cohesion"}
             value={props.config.coheseWithOtherFlocks}
-            setValue={(val) => setConfigProperty("coheseWithOtherFlocks", val)}
+            setValue={(val: boolean) => setConfigProperty("coheseWithOtherFlocks", val)}
             disabled={props.config.isPredator}
           />
           <Checkbox
             label={"Alignment"}
             value={props.config.alignWithOtherFlocks}
-            setValue={(val) => setConfigProperty("alignWithOtherFlocks", val)}
+            setValue={(val: boolean) => setConfigProperty("alignWithOtherFlocks", val)}
             disabled={props.config.isPredator}
           />
           <Checkbox
             label={"Separation"}
             value={props.config.separateFromOtherFlocks}
-            setValue={(val) => setConfigProperty("separateFromOtherFlocks", val)}
+            setValue={(val: boolean) => setConfigProperty("separateFromOtherFlocks", val)}
             disabled={props.config.isPredator}
           />
           <Checkbox
             label={"Predator"}
             value={props.config.isPredator}
-            setValue={(val) => setConfigProperty("isPredator", val)}
+            setValue={(val: boolean) => setConfigProperty("isPredator", val)}
           />
         </div>
       </div>
@@ -184,7 +198,6 @@ function Controls(props) {
             />
             <RangeSlider
               label="Boid Size"
-              id="size"
               min={0}
               max={15}
               step={0.1}

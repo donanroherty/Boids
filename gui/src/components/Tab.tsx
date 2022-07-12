@@ -1,10 +1,16 @@
-function Tab(props) {
-  function handleClickTab(e) {
+function Tab(props: {
+  color: string
+  active: boolean
+  idx: number
+  onTabClick: (idx: number) => void
+  onTabClose: (idx: number) => void
+}) {
+  function handleClickTab(e: MouseEvent) {
     e.stopPropagation()
     props.onTabClick(props.idx)
   }
 
-  function handleClickClose(e) {
+  function handleClickClose(e: MouseEvent) {
     e.stopPropagation()
     props.onTabClose(props.idx)
   }

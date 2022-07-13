@@ -42,7 +42,7 @@ function createConfig(override = {}) {
     alignWithOtherFlocks: false,
     separateFromOtherFlocks: false,
     isPredator: false,
-    drawDebug: true,
+    drawDebug: false,
     ...override,
   }
 }
@@ -67,10 +67,23 @@ function createBoid(
   }
 }
 
-function updateVisibleBoids(b: Boid, entities: Set<Boid>, quadTree: QuadTreeNode | null) {
+function updateVisibleBoids(
+  b: Boid,
+  entities: Set<Boid>,
+  quadTree: QuadTreeNode | null,
+  boidHashTable: SpatialIndexSystem,
+  drawDebug: boolean = false
+) {
   b.visibleBoids = []
-  let inRange = []
-  if (quadTree) {
+  let inRange: Boid[] = []
+
+  if (boidHashTable) {
+    inRange = boidHashTable.boxQuery(
+      b.position,
+      b.config.detectionRange * 2,
+      drawDebug && isDebugBoid(b)
+    )
+  } else if (quadTree) {
     let positions = circleQuery(quadTree, b.position, b.config.detectionRange)
     inRange = Array.from(entities).filter(
       (o) => positions.find((p) => p.x === o.position.x && p.y === o.position.y) !== undefined

@@ -1,6 +1,6 @@
 import createBoidsApp, { BoidsApp } from "../../../boids/src/app"
 import { onMount, createSignal, mergeProps } from "solid-js"
-import FPSCounter from "./FpsCounter"
+import FPSCounter from "./FPSCounter"
 
 import "tailwindcss/tailwind.css"
 import styles from "../index.css"

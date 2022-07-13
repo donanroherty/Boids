@@ -1,5 +1,4 @@
 import { Rect } from "../types"
-import { Edge } from "./colliders"
 import debugHelper from "./debugHelper"
 import { lineLineIntersection, rectContainsPoint } from "./math"
 import { drawRect } from "./rendering"
@@ -20,12 +19,32 @@ function createSpatialIndex(cellSize: number, gridSize: Vec2) {
     grid,
     gridSize,
     cellSize,
+    clear: () => clear(grid),
+    insertPointType: (pt: Vec2, value: any) => insertPointType(pt, value, grid, cellSize),
     indexLineType: (from: Vec2, to: Vec2, value: any) =>
       insertLineType(from, to, value, grid, cellSize, gridSize),
     boxQuery: (pt: Vec2, boxSize: number, drawDebug: boolean = false) =>
       boxQuery(pt, boxSize, drawDebug, cellSize, gridSize, grid),
     draw: (canvas: HTMLCanvasElement) => drawGrid(canvas, grid),
   }
+}
+
+function insertPointType(pt: Vec2, value: any, grid: Grid, cellSize: number) {
+  const x = Math.floor(pt.x / cellSize)
+  const y = Math.floor(pt.y / cellSize)
+
+  const hash = `${x} ${y}`
+
+  if (!grid.has(hash)) {
+    const c: Cell = {
+      rect: { x: x * cellSize, y: y * cellSize, w: cellSize, h: cellSize },
+      items: [],
+    }
+    grid.set(hash, c)
+  }
+
+  const cell = grid.get(hash)!
+  cell.items.push(value)
 }
 
 function insertLineType(
@@ -117,6 +136,10 @@ function boxQuery(
   }, [])
 
   return out
+}
+
+function clear(grid: Grid) {
+  grid.forEach((_, key) => grid.delete(key))
 }
 
 function drawGrid(canvas: HTMLCanvasElement, grid: Grid) {

@@ -260,11 +260,20 @@ function chasePrey(b: Boid, others: Boid[]) {
 
   if (!b.hasPrey) return vec2()
 
-  const target = prey.reduce((target, o: Boid) => {
-    const toOther = b.position.sub(o.position).lenSq()
-    const toTarget = b.position.sub(target).lenSq()
-    return toOther < toTarget ? o.position : target
-  }, prey[0].position)
+  // chase closest prey
+  // const target = prey.reduce((target, o: Boid) => {
+  //   const toOther = b.position.sub(o.position).lenSq()
+  //   const toTarget = b.position.sub(target).lenSq()
+  //   return toOther < toTarget ? o.position : target
+  // }, prey[0].position)
+
+  //chase group center
+  const target = prey
+    .reduce((acc, o) => {
+      acc = acc.add(o.position)
+      return acc
+    }, vec2())
+    .div(vec2(prey.length, prey.length))
 
   const toTarget = target.sub(b.position)
   return toTarget.scale(b.config.predatorAttack)

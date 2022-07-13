@@ -161,7 +161,7 @@ function Controls(props: {
             <RangeSlider
               label="Predator Avoid"
               min={0}
-              max={60}
+              max={150}
               step={0.1}
               value={props.config.predatorAvoid}
               setValue={(val) => setConfigProperty("predatorAvoid", val)}

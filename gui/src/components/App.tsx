@@ -20,19 +20,20 @@ function App(inProps: any) {
     setAppBoids(app)
 
     // Prey
-    // app.flockHandler.addFlock({
-    //   color: "black",
-    //   numBoids: 50,
-    //   detectionRange: 50,
-    //   alignmentMaxStrength: 1.0,
-    //   separationRange: 20,
-    //   minSpeed: 30,
-    //   maxSpeed: 200,
-    //   size: 3.5,
-    //   coheseWithOtherFlocks: false,
-    //   alignWithOtherFlocks: false,
-    //   separateFromOtherFlocks: true,
-    // })
+    app.flockHandler.addFlock({
+      color: "black",
+      numBoids: 100,
+      detectionRange: 50,
+      alignmentMaxStrength: 1.5,
+      separationRange: 20,
+      predatorAvoid: 100,
+      minSpeed: 30,
+      maxSpeed: 200,
+      size: 3.5,
+      coheseWithOtherFlocks: false,
+      alignWithOtherFlocks: false,
+      separateFromOtherFlocks: true,
+    })
     // Predator
     app.flockHandler.addFlock({
       color: "red",

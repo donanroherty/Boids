@@ -1,10 +1,12 @@
-import { Edge } from "./lib/colliders.js"
-import { circleQuery, QuadTreeNode } from "./lib/pointQuadTree.js"
+import { SpatialIndexSystem } from "./lib/spatialHash"
+import { circleQuery } from "./lib/pointQuadTree"
+import { QuadTreeNode } from "./lib/pointQuadTree.js"
 import { drawArcCone, drawBoid, drawCircle } from "./lib/rendering.js"
 import { closestPointOnLine, raycastCone } from "./lib/utils.js"
 import { getFirstSweptHit } from "./lib/utils"
 import vec2, { Vec2 } from "./lib/vec2.js"
 import { Hit } from "./types.js"
+import debugHelper from "./lib/debugHelper"
 
 type BoidConfig = ReturnType<typeof createConfig>
 type Boid = {
@@ -40,7 +42,7 @@ function createConfig(override = {}) {
     alignWithOtherFlocks: false,
     separateFromOtherFlocks: false,
     isPredator: false,
-    drawDebug: true,
+    drawDebug: false,
     ...override,
   }
 }
@@ -65,10 +67,23 @@ function createBoid(
   }
 }
 
-function updateVisibleBoids(b: Boid, entities: Set<Boid>, quadTree: QuadTreeNode | null) {
+function updateVisibleBoids(
+  b: Boid,
+  entities: Set<Boid>,
+  quadTree: QuadTreeNode | null,
+  boidHashTable: SpatialIndexSystem,
+  drawDebug: boolean = false
+) {
   b.visibleBoids = []
-  let inRange = []
-  if (quadTree) {
+  let inRange: Boid[] = []
+
+  if (boidHashTable) {
+    inRange = boidHashTable.boxQuery(
+      b.position,
+      b.config.detectionRange * 2,
+      drawDebug && isDebugBoid(b)
+    )
+  } else if (quadTree) {
     let positions = circleQuery(quadTree, b.position, b.config.detectionRange)
     inRange = Array.from(entities).filter(
       (o) => positions.find((p) => p.x === o.position.x && p.y === o.position.y) !== undefined
@@ -83,7 +98,13 @@ function updateVisibleBoids(b: Boid, entities: Set<Boid>, quadTree: QuadTreeNode
   b.visibleBoids = inRange.filter((o) => o !== b && canSee(b, o))
 }
 
-function updateBoid(b: Boid, deltatime: number, sceneSize: Vec2, edges: Edge[], isPaused: boolean) {
+function updateBoid(
+  b: Boid,
+  deltatime: number,
+  sceneSize: Vec2,
+  geomHashTable: SpatialIndexSystem,
+  isPaused: boolean
+) {
   // update forces
   let vel = vec2(b.velocity.x, b.velocity.y)
   vel = vel.add(cohesion(b, b.visibleBoids))
@@ -91,7 +112,7 @@ function updateBoid(b: Boid, deltatime: number, sceneSize: Vec2, edges: Edge[], 
   vel = vel.add(separation(b, b.visibleBoids))
   vel = vel.add(avoidPredator(b, b.visibleBoids))
   vel = vel.add(chasePrey(b, b.visibleBoids))
-  vel = vel.add(avoidObstacles(b, edges))
+  vel = vel.add(avoidObstacles(b, geomHashTable))
   vel = vel.add(drag(b, vel))
   vel = vel.clampedLen(b.config.minSpeed, b.config.maxSpeed)
 
@@ -103,8 +124,7 @@ function updateBoid(b: Boid, deltatime: number, sceneSize: Vec2, edges: Edge[], 
     vel,
     deltatime,
     b.config.size * 0.5,
-    b.config.detectionRange,
-    edges,
+    geomHashTable,
     0.1,
     2
   )
@@ -159,7 +179,7 @@ function renderBoid(b: Boid, canvas: HTMLCanvasElement) {
     b.hasPrey
   )
 
-  if (b.index === 0 && b.config.drawDebug) drawDebug(b, canvas)
+  if (isDebugBoid(b)) drawDebug(b, canvas)
 }
 
 function drawDebug(b: Boid, canvas: HTMLCanvasElement) {
@@ -240,19 +260,29 @@ function chasePrey(b: Boid, others: Boid[]) {
 
   if (!b.hasPrey) return vec2()
 
-  const target = prey.reduce((target, o: Boid) => {
-    const toOther = b.position.sub(o.position).lenSq()
-    const toTarget = b.position.sub(target).lenSq()
-    return toOther < toTarget ? o.position : target
-  }, prey[0].position)
+  // chase closest prey
+  // const target = prey.reduce((target, o: Boid) => {
+  //   const toOther = b.position.sub(o.position).lenSq()
+  //   const toTarget = b.position.sub(target).lenSq()
+  //   return toOther < toTarget ? o.position : target
+  // }, prey[0].position)
+
+  //chase group center
+  const target = prey
+    .reduce((acc, o) => {
+      acc = acc.add(o.position)
+      return acc
+    }, vec2())
+    .div(vec2(prey.length, prey.length))
 
   const toTarget = target.sub(b.position)
   return toTarget.scale(b.config.predatorAttack)
 }
 
 // todo: this should pick a safe path away from collisions, not just push away from them
-function avoidObstacles(b: Boid, allEdges: Edge[]) {
-  const edges = getCollisionGeometry(b.position, b.config.detectionRange, allEdges)
+function avoidObstacles(b: Boid, geomHashTable: SpatialIndexSystem) {
+  const edges = getCollisionGeometry(b.position, b.config.detectionRange, geomHashTable, false)
+
   const hits = raycastCone(
     b.position,
     b.direction,
@@ -296,14 +326,14 @@ function sweepAndSlidePosition(
   velocity: Vec2,
   deltatime: number,
   rad: number,
-  range: number,
-  edges: Edge[],
+  geomHashTable: SpatialIndexSystem,
   padding: number,
   maxBounces: number
 ) {
   let from = start.clone()
   let vel = velocity.clone()
   let to = from.add(vel.scale(deltatime))
+  let len = vel.len()
 
   let dir = vel.norm()
   let initialSpeed = velocity.len()
@@ -312,7 +342,7 @@ function sweepAndSlidePosition(
 
   // must do minimum 1 sweep check
   for (let i = 0; i < maxBounces + 1; i++) {
-    const collisionGeo = getCollisionGeometry(from, range, edges)
+    const collisionGeo = getCollisionGeometry(from, (len + rad) * deltatime, geomHashTable, false)
 
     const hit: Hit | undefined = getFirstSweptHit(from, to, rad, collisionGeo)
     if (!hit) break
@@ -336,9 +366,9 @@ function sweepAndSlidePosition(
 
     const isLastBounce = i === maxBounces
 
-    const remainingSpeed = vel.sub(vel.scale(t)).len() // remove already spent distance
+    len = vel.sub(vel.scale(t)).len() // remove already spent distance
     dir = slideDir
-    vel = slideDir.scale(remainingSpeed)
+    vel = slideDir.scale(len)
     from = safeLocation
     to = isLastBounce ? from : from.add(vel.scale(deltatime))
 
@@ -351,27 +381,32 @@ function sweepAndSlidePosition(
   return [to, outVelocity] // position, velocity
 }
 
-function getCollisionGeometry(pos: Vec2, range: number, edges: Edge[]) {
-  // filter edges to viable hit targets
-
-  const viableEdges = edges.filter((edge) => {
+function getCollisionGeometry(
+  pos: Vec2,
+  radius: number,
+  geomHashTable: SpatialIndexSystem,
+  drawDebug = false
+) {
+  const edges = geomHashTable.boxQuery(pos, radius * 2, drawDebug).filter((edge) => {
     // boid is on the colliding side of the edge
-    {
-      const ptToBoid = pos.sub(edge.start).norm()
-      if (ptToBoid.dot(edge.normal) < 0) return false
-    }
-
-    // edge is within detection radius
-    {
-      const pt = closestPointOnLine(pos, edge.start, edge.end, true)
-      const ptInRange = pt && pt.sub(pos).lenSq() < range * range
-      if (!ptInRange) return false
-    }
+    const ptToBoid = pos.sub(edge.start).norm()
+    if (ptToBoid.dot(edge.normal) < 0) return false
 
     return true
   })
 
-  return viableEdges
+  if (drawDebug) {
+    edges.forEach((edge) => {
+      debugHelper.drawDebugLine(edge.start, edge.end, { lineWidth: 3 })
+      debugHelper.drawDebugPoint(edge.start, 2, {})
+    })
+  }
+
+  return edges
+}
+
+function isDebugBoid(b: Boid) {
+  return b.index === 0 && b.config.drawDebug
 }
 
 export { createBoid, updateVisibleBoids, updateBoid, renderBoid, createConfig }

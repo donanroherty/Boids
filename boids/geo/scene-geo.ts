@@ -153,6 +153,6 @@ const s_2 = [
   vec2(498.38, 154.861),
 ]
 
-const positivesShapes = [b_1, b_2, o_1, o_2, i_1, i_2, i_3, d_1, d_2, s_1, s_2]
+const paths = [b_1, b_2, o_1, o_2, i_1, i_2, i_3, d_1, d_2, s_1, s_2]
 
-export { positivesShapes }
+export { paths }

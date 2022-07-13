@@ -4,46 +4,66 @@ import vec2, { Vec2 } from "./lib/vec2.js"
 import * as geo from "../geo/scene-geo"
 import { QuadTreeNode } from "./lib/pointQuadTree.js"
 
+import { createSpatialIndex, SpatialIndexSystem } from "./lib/spatialHash.js"
+
 function createScene(canvas: HTMLCanvasElement) {
   let entities: Set<Boid> = new Set()
-  let shapes: Set<Shape> = new Set()
+  let geometry: Set<Shape> = new Set()
 
-  createShapes(shapes, getSceneSize())
+  createShapes(geometry, getSceneSize(canvas))
 
-  let collisionEdges = Array.from(shapes).reduce(
-    (acc: Edge[], shape) => acc.concat(shape.edges),
-    []
-  )
+  const geomHashTable = createSpatialIndex(20, getSceneSize(canvas))
+  {
+    const geomEdges = Array.from(geometry).reduce((acc: Edge[], geo) => acc.concat(geo.edges), []) // get all geometry edges
+    geomEdges.forEach((edge) => geomHashTable.indexLineType(edge.start, edge.end, edge)) // add each edge to the hash table
+  }
+
+  const boidHashTable = createSpatialIndex(20, getSceneSize(canvas))
 
   return {
     entities,
-    shapes,
-    getSceneSize,
+    shapes: geometry,
+    getSceneSize: () => getSceneSize(canvas),
     update,
   }
 
   function update(deltatime: number, quadTree: QuadTreeNode | null, isPaused: boolean) {
-    entities.forEach((b) => updateVisibleBoids(b, entities, quadTree))
+    updateBoidHashTable(entities, boidHashTable)
+    // boidHashTable.draw(canvas)
+    // geomHashTable.draw(canvas)
 
-    entities.forEach((b) => updateBoid(b, deltatime, getSceneSize(), collisionEdges, isPaused))
-
-    shapes.forEach((s) => s.draw(canvas))
+    entities.forEach((b) => updateVisibleBoids(b, entities, quadTree, boidHashTable))
+    entities.forEach((b) => updateBoid(b, deltatime, getSceneSize(canvas), geomHashTable, isPaused))
+    geometry.forEach((s) => s.draw(canvas))
     entities.forEach((b) => renderBoid(b, canvas))
-  }
-
-  function getSceneSize() {
-    const pixelRatio = window.devicePixelRatio || 1
-    return vec2(canvas.width / pixelRatio, canvas.height / pixelRatio)
   }
 }
 
+function updateBoidHashTable(entities: Set<Boid>, boidHashTable: SpatialIndexSystem) {
+  boidHashTable.clear()
+  entities.forEach((ent) => {
+    boidHashTable.insertPointType(ent.position, ent)
+  })
+}
+
+function getSceneSize(canvas: HTMLCanvasElement) {
+  const pixelRatio = window.devicePixelRatio || 1
+  return vec2(canvas.width / pixelRatio, canvas.height / pixelRatio)
+}
+
 function createShapes(shapes: Set<Shape>, sceneSize: Vec2) {
-  geo.positivesShapes.forEach((ps) => {
-    const shape = polygonCollider(ps, { fill: false })
+  geo.paths.forEach((ps) => {
+    const shape = polygonCollider(ps, { fill: false, drawNormal: false })
     shapes.add(shape)
   })
 
-  const sceneBox = boxCollider(vec2(), sceneSize, { color: "purple", lineWidth: 1 }, true)
+  const padding = 1
+  const sceneBox = boxCollider(
+    vec2(padding, padding),
+    sceneSize.sub(vec2(padding * 2, padding * 2)),
+    { color: "purple", lineWidth: 1, drawNormal: true },
+    true
+  )
   shapes.add(sceneBox)
 }
 

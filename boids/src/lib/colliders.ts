@@ -13,6 +13,7 @@ type ShapeRenderOptions = {
   drawNormal?: boolean
   fill?: boolean
   openClosePath?: boolean
+  alpha?: number
 }
 
 type Edge = {
@@ -26,7 +27,7 @@ function edgeCollider(start: Vec2, end: Vec2, options: ShapeRenderOptions): Shap
     color: "black",
     lineWidth: 1,
     drawNormal: false,
-    openClosePath: false,
+    openClosePath: true,
     ...options,
   }
 
@@ -36,7 +37,7 @@ function edgeCollider(start: Vec2, end: Vec2, options: ShapeRenderOptions): Shap
   const edge = { start, end, normal: normal }
 
   function draw(canvas: HTMLCanvasElement) {
-    drawLine(canvas, edge.start, edge.end, edge.normal, opts, false)
+    drawLine(canvas, edge.start, edge.end, edge.normal, opts)
   }
 
   return {

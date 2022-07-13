@@ -1,7 +1,7 @@
 import { Edge } from "./lib/colliders"
 import { Vec2 } from "./lib/vec2"
 
-type Hit = {
+export type Hit = {
   location: Vec2
   hitLocation: Vec2
   hitNormal: Vec2
@@ -10,11 +10,26 @@ type Hit = {
   other: Edge
 }
 
-type RayHit = {
+export type RayHit = {
   location: Vec2
   normal: Vec2
   t: number
   other: Edge
 }
 
-export type { Hit, RayHit }
+export type Rect = {
+  x: number
+  y: number
+  w: number
+  h: number
+}
+
+export type Point = {
+  x: number
+  y: number
+}
+
+export type Line = {
+  from: Point
+  to: Point
+}

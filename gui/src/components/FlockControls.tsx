@@ -18,8 +18,6 @@ function Controls(props: {
     props.setConfig({ ...props.config, [key]: value })
   }
 
-  console.log(props)
-
   return (
     <div class="flex w-full flex-col gap-3 rounded-bl-md rounded-br-md border-l-[1px] border-b-[1px] border-r-[1px] border-solid border-black border-t-inherit bg-gray-100 px-2 py-2">
       {/* System */}

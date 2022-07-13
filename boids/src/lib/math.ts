@@ -1,3 +1,4 @@
+import { Point, Rect } from "../types"
 import { Vec2 } from "./vec2"
 
 function radToDeg(radians: number) {
@@ -62,6 +63,10 @@ function lineLineIntersection(
   return undefined
 }
 
+function rectContainsPoint(pt: Point, rect: Rect) {
+  return pt.x >= rect.x && pt.y >= rect.y && pt.x <= rect.x + rect.w && pt.y <= rect.y + rect.h
+}
+
 function pointInCapsule(pt: Vec2, start: Vec2, end: Vec2, rad: number) {
   const closestPt = closestPointOnLine(pt, start, end)
   if (closestPt && pt.sub(closestPt).lenSq() < rad * rad) return true
@@ -71,4 +76,12 @@ function pointInCapsule(pt: Vec2, start: Vec2, end: Vec2, rad: number) {
   return false
 }
 
-export { radToDeg, degToRad, clamp, closestPointOnLine, lineLineIntersection, pointInCapsule }
+export {
+  radToDeg,
+  degToRad,
+  clamp,
+  closestPointOnLine,
+  lineLineIntersection,
+  pointInCapsule,
+  rectContainsPoint,
+}

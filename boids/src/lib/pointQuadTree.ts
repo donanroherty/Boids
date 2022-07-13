@@ -1,19 +1,4 @@
-type Rect = {
-  x: number
-  y: number
-  w: number
-  h: number
-}
-
-type Point = {
-  x: number
-  y: number
-}
-
-type Line = {
-  from: Point
-  to: Point
-}
+import { Line, Point, Rect } from "../types"
 
 type QuadTreeNode = {
   bounds: Rect

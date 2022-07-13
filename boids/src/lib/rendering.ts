@@ -53,7 +53,12 @@ function drawBoid(
   ctx.restore()
 }
 
-function drawCircle(canvas: HTMLCanvasElement, position: Vec2, radius: number, options: Object) {
+function drawCircle(
+  canvas: HTMLCanvasElement,
+  position: Vec2,
+  radius: number,
+  options?: Partial<ShapeRenderOptions>
+) {
   const opts = {
     color: "red",
     lineWidth: 1,
@@ -141,11 +146,16 @@ function drawQuadTree(quadTree: QuadTreeNode, canvas: HTMLCanvasElement) {
   }
 }
 
-function drawPolygon(canvas: HTMLCanvasElement, edges: Edge[], options: Object) {
-  const opts = {
+function drawPolygon(
+  canvas: HTMLCanvasElement,
+  edges: Edge[],
+  options?: Partial<ShapeRenderOptions>
+) {
+  const opts: ShapeRenderOptions = {
     color: "black",
     lineWidth: 1,
     fill: false,
+    drawNormal: false,
     ...options,
   }
 
@@ -156,11 +166,11 @@ function drawPolygon(canvas: HTMLCanvasElement, edges: Edge[], options: Object) 
 
   edges.forEach((edge) => drawLine(canvas, edge.start, edge.end, edge.normal, opts))
 
-  ctx.lineWidth = opts.lineWidth
-  ctx.strokeStyle = opts.color
+  ctx.lineWidth = opts.lineWidth!
+  ctx.strokeStyle = opts.color!
   ctx.stroke()
   if (opts.fill) {
-    ctx.fillStyle = opts.color
+    ctx.fillStyle = opts.color!
     ctx.fill()
   }
 
@@ -172,12 +182,13 @@ function drawLine(
   start: Vec2,
   end: Vec2,
   normal: Vec2,
-  options: ShapeRenderOptions,
-  drawNormal = false
+  options?: Partial<ShapeRenderOptions>
 ) {
   const opts: ShapeRenderOptions = {
     color: "black",
     lineWidth: 1,
+    drawNormal: false,
+    openClosePath: true,
     ...options,
   }
 
@@ -193,7 +204,7 @@ function drawLine(
     ctx.lineTo(start.x, start.y)
   }
 
-  if (drawNormal) {
+  if (opts.drawNormal) {
     const normalLen = 5
     const normalStart = start.add(v.scale(0.5))
     const normalEnd = normalStart.add(normal.scale(normalLen))
@@ -219,7 +230,7 @@ function drawCapsule(
   start: Vec2,
   end: Vec2,
   radius: number,
-  options: Object
+  options?: Partial<ShapeRenderOptions>
 ) {
   const opts = {
     color: "black",
@@ -248,6 +259,34 @@ function drawCapsule(
   ctx.restore()
 }
 
+function drawRect(
+  canvas: HTMLCanvasElement,
+  position: Vec2,
+  size: Vec2,
+  options?: Partial<ShapeRenderOptions>
+) {
+  const opts: ShapeRenderOptions = {
+    color: "red",
+    lineWidth: 1,
+    alpha: 1,
+    ...options,
+  }
+
+  const ctx = canvas.getContext("2d")
+  if (!ctx) return
+
+  const prevAlpha = ctx.globalAlpha
+  ctx.globalAlpha = opts.alpha!
+
+  ctx.beginPath()
+  ctx.rect(position.x, position.y, size.x, size.y)
+  ctx.strokeStyle = opts.color!
+  ctx.lineWidth = opts.lineWidth!
+  ctx.stroke()
+
+  ctx.globalAlpha = prevAlpha
+}
+
 export {
   scaleCanvasToPixelRatio,
   drawBoid,
@@ -257,4 +296,5 @@ export {
   drawLine,
   drawPolygon,
   drawCapsule,
+  drawRect,
 }

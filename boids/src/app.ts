@@ -1,27 +1,25 @@
-import createTick from "./lib/tick"
-import { createFlockHandler } from "./flockHandler"
+import createTick, { Tick } from "./lib/tick"
+import { createFlockHandler, FlockHandler } from "./flockHandler"
 import { pointQuadTree, QuadTreeNode } from "./lib/pointQuadTree.js"
 import { drawQuadTree, scaleCanvasToPixelRatio } from "./lib/rendering"
 import debugHelper from "./lib/debugHelper"
-import { createBoidController } from "./boidController"
-import { createScene } from "./scene.js"
+import { BoidController, createBoidController } from "./boidController"
+import { createScene, Scene } from "./scene.js"
 import { Boid } from "./boid"
+import { Vec2 } from "./lib/vec2"
 
 type BoidsApp = ReturnType<typeof createBoidsApp>
 
-function createBoidsApp(canvas: HTMLCanvasElement) {
-  debugHelper.init(canvas)
-
-  scaleCanvasToPixelRatio(canvas)
-
+function createBoidsApp() {
+  let canvas: HTMLCanvasElement
   let quadTree: QuadTreeNode | null = null
-  const scene = createScene(canvas)
-
-  const manualBoidController = createBoidController(canvas)
-  const flockHandler = createFlockHandler(scene.entities, scene.getSceneSize)
-  const tick = createTick(update)
+  let scene: Scene
+  let boidController: BoidController | undefined = undefined
+  let flockHandler: FlockHandler | undefined = undefined
+  let tick: Tick | undefined
 
   const app = {
+    init,
     flockHandler,
     tick,
     useQuadTree: false,
@@ -29,12 +27,27 @@ function createBoidsApp(canvas: HTMLCanvasElement) {
     isPaused: false,
   }
 
-  tick.start()
+  return app
+
+  function init(cvs: HTMLCanvasElement, canvasResolution: { x: number; y: number }) {
+    canvas = cvs
+    debugHelper.init(canvas)
+
+    scaleCanvasToPixelRatio(canvas, canvasResolution)
+
+    scene = createScene(canvas)
+
+    boidController = createBoidController(canvas)
+    flockHandler = createFlockHandler(scene.entities, scene.getSceneSize)
+
+    tick = createTick(update)
+    tick.start()
+  }
 
   function update(deltatime: number) {
     clearCanvas()
     updateQuadTree()
-    manualBoidController.update(scene.entities)
+    if (boidController) boidController.update(scene.entities)
     scene.update(deltatime, quadTree, app.isPaused)
   }
 
@@ -51,8 +64,6 @@ function createBoidsApp(canvas: HTMLCanvasElement) {
       if (app.bRenderQuadTree) drawQuadTree(quadTree, canvas)
     } else quadTree = null
   }
-
-  return app
 }
 
 export default createBoidsApp

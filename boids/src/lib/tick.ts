@@ -1,3 +1,5 @@
+export type Tick = ReturnType<typeof createTick>
+
 function createTick(tickFn: (dt: number) => void) {
   const targetFPS = 60
   let timeout: number

@@ -77,16 +77,16 @@ function updateVisibleBoids(
   b.visibleBoids = []
   let inRange: Boid[] = []
 
-  if (boidHashTable) {
+  if (quadTree) {
+    let positions = circleQuery(quadTree, b.position, b.config.detectionRange)
+    inRange = Array.from(entities).filter(
+      (o) => positions.find((p) => p.x === o.position.x && p.y === o.position.y) !== undefined
+    )
+  } else if (boidHashTable) {
     inRange = boidHashTable.boxQuery(
       b.position,
       b.config.detectionRange * 2,
       drawDebug && isDebugBoid(b)
-    )
-  } else if (quadTree) {
-    let positions = circleQuery(quadTree, b.position, b.config.detectionRange)
-    inRange = Array.from(entities).filter(
-      (o) => positions.find((p) => p.x === o.position.x && p.y === o.position.y) !== undefined
     )
   } else {
     inRange = Array.from(entities).filter(

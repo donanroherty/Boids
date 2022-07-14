@@ -1,6 +1,8 @@
 import { Boid, BoidConfig, createBoid, createConfig } from "./boid"
 import vec2, { Vec2 } from "./lib/vec2.js"
 
+export type FlockHandler = ReturnType<typeof createFlockHandler>
+
 function createFlockHandler(entities: Set<Boid>, getSceneSize: () => Vec2) {
   let lastFlockID = -1
 

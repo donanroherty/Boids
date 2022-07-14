@@ -2,6 +2,8 @@ import { Boid } from "./boid"
 import debugHelper from "./lib/debugHelper"
 import vec2, { Vec2 } from "./lib/vec2.js"
 
+export type BoidController = ReturnType<typeof createBoidController>
+
 function createBoidController(canvas: HTMLCanvasElement) {
   let pointerDown = false
   let mouseX = 0

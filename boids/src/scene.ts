@@ -1,10 +1,11 @@
 import { Boid, renderBoid, updateBoid, updateVisibleBoids } from "./boid.js"
 import { boxCollider, Edge, polygonCollider, Shape } from "./lib/colliders"
 import vec2, { Vec2 } from "./lib/vec2.js"
-import * as geo from "../geo/scene-geo"
+import { getGeometry } from "./scene-geo"
 import { QuadTreeNode } from "./lib/pointQuadTree.js"
-
 import { createSpatialIndex, SpatialIndexSystem } from "./lib/spatialHash.js"
+
+export type Scene = ReturnType<typeof createScene>
 
 function createScene(canvas: HTMLCanvasElement) {
   let entities: Set<Boid> = new Set()
@@ -52,8 +53,14 @@ function getSceneSize(canvas: HTMLCanvasElement) {
 }
 
 function createShapes(shapes: Set<Shape>, sceneSize: Vec2) {
-  geo.paths.forEach((ps) => {
-    const shape = polygonCollider(ps, { fill: false, drawNormal: false })
+  const geometry = getGeometry()
+  geometry.reversePathPointOrder([0, 1, 2, 3, 4, 5])
+  geometry.scale(vec2(4, 4))
+  geometry.offset(vec2(80, 165))
+
+  // create geometry in scene
+  geometry.getPaths().forEach((ps) => {
+    const shape = polygonCollider(ps, { fill: false, drawNormal: true })
     shapes.add(shape)
   })
 

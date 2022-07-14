@@ -1,11 +1,19 @@
 {
-  "name": "boids",
+  "name": "@boids/boids",
   "private": true,
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview"
+  },
+  "exports": "./index.ts",
+  "typesVersions": {
+    "*": {
+      "/*": [
+        "/src/*"
+      ]
+    }
   },
   "devDependencies": {
     "typescript": "^4.5.4",

@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "composite": true
+  },
+  "files": [],
+  "references": [
+    {
+      "path": "./boids/tsconfig.ref.json"
+    },
+    {
+      "path": "./web/tsconfig.ref.json"
+    }
+  ]
+}

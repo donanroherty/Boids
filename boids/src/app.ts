@@ -6,25 +6,32 @@ import debugHelper from "./lib/debugHelper"
 import { BoidController, createBoidController } from "./boidController"
 import { createScene, Scene } from "./scene.js"
 import { Boid } from "./boid"
-import { Vec2 } from "./lib/vec2"
 
 type BoidsApp = ReturnType<typeof createBoidsApp>
+type Optimization = "QuadTree" | "SpatialIndex" | "None"
 
 function createBoidsApp() {
   let canvas: HTMLCanvasElement
   let quadTree: QuadTreeNode | null = null
   let scene: Scene
-  let boidController: BoidController | undefined = undefined
-  let flockHandler: FlockHandler | undefined = undefined
+  let boidController: BoidController
+  let flockHandler: FlockHandler
   let tick: Tick | undefined
+  let isPaused: boolean
+  let optimization: Optimization = "None"
+  let drawOptimization = false
 
   const app = {
     init,
-    flockHandler,
-    tick,
+    getFlockhandler,
+    getTick,
+    getPaused,
+    setPaused,
     useQuadTree: false,
-    bRenderQuadTree: false,
-    isPaused: false,
+    getOptimization,
+    setOptimization,
+    getDrawOptimization,
+    setDrawOptimization,
   }
 
   return app
@@ -36,7 +43,6 @@ function createBoidsApp() {
     scaleCanvasToPixelRatio(canvas, canvasResolution)
 
     scene = createScene(canvas)
-
     boidController = createBoidController(canvas)
     flockHandler = createFlockHandler(scene.entities, scene.getSceneSize)
 
@@ -48,7 +54,7 @@ function createBoidsApp() {
     clearCanvas()
     updateQuadTree()
     if (boidController) boidController.update(scene.entities)
-    scene.update(deltatime, quadTree, app.isPaused)
+    scene.update(deltatime, quadTree, app.getPaused())
   }
 
   function clearCanvas() {
@@ -61,8 +67,40 @@ function createBoidsApp() {
       const sceneSize = scene.getSceneSize()
       const positions = Array.from(scene.entities).map((b: Boid) => b.position.toPoint())
       quadTree = pointQuadTree({ x: 0, y: 0, w: sceneSize.x, h: sceneSize.y }, 8, positions)
-      if (app.bRenderQuadTree) drawQuadTree(quadTree, canvas)
+      if (app.getDrawOptimization()) drawQuadTree(quadTree, canvas)
     } else quadTree = null
+  }
+
+  function getFlockhandler(): FlockHandler {
+    return flockHandler
+  }
+
+  function getTick() {
+    return tick
+  }
+
+  function getPaused() {
+    return isPaused
+  }
+
+  function setPaused(val: boolean) {
+    isPaused = val
+  }
+
+  function getOptimization() {
+    return optimization
+  }
+
+  function setOptimization(val: Optimization) {
+    optimization = val
+  }
+
+  function getDrawOptimization() {
+    return drawOptimization
+  }
+
+  function setDrawOptimization(val: boolean) {
+    drawOptimization = val
   }
 }
 

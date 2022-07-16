@@ -56,7 +56,7 @@ function createShapes(shapes: Set<Shape>, sceneSize: Vec2) {
   const geometry = getGeometry()
   geometry.reversePathPointOrder([0, 1, 2, 3, 4, 5])
   geometry.scale(vec2(4, 4))
-  geometry.offset(vec2(80, 165))
+  geometry.offset(vec2(80, 230))
 
   // create geometry in scene
   geometry.getPaths().forEach((ps) => {

@@ -1,4 +1,5 @@
 import BoidControl from "./BoidControl"
+import Icons from "./Icons"
 import PlayPauseButton from "./PlayPauseButton"
 import TabBar from "./TabBar"
 import Tooltip from "./Tooltip"
@@ -9,16 +10,15 @@ function UI() {
       <div className="pt-5 pb-5 pl-5">
         <div className="flex flex-col h-full gap-6 bg-green-400 opacity-25 w-80">
           <div>
-            Settings
+            <Icons type="settings" />
             <div className="flex flex-col gap-2">
               <div>Icon</div>
               <BoidControl label="Optimization" />
             </div>
           </div>
           <div>
-            Controls
+            <Icons type="controller" />
             <div className="flex flex-col gap-2">
-              <BoidControl label="Optimization" />
               <BoidControl label="Num Boids" />
               <BoidControl label="Vision Range" />
               <BoidControl label="FOV" />
@@ -41,7 +41,7 @@ function UI() {
       </div>
       <div className="flex p-5">
         <TabBar />
-        <PlayPauseButton />
+        <PlayPauseButton isPaused={false} />
       </div>
 
       <Tooltip />

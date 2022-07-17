@@ -1,5 +1,17 @@
-function PlayPauseButton() {
-  return <div className="w-10 h-10 bg-green-300">Play/Pause</div>
+import Icons from "./Icons"
+
+type PlayPauseButtonProps = {
+  isPaused: boolean
+}
+
+function PlayPauseButton(props: PlayPauseButtonProps) {
+  const { isPaused } = props
+
+  return (
+    <div>
+      <Icons type={isPaused ? "play" : "pause"} />
+    </div>
+  )
 }
 
 export default PlayPauseButton

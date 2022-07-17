@@ -55,20 +55,20 @@ function getSceneSize(canvas: HTMLCanvasElement) {
 function createShapes(shapes: Set<Shape>, sceneSize: Vec2) {
   const geometry = getGeometry()
   geometry.reversePathPointOrder([0, 1, 2, 3, 4, 5])
-  geometry.scale(vec2(4, 4))
-  geometry.offset(vec2(80, 230))
+  geometry.scale(vec2(3.3, 3.3))
+  geometry.offset(vec2(135, 245))
 
   // create geometry in scene
   geometry.getPaths().forEach((ps) => {
-    const shape = polygonCollider(ps, { fill: false, drawNormal: true })
+    const shape = polygonCollider(ps, { fill: false, drawNormal: false })
     shapes.add(shape)
   })
 
-  const padding = 1
+  const padding = 2
   const sceneBox = boxCollider(
     vec2(padding, padding),
     sceneSize.sub(vec2(padding * 2, padding * 2)),
-    { color: "purple", lineWidth: 1, drawNormal: true },
+    { color: "purple", lineWidth: 1, drawNormal: true, visible: false },
     true
   )
   shapes.add(sceneBox)

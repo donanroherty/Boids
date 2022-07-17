@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react"
 import { createBoidsApp } from "@boids/boids"
 import { BoidsApp } from "@boids/boids/src/app"
+import UI from "./UI"
 
 function Boids() {
   const [boidsApp] = useState<BoidsApp>(createBoidsApp())
@@ -43,8 +44,16 @@ function Boids() {
   }, [])
 
   return (
-    <div>
-      <canvas ref={canvasRef} width={canvasResolution.x} height={canvasResolution.y}></canvas>
+    <div className={`w-[${canvasResolution.x}px] h-[${canvasResolution.y}px]`}>
+      <div className={`absolute w-[640px] h-[640px]`}>
+        <UI />
+      </div>
+      <canvas
+        ref={canvasRef}
+        width={canvasResolution.x}
+        height={canvasResolution.y}
+        className="self-center border-2 border-black border-solid rounded-lg"
+      ></canvas>
     </div>
   )
 }

@@ -1,6 +1,5 @@
 import BoidControl from "./BoidControl"
-import Icons from "./Icons"
-import PlayPauseButton from "./PlayPauseButton"
+import Button from "./Button"
 import TabBar from "./TabBar"
 import Tooltip from "./Tooltip"
 
@@ -8,16 +7,20 @@ function UI() {
   return (
     <div className="absolute grid w-full h-full grid-cols-1 grid-rows-[minmax(auto,1fr)] text-xs">
       <div className="pt-5 pb-5 pl-5">
-        <div className="flex flex-col h-full gap-6 bg-green-400 opacity-25 w-80">
+        <div className="flex flex-col h-full gap-6 w-80">
+          {/* App settings */}
           <div>
-            <Icons type="settings" />
+            <Button icon="settings" className="w-6 h-6" />
+
             <div className="flex flex-col gap-2">
-              <div>Icon</div>
               <BoidControl label="Optimization" />
             </div>
           </div>
+
+          {/* Boid configuration */}
           <div>
-            <Icons type="controller" />
+            <Button icon="controller" className="w-6 h-6" />
+
             <div className="flex flex-col gap-2">
               <BoidControl label="Num Boids" />
               <BoidControl label="Vision Range" />
@@ -39,9 +42,13 @@ function UI() {
           </div>
         </div>
       </div>
+
+      {/* Bottom bar */}
       <div className="flex p-5">
         <TabBar />
-        <PlayPauseButton isPaused={false} />
+
+        {/* Play/Pause button */}
+        <Button icon="play" altIcon="pause" useAltIcon />
       </div>
 
       <Tooltip />

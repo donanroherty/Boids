@@ -48,12 +48,15 @@ function Boids() {
       <div className={`absolute w-[640px] h-[640px]`}>
         <UI />
       </div>
-      <canvas
-        ref={canvasRef}
-        width={canvasResolution.x}
-        height={canvasResolution.y}
-        className="self-center border-2 border-black border-solid rounded-lg"
-      ></canvas>
+
+      <div className="self-center border border-solid rounded-lg border-boids_btn bg-boids_scene_bg">
+        <canvas
+          ref={canvasRef}
+          width={canvasResolution.x}
+          height={canvasResolution.y}
+          className=""
+        ></canvas>
+      </div>
     </div>
   )
 }

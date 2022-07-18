@@ -1,4 +1,4 @@
-import Icons from "./Icons"
+import Button from "./Button"
 
 type TabProps = {
   colorClass: string
@@ -10,16 +10,14 @@ function Tab(props: TabProps) {
 
   return (
     <div
-      className={`flex items-center h-5 gap-2 p-1 border rounded 
-      ${selected ? "border-gray-300" : "border-transparent"}`}
+      className={`flex items-center pl-1 h-5 gap  border rounded 
+      ${selected ? "border-boids_btn" : "border-transparent"}`}
     >
       {/* Color label */}
       <div className={`w-20 h-3 rounded ${colorClass}`}></div>
 
       {/* Close button */}
-      <div className="flex items-center justify-center w-2 h-full p-1">
-        <Icons type="subtract" />
-      </div>
+      <Button icon="subtract" className="w-5 h-5" />
     </div>
   )
 }

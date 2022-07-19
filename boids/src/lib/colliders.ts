@@ -8,7 +8,7 @@ type Shape = {
 }
 
 type ShapeRenderOptions = {
-  visible: boolean
+  visible?: boolean
   color?: string
   lineWidth?: number
   drawNormal?: boolean

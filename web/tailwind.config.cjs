@@ -2,6 +2,9 @@
 module.exports = {
   content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
   darkMode: "class",
+  fontFamily: {
+    sans: ["Open Sans"],
+  },
   theme: {
     extend: {
       colors: {
@@ -17,5 +20,5 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [require("prettier-plugin-tailwindcss")],
 }

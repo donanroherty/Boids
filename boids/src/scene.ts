@@ -60,7 +60,7 @@ function createShapes(shapes: Set<Shape>, sceneSize: Vec2) {
 
   // create geometry in scene
   geometry.getPaths().forEach((ps) => {
-    const shape = polygonCollider(ps, { fill: false, drawNormal: false })
+    const shape = polygonCollider(ps, { fill: false, drawNormal: false, color: "rgb(160,160,160)" })
     shapes.add(shape)
   })
 

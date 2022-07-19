@@ -1,6 +1,6 @@
 import Icon, { IconType } from "./Icon"
 
-// Class names in full to enable tailwind static analysis
+// Class names in full to support tailwind static analysis
 // fill-boids_btn
 // fill-boids_btn_hover
 // group-hover:fill-boids_btn_hover
@@ -23,8 +23,8 @@ function Button(props: ButtonProps) {
   return (
     <div
       className={`group flex items-center justify-center 
-      ${border && "border"} ${className}
-      border-boids_btn hover:border-boids_btn_hover rounded solid`}
+      ${border && "border"} ${className} solid
+      rounded border-boids_btn hover:border-boids_btn_hover`}
       onClick={onClick}
     >
       <Icon

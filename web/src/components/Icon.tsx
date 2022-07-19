@@ -1,4 +1,4 @@
-export type IconType = "settings" | "controller" | "play" | "pause" | "plus" | "subtract"
+export type IconType = "settings" | "controller" | "play" | "pause" | "plus" | "subtract" | "reset"
 
 type IconsProps = {
   color: string
@@ -7,7 +7,7 @@ type IconsProps = {
   className?: string
 }
 
-function Icons(props: IconsProps) {
+function Icon(props: IconsProps) {
   let { type, color, hoverColor, className } = props
   if (!hoverColor) hoverColor = color
 
@@ -15,7 +15,6 @@ function Icons(props: IconsProps) {
     const prefix = fill ? "fill" : "stroke"
     const c = `${prefix}-${color}`
     const h = `group-hover:${prefix}-${hoverColor}`
-    console.log(`${c} ${h}`)
     return `${c} ${h}`
   }
 
@@ -33,12 +32,14 @@ function Icons(props: IconsProps) {
         ? subtractIcon(getColorClasses(false))
         : type === "plus"
         ? plusIcon(getColorClasses(false))
+        : type === "reset"
+        ? resetIcon(getColorClasses(false))
         : null}
     </div>
   )
 }
 
-export default Icons
+export default Icon
 
 function plusIcon(colorClasses: string) {
   return (
@@ -100,6 +101,31 @@ function controllerIcon(colorClasses: string) {
       <path
         className={colorClasses}
         d="M6.25.5h12.503a5.75 5.75 0 1 1-4.107 9.775l-.148-.15h-3.995l-.147.15A5.749 5.749 0 1 1 6.251.5Zm3.655 6.904a.969.969 0 0 0 .283-.685V5.78a.969.969 0 0 0-.968-.968H7.688V3.28a.969.969 0 0 0-.968-.969h-.938a.969.969 0 0 0-.969.97v1.53h-1.53a.969.969 0 0 0-.97.97v.937a.969.969 0 0 0 .97.968h1.53V9.22a.969.969 0 0 0 .97.969h.937a.969.969 0 0 0 .968-.97v-1.53H9.22a.969.969 0 0 0 .685-.284ZM16.98 9.84a2.063 2.063 0 1 0 2.292-3.431 2.063 2.063 0 0 0-2.292 3.43Zm2.5-3.75a2.063 2.063 0 1 0 2.292-3.43 2.063 2.063 0 0 0-2.292 3.43Z"
+      />
+    </svg>
+  )
+}
+
+function resetIcon(colorClasses: string) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 15 15">
+      <path
+        className={colorClasses}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M13.23 5A6.252 6.252 0 0 0 1.28 6.875"
+      />
+      <path
+        className={colorClasses}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M10.625 5h2.75a.375.375 0 0 0 .375-.375v-2.75M1.8 10a6.251 6.251 0 0 0 11.95-1.875"
+      />
+      <path
+        className={colorClasses}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M4.406 10h-2.75a.375.375 0 0 0-.375.375v2.75"
       />
     </svg>
   )

@@ -1,4 +1,12 @@
-export type IconType = "settings" | "controller" | "play" | "pause" | "plus" | "subtract" | "reset"
+export type IconType =
+  | "settings"
+  | "controller"
+  | "play"
+  | "pause"
+  | "plus"
+  | "subtract"
+  | "reset"
+  | "downarrow"
 
 type IconsProps = {
   color: string
@@ -34,6 +42,8 @@ function Icon(props: IconsProps) {
         ? plusIcon(getColorClasses(false))
         : type === "reset"
         ? resetIcon(getColorClasses(false))
+        : type === "downarrow"
+        ? downArrowIcon(getColorClasses(true))
         : null}
     </div>
   )
@@ -126,6 +136,17 @@ function resetIcon(colorClasses: string) {
         strokeLinecap="round"
         strokeLinejoin="round"
         d="M4.406 10h-2.75a.375.375 0 0 0-.375.375v2.75"
+      />
+    </svg>
+  )
+}
+
+function downArrowIcon(colorClasses: string) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="8" height="7" fill="none" viewBox="0 0 8 7">
+      <path
+        className={colorClasses}
+        d="M6.18.539c1.201 0 1.915 1.342 1.244 2.338l-1.928 2.86a1.5 1.5 0 0 1-2.432.077L.86 2.954C.1 1.968.804.539 2.049.539h4.13Z"
       />
     </svg>
   )

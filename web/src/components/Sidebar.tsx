@@ -1,3 +1,4 @@
+import Combo from "./Combo"
 import Icon from "./Icon"
 import SettingExpander from "./SettingExpander"
 import SettingsList from "./SettingsList"
@@ -8,7 +9,21 @@ function Sidebar() {
     <div className="inline-block pt-5 pb-5 pl-5">
       <div className="inline-block">
         <SettingsList icon="settings">
-          <SettingExpander title="Optimization" />
+          <SettingExpander
+            title="Optimization"
+            render={(title, hovered) => {
+              return (
+                <div>
+                  <Combo
+                    defaultSelectionIdx={0}
+                    options={["Spatial Hashing", "Quad Tree", "None"]}
+                    hidden={hovered}
+                    className="w-36"
+                  />
+                </div>
+              )
+            }}
+          />
         </SettingsList>
 
         <div className="mt-4">

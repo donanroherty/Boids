@@ -8,7 +8,7 @@ type SettingExpanderProps = {
 function SettingExpander(props: SettingExpanderProps) {
   const { title, render } = props
 
-  // hovered state offers more control than css hover selector when using absolute positioned items (Combo component)
+  // hovered state offers more control than css hover selector when using absolute positioned items (eg. Combo component)
   const [hovered, setHovered] = useState(false)
 
   const ref = useRef<HTMLDivElement>()
@@ -42,27 +42,29 @@ function SettingExpander(props: SettingExpanderProps) {
   return (
     <div
       ref={cbRef}
-      className={`group flex items-center rounded-md py-0.5 font-light text-neutral-600 border border-1 border-transparent
-      ${
-        hovered &&
-        "backdrop-blur-[2px] gap-1 bg-neutral-800/80 px-2 font-bold border-neutral-700 text-neutral-300"
-      }
+      className={`flex items-center transition-all duration-200 ease-in font-sans font-light border border-transparent rounded-md group text-neutral-600 border-1
+        ${
+          hovered &&
+          "backdrop-blur-[2px] gap-1 bg-neutral-800/80 font-bold border-neutral-700 text-neutral-300"
+        }
       `}
     >
+      {/* Render props */}
       <div
-        className={`
-        transition-all duration-800 ease-in origin-left max-w-0 scale-x-0
-        ${hovered && "scale-x-100 max-w-md"}
-      `}
+        className={`origin-left max-w-0 scale-x-0 py-0.5 flex items-center gap-3 transition-all duration-200 ease-in
+        ${hovered && "scale-x-100 max-w-md p-0.5"}
+        `}
       >
         {render && render(title, hovered)}
       </div>
 
-      <div className="font-sans">
-        <span className={`relative transition-all opacity-0 ${hovered && "opacity-100"}`}>
-          :&nbsp;&nbsp;
-        </span>
-        <span className={`relative transition-all -left-2 ${hovered && "left-0"}`}>{title}</span>
+      {/* Property title */}
+      <div
+        className={`flex items-center h-full py-0.5 pr-2 
+          ${hovered && "border-l border-neutral-700 pl-2"}
+        `}
+      >
+        {title}
       </div>
     </div>
   )

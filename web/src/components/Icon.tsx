@@ -1,3 +1,13 @@
+// Class names in full to support tailwind static analysis
+// fill-boids_btn
+// fill-boids_btn_hover
+// group-hover:fill-boids_btn_hover
+// stroke-boids_btn
+// stroke-boids_btn_hover
+// group-hover:stroke-boids_btn_hover
+// stroke-white
+// group-hover:stroke-white
+
 export type IconType =
   | "settings"
   | "controller"
@@ -7,6 +17,7 @@ export type IconType =
   | "subtract"
   | "reset"
   | "downarrow"
+  | "tick"
 
 type IconsProps = {
   color: string
@@ -16,7 +27,7 @@ type IconsProps = {
 }
 
 function Icon(props: IconsProps) {
-  let { type, color, hoverColor, className } = props
+  let { type, color, hoverColor, className = "" } = props
   if (!hoverColor) hoverColor = color
 
   function getColorClasses(fill: boolean) {
@@ -27,7 +38,7 @@ function Icon(props: IconsProps) {
   }
 
   return (
-    <div className={`group ${className && className}`}>
+    <div className={`group ${className}`}>
       {type === "controller"
         ? controllerIcon(getColorClasses(false))
         : type === "settings"
@@ -44,6 +55,8 @@ function Icon(props: IconsProps) {
         ? resetIcon(getColorClasses(false))
         : type === "downarrow"
         ? downArrowIcon(getColorClasses(true))
+        : type === "tick"
+        ? tickIcon(getColorClasses(false))
         : null}
     </div>
   )
@@ -53,7 +66,14 @@ export default Icon
 
 function plusIcon(colorClasses: string) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" fill="none" viewBox="0 0 8 8">
+    <svg
+      className="w-full h-full"
+      xmlns="http://www.w3.org/2000/svg"
+      width="8"
+      height="8"
+      fill="none"
+      viewBox="0 0 8 8"
+    >
       <path className={colorClasses} d="M0 3.944h8M3.944 8V0" />
     </svg>
   )
@@ -61,7 +81,14 @@ function plusIcon(colorClasses: string) {
 
 function subtractIcon(colorClasses: string) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="9" height="1" fill="none" viewBox="0 0 9 1">
+    <svg
+      className="w-full h-full"
+      xmlns="http://www.w3.org/2000/svg"
+      width="9"
+      height="1"
+      fill="none"
+      viewBox="0 0 9 1"
+    >
       <path className={colorClasses} d="M0 .5h9" />
     </svg>
   )
@@ -69,7 +96,14 @@ function subtractIcon(colorClasses: string) {
 
 function playIcon(colorClasses: string) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="27" fill="none" viewBox="0 0 24 27">
+    <svg
+      className="w-full h-full"
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="27"
+      fill="none"
+      viewBox="0 0 24 27"
+    >
       <path
         className={colorClasses}
         d="M0 3.935C0 1.685 2.384.236 4.381 1.272l17.82 9.24c2.09 1.084 2.174 4.043.149 5.244L4.53 26.316C2.53 27.5 0 26.06 0 23.735v-19.8Z"
@@ -79,7 +113,14 @@ function playIcon(colorClasses: string) {
 }
 function pauseIcon(colorClasses: string) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="none" viewBox="0 0 30 30">
+    <svg
+      className="w-full h-full"
+      xmlns="http://www.w3.org/2000/svg"
+      width="30"
+      height="30"
+      fill="none"
+      viewBox="0 0 30 30"
+    >
       <rect width="12.273" height="30" className={colorClasses} rx="3" />
       <rect width="12.273" height="30" x="17.727" className={colorClasses} rx="3" />
     </svg>
@@ -88,7 +129,14 @@ function pauseIcon(colorClasses: string) {
 
 function settingsIcon(colorClasses: string) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+    <svg
+      className="w-full h-full"
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
       <path
         className={colorClasses}
         strokeLinecap="round"
@@ -107,7 +155,14 @@ function settingsIcon(colorClasses: string) {
 
 function controllerIcon(colorClasses: string) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="13" fill="none" viewBox="0 0 26 13">
+    <svg
+      className="w-full h-full"
+      xmlns="http://www.w3.org/2000/svg"
+      width="26"
+      height="13"
+      fill="none"
+      viewBox="0 0 26 13"
+    >
       <path
         className={colorClasses}
         d="M6.25.5h12.503a5.75 5.75 0 1 1-4.107 9.775l-.148-.15h-3.995l-.147.15A5.749 5.749 0 1 1 6.251.5Zm3.655 6.904a.969.969 0 0 0 .283-.685V5.78a.969.969 0 0 0-.968-.968H7.688V3.28a.969.969 0 0 0-.968-.969h-.938a.969.969 0 0 0-.969.97v1.53h-1.53a.969.969 0 0 0-.97.97v.937a.969.969 0 0 0 .97.968h1.53V9.22a.969.969 0 0 0 .97.969h.937a.969.969 0 0 0 .968-.97v-1.53H9.22a.969.969 0 0 0 .685-.284ZM16.98 9.84a2.063 2.063 0 1 0 2.292-3.431 2.063 2.063 0 0 0-2.292 3.43Zm2.5-3.75a2.063 2.063 0 1 0 2.292-3.43 2.063 2.063 0 0 0-2.292 3.43Z"
@@ -118,7 +173,14 @@ function controllerIcon(colorClasses: string) {
 
 function resetIcon(colorClasses: string) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 15 15">
+    <svg
+      className="w-full h-full"
+      xmlns="http://www.w3.org/2000/svg"
+      width="15"
+      height="15"
+      fill="none"
+      viewBox="0 0 15 15"
+    >
       <path
         className={colorClasses}
         strokeLinecap="round"
@@ -143,10 +205,38 @@ function resetIcon(colorClasses: string) {
 
 function downArrowIcon(colorClasses: string) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="8" height="7" fill="none" viewBox="0 0 8 7">
+    <svg
+      className="w-full h-full"
+      xmlns="http://www.w3.org/2000/svg"
+      width="8"
+      height="7"
+      fill="none"
+      viewBox="0 0 8 7"
+    >
       <path
         className={colorClasses}
         d="M6.18.539c1.201 0 1.915 1.342 1.244 2.338l-1.928 2.86a1.5 1.5 0 0 1-2.432.077L.86 2.954C.1 1.968.804.539 2.049.539h4.13Z"
+      />
+    </svg>
+  )
+}
+
+function tickIcon(colorClasses: string) {
+  return (
+    <svg
+      className="w-full h-full"
+      xmlns="http://www.w3.org/2000/svg"
+      width="8"
+      height="7"
+      fill="none"
+      viewBox="0 0 8 7"
+    >
+      <path
+        className={colorClasses}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="2"
+        d="m1 3.571 1.714 1.715L7 1"
       />
     </svg>
   )

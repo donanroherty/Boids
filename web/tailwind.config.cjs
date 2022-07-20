@@ -11,6 +11,7 @@ module.exports = {
         boids_document_bg: "#1E1E1E",
         boids_scene_bg: "#2C2C2C",
         boids_scene_stroke: "#656565",
+        boids_white: "#FFFFFF",
         boids_btn: "#656565",
         boids_btn_hover: "#9A9A9A",
         boids_blue: "#79B6EF",

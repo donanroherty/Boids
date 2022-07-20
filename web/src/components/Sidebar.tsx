@@ -1,3 +1,4 @@
+import Checkbox from "./Checkbox"
 import Combo from "./Combo"
 import Icon from "./Icon"
 import SettingExpander from "./SettingExpander"
@@ -13,14 +14,16 @@ function Sidebar() {
             title="Optimization"
             render={(title, hovered) => {
               return (
-                <div>
+                <>
                   <Combo
                     defaultSelectionIdx={0}
                     options={["Spatial Hashing", "Quad Tree", "None"]}
                     hidden={hovered}
                     className="w-36"
                   />
-                </div>
+
+                  <Checkbox label="Draw" />
+                </>
               )
             }}
           />
@@ -34,7 +37,14 @@ function Sidebar() {
             />
             <SettingExpander
               title="Vision Range"
-              render={(title) => <Slider title={title} min={0} max={300} step={1} />}
+              render={(title) => {
+                return (
+                  <>
+                    <Slider title={title} min={0} max={300} step={1} />
+                    <Checkbox label="Draw" />
+                  </>
+                )
+              }}
             />
             <SettingExpander
               title="FOV"
@@ -86,9 +96,17 @@ function Sidebar() {
             />
             <SettingExpander
               title="Flock Interactions"
-              render={(title) => <Slider title={title} />}
+              render={(title) => {
+                return (
+                  <>
+                    <Checkbox label="Cohesion" />
+                    <Checkbox label="Alignment" />
+                    <Checkbox label="Seperation" />
+                  </>
+                )
+              }}
             />
-            <SettingExpander title="Debug" render={(title) => <Slider title={title} />} />
+
             <div className="group flex gap-2 py-0.5 text-neutral-600 hover:text-neutral-300">
               <Icon type="reset" color="boids_btn" hoverColor="boids_btn_hover" />
               <div className="text-neutral-600 group-hover:text-neutral-300">

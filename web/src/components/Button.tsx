@@ -1,13 +1,5 @@
 import Icon, { IconType } from "./Icon"
 
-// Class names in full to support tailwind static analysis
-// fill-boids_btn
-// fill-boids_btn_hover
-// group-hover:fill-boids_btn_hover
-// stroke-boids_btn
-// stroke-boids_btn_hover
-// group-hover:stroke-boids_btn_hover
-
 type ButtonProps = {
   icon: IconType
   altIcon?: IconType

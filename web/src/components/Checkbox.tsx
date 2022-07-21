@@ -3,10 +3,11 @@ import Icon from "./Icon"
 
 type CheckboxProps = {
   label?: string
+  className?: string
 }
 
 function Checkbox(props: CheckboxProps) {
-  const { label } = props
+  const { label, className = "" } = props
   const [checked, setChecked] = useState(false)
 
   function handleClick() {
@@ -14,9 +15,7 @@ function Checkbox(props: CheckboxProps) {
   }
 
   return (
-    <div className="flex items-center gap-2 font-normal">
-      {label && label}
-
+    <div className={`flex items-center gap-2 font-normal ${className}`}>
       <div
         onClick={handleClick}
         className="w-3 h-3 rounded-sm border-[1px] solid border-boids_scene_stroke bg-[#0C8CE9]"

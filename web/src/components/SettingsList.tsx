@@ -21,8 +21,7 @@ function SettingsList(props: SettingsListProps) {
       <Button onClick={handleClick} icon={icon} className="w-6 h-6" />
       <div
         className={`relative mt-1 flex flex-col gap-1 transition-all duration-200 ease-in-out 
-        ${visible ? "max-h-96" : "max-h-0"}
-        `}
+        ${visible ? "max-h-96 overflow-visible" : "max-h-0 overflow-hidden"}`}
       >
         {children}
       </div>

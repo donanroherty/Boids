@@ -3,7 +3,7 @@ import Button from "./Button"
 import "./slider.css"
 
 type SliderProps = {
-  title: string
+  label?: string
   min?: number
   max?: number
   step?: number
@@ -14,7 +14,7 @@ type SliderProps = {
 
 function Slider(props: SliderProps) {
   const {
-    title = "slider",
+    label = "slider",
     min = 0,
     max = 100,
     step = 1,
@@ -58,11 +58,11 @@ function Slider(props: SliderProps) {
   updateBackgroundGradient()
 
   return (
-    <div className="flex items-center w-full h-full gap-1 select-none">
+    <div className={`flex items-center w-40 h-full gap-1 select-none ${className}`}>
       <Button icon="subtract" onClick={handleDecrement} className="w-4 h-4" />
 
       <input
-        title={title}
+        title={label}
         ref={rangeCB}
         type="range"
         min={min}
@@ -75,7 +75,13 @@ function Slider(props: SliderProps) {
 
       <Button icon="plus" onClick={handleIncrement} className="w-4 h-4" />
 
-      <div className="text-xs font-light text-neutral-300">{val}</div>
+      <div
+        className={`text-xs font-light text-neutral-30 
+        ${step <= 0.01 ? "w-14" : step <= 0.1 ? "w-10" : "w-6"}
+        `}
+      >
+        {val}
+      </div>
     </div>
   )
 }

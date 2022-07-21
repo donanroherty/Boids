@@ -33,3 +33,26 @@ export type Line = {
   from: Point
   to: Point
 }
+
+export enum UserSetting {
+  BoidSearchOptimization,
+  ColliderSearchOptimization,
+  NumBoids,
+  VisionRange,
+  FOV,
+  Cohesion,
+  Alignment,
+  Seperation,
+  SeperationRange,
+  PredatorAttack,
+  PredatorAvoid,
+  Drag,
+  MinSpeed,
+  MaxSpeed,
+  ObstacleAvoid,
+  Size,
+  PredatorInteraction,
+  CohesionInteraction,
+  AlignmentInteraction,
+  SeperationInteraction,
+}

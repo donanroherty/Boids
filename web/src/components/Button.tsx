@@ -5,7 +5,7 @@ type ButtonProps = {
   altIcon?: IconType
   useAltIcon?: boolean
   border?: boolean
-  onClick?: () => void
+  onClick?: (e: React.MouseEvent<HTMLDivElement>) => void
   className?: string
 }
 

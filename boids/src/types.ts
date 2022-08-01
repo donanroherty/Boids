@@ -34,9 +34,13 @@ export type Line = {
   to: Point
 }
 
-export enum UserSetting {
+export enum AppSetting {
   BoidSearchOptimization,
   ColliderSearchOptimization,
+}
+
+export enum BoidSetting {
+  Color,
   NumBoids,
   VisionRange,
   FOV,

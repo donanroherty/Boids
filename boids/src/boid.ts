@@ -5,7 +5,7 @@ import { drawArcCone, drawBoid, drawCircle } from "./lib/rendering.js"
 import { closestPointOnLine, raycastCone } from "./lib/utils.js"
 import { getFirstSweptHit } from "./lib/utils"
 import vec2, { Vec2 } from "./lib/vec2.js"
-import { Hit } from "./types.js"
+import { Hit, BoidSetting } from "./types.js"
 import debugHelper from "./lib/debugHelper"
 
 type BoidConfig = ReturnType<typeof createConfig>
@@ -409,5 +409,139 @@ function isDebugBoid(b: Boid) {
   return b.index === 0 && b.config.drawDebug
 }
 
-export { createBoid, updateVisibleBoids, updateBoid, renderBoid, createConfig }
+function getBoidProperty(b: Boid, prop: BoidSetting) {
+  switch (prop) {
+    case BoidSetting.Color: {
+      return b.config.color
+    }
+    case BoidSetting.NumBoids: {
+      return b.config.numBoids
+    }
+    case BoidSetting.VisionRange: {
+      return b.config.detectionRange
+    }
+    case BoidSetting.FOV: {
+      return b.config.fov
+    }
+    case BoidSetting.Cohesion: {
+      return b.config.cohesionFactor
+    }
+    case BoidSetting.Alignment: {
+      return b.config.alignmentMaxStrength
+    }
+    case BoidSetting.Seperation: {
+      return b.config.separationMaxStrength
+    }
+    case BoidSetting.SeperationRange: {
+      return b.config.separationRange
+    }
+    case BoidSetting.PredatorAttack: {
+      return b.config.predatorAttack
+    }
+    case BoidSetting.PredatorAvoid: {
+      return b.config.predatorAvoid
+    }
+    case BoidSetting.Drag: {
+      return b.config.dragFactor
+    }
+    case BoidSetting.MinSpeed: {
+      return b.config.minSpeed
+    }
+    case BoidSetting.MaxSpeed: {
+      return b.config.maxSpeed
+    }
+    case BoidSetting.ObstacleAvoid: {
+      return b.config.obstacleAvoid
+    }
+    case BoidSetting.Size: {
+      return b.config.size
+    }
+    case BoidSetting.PredatorInteraction: {
+      return b.config.isPredator
+    }
+    case BoidSetting.CohesionInteraction: {
+      return b.config.coheseWithOtherFlocks
+    }
+    case BoidSetting.AlignmentInteraction: {
+      return b.config.alignWithOtherFlocks
+    }
+    case BoidSetting.SeperationInteraction: {
+      return b.config.separateFromOtherFlocks
+    }
+    default:
+      return null
+  }
+}
+
+function setBoidProperty(b: Boid, prop: BoidSetting, val: number | boolean | string) {
+  switch (prop) {
+    case BoidSetting.Color: {
+      b.config.color = val as string
+    }
+    case BoidSetting.NumBoids: {
+      b.config.numBoids = val as number
+    }
+    case BoidSetting.VisionRange: {
+      b.config.detectionRange = val as number
+    }
+    case BoidSetting.FOV: {
+      b.config.fov = val as number
+    }
+    case BoidSetting.Cohesion: {
+      b.config.cohesionFactor = val as number
+    }
+    case BoidSetting.Alignment: {
+      b.config.alignmentMaxStrength = val as number
+    }
+    case BoidSetting.Seperation: {
+      b.config.separationMaxStrength = val as number
+    }
+    case BoidSetting.SeperationRange: {
+      b.config.separationRange = val as number
+    }
+    case BoidSetting.PredatorAttack: {
+      b.config.predatorAttack = val as number
+    }
+    case BoidSetting.PredatorAvoid: {
+      b.config.predatorAvoid = val as number
+    }
+    case BoidSetting.Drag: {
+      b.config.dragFactor = val as number
+    }
+    case BoidSetting.MinSpeed: {
+      b.config.minSpeed = val as number
+    }
+    case BoidSetting.MaxSpeed: {
+      b.config.maxSpeed = val as number
+    }
+    case BoidSetting.ObstacleAvoid: {
+      b.config.obstacleAvoid = val as number
+    }
+    case BoidSetting.Size: {
+      b.config.size = val as number
+    }
+    case BoidSetting.PredatorInteraction: {
+      b.config.isPredator = val as boolean
+    }
+    case BoidSetting.CohesionInteraction: {
+      b.config.coheseWithOtherFlocks = val as boolean
+    }
+    case BoidSetting.AlignmentInteraction: {
+      b.config.alignWithOtherFlocks = val as boolean
+    }
+    case BoidSetting.SeperationInteraction: {
+      b.config.separateFromOtherFlocks = val as boolean
+    }
+  }
+}
+
+export {
+  createBoid,
+  updateVisibleBoids,
+  updateBoid,
+  renderBoid,
+  createConfig,
+  getBoidProperty,
+  setBoidProperty,
+}
 export type { Boid, BoidConfig }

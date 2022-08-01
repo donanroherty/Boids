@@ -1,4 +1,4 @@
 import createBoidsApp from "./src/app"
-import { UserSetting } from "./src/types"
+import { BoidSetting, AppSetting } from "./src/types"
 
-export { createBoidsApp, UserSetting }
+export { createBoidsApp, BoidSetting, AppSetting }

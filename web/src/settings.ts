@@ -1,4 +1,4 @@
-import { UserSetting } from "@boids/boids"
+import { BoidSetting, AppSetting } from "@boids/boids"
 
 export type SettingType = {
   title: string
@@ -7,7 +7,7 @@ export type SettingType = {
 }
 
 export type Control = {
-  id: UserSetting
+  id: BoidSetting | AppSetting
   label?: string
   type: "slider" | "checkbox" | "combo"
   properties: SliderProperties | CheckboxProperties | ComboProperties
@@ -37,7 +37,7 @@ const appProperties: SettingType[] = [
     description: "",
     controls: [
       {
-        id: UserSetting.BoidSearchOptimization,
+        id: AppSetting.BoidSearchOptimization,
         type: "combo",
         properties: {
           options: ["Spatial Hash", "Quad Tree", "None"],
@@ -52,7 +52,7 @@ const appProperties: SettingType[] = [
     description: "",
     controls: [
       {
-        id: UserSetting.ColliderSearchOptimization,
+        id: AppSetting.ColliderSearchOptimization,
         type: "combo",
         properties: {
           options: ["Spatial Hash", "None"],
@@ -70,7 +70,7 @@ const boidProperties: SettingType[] = [
     description: "",
     controls: [
       {
-        id: UserSetting.NumBoids,
+        id: BoidSetting.NumBoids,
         type: "slider",
         properties: {
           default: 50,
@@ -86,7 +86,7 @@ const boidProperties: SettingType[] = [
     description: "",
     controls: [
       {
-        id: UserSetting.VisionRange,
+        id: BoidSetting.VisionRange,
         type: "slider",
         properties: {
           default: 50,
@@ -102,7 +102,7 @@ const boidProperties: SettingType[] = [
     description: "",
     controls: [
       {
-        id: UserSetting.FOV,
+        id: BoidSetting.FOV,
         type: "slider",
         properties: {
           default: 340,
@@ -118,7 +118,7 @@ const boidProperties: SettingType[] = [
     description: "",
     controls: [
       {
-        id: UserSetting.Cohesion,
+        id: BoidSetting.Cohesion,
         type: "slider",
         properties: {
           default: 0.2,
@@ -134,7 +134,7 @@ const boidProperties: SettingType[] = [
     description: "",
     controls: [
       {
-        id: UserSetting.Alignment,
+        id: BoidSetting.Alignment,
         type: "slider",
         properties: {
           default: 0.3,
@@ -150,7 +150,7 @@ const boidProperties: SettingType[] = [
     description: "",
     controls: [
       {
-        id: UserSetting.Seperation,
+        id: BoidSetting.Seperation,
         type: "slider",
         properties: {
           default: 10,
@@ -161,7 +161,7 @@ const boidProperties: SettingType[] = [
       },
       {
         label: "Range",
-        id: UserSetting.SeperationRange,
+        id: BoidSetting.SeperationRange,
         type: "slider",
         properties: {
           default: 30,
@@ -178,7 +178,7 @@ const boidProperties: SettingType[] = [
     description: "",
     controls: [
       {
-        id: UserSetting.PredatorAttack,
+        id: BoidSetting.PredatorAttack,
         type: "slider",
         properties: {
           default: 0.9,
@@ -194,7 +194,7 @@ const boidProperties: SettingType[] = [
     description: "",
     controls: [
       {
-        id: UserSetting.PredatorAvoid,
+        id: BoidSetting.PredatorAvoid,
         type: "slider",
         properties: {
           default: 40,
@@ -210,7 +210,7 @@ const boidProperties: SettingType[] = [
     description: "",
     controls: [
       {
-        id: UserSetting.Drag,
+        id: BoidSetting.Drag,
         type: "slider",
         properties: {
           default: 0.01,
@@ -226,7 +226,7 @@ const boidProperties: SettingType[] = [
     description: "",
     controls: [
       {
-        id: UserSetting.MinSpeed,
+        id: BoidSetting.MinSpeed,
         type: "slider",
         properties: {
           default: 50,
@@ -242,7 +242,7 @@ const boidProperties: SettingType[] = [
     description: "",
     controls: [
       {
-        id: UserSetting.MaxSpeed,
+        id: BoidSetting.MaxSpeed,
         type: "slider",
         properties: {
           default: 150,
@@ -258,7 +258,7 @@ const boidProperties: SettingType[] = [
     description: "",
     controls: [
       {
-        id: UserSetting.ObstacleAvoid,
+        id: BoidSetting.ObstacleAvoid,
         type: "slider",
         properties: {
           default: 5,
@@ -274,7 +274,7 @@ const boidProperties: SettingType[] = [
     description: "",
     controls: [
       {
-        id: UserSetting.Size,
+        id: BoidSetting.Size,
         type: "slider",
         properties: {
           default: 5,
@@ -290,7 +290,7 @@ const boidProperties: SettingType[] = [
     description: "",
     controls: [
       {
-        id: UserSetting.PredatorInteraction,
+        id: BoidSetting.PredatorInteraction,
         type: "checkbox",
         label: "Predator",
         properties: {
@@ -298,7 +298,7 @@ const boidProperties: SettingType[] = [
         } as CheckboxProperties,
       },
       {
-        id: UserSetting.CohesionInteraction,
+        id: BoidSetting.CohesionInteraction,
         type: "checkbox",
         label: "Cohesion",
         properties: {
@@ -306,7 +306,7 @@ const boidProperties: SettingType[] = [
         } as CheckboxProperties,
       },
       {
-        id: UserSetting.AlignmentInteraction,
+        id: BoidSetting.AlignmentInteraction,
         type: "checkbox",
         label: "Alignment",
         properties: {
@@ -314,7 +314,7 @@ const boidProperties: SettingType[] = [
         } as CheckboxProperties,
       },
       {
-        id: UserSetting.SeperationInteraction,
+        id: BoidSetting.SeperationInteraction,
         type: "checkbox",
         label: "Seperation",
         properties: {

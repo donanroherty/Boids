@@ -6,7 +6,7 @@ export type FlockHandler = ReturnType<typeof createFlockHandler>
 function createFlockHandler(entities: Set<Boid>, getSceneSize: () => Vec2) {
   let lastFlockID = -1
 
-  function addFlock(cfg: Partial<BoidConfig>, spawnPos = undefined) {
+  function addFlock(cfg?: Partial<BoidConfig>, spawnPos?: Vec2) {
     const flock = ++lastFlockID
     const config = createConfig(cfg)
 
@@ -20,6 +20,12 @@ function createFlockHandler(entities: Set<Boid>, getSceneSize: () => Vec2) {
     })
 
     newBoids.forEach((b) => entities.add(b))
+  }
+
+  function removeFlock(flockID: number) {
+    entities.forEach((e) => {
+      if (e.flock === flockID) entities.delete(e)
+    })
   }
 
   function onChangeNumBoids(flockID: number, cfg: BoidConfig) {
@@ -41,6 +47,18 @@ function createFlockHandler(entities: Set<Boid>, getSceneSize: () => Vec2) {
     }
   }
 
+  function setFlockConfig(flockID: number, cfg: BoidConfig) {
+    const prevCfg = getFlockConfig(flockID)
+    const newCfg = { ...prevCfg, ...cfg }
+    if (newCfg.numBoids === 0) newCfg.numBoids = 1
+
+    getFlockEntities(flockID).forEach((e) => (e.config = newCfg))
+
+    if (prevCfg && prevCfg.numBoids !== newCfg.numBoids) {
+      onChangeNumBoids(flockID, newCfg)
+    }
+  }
+
   function getAllFlockIDs() {
     return Array.from(new Set(Array.from(entities).map((e) => e.flock)))
   }
@@ -59,26 +77,8 @@ function createFlockHandler(entities: Set<Boid>, getSceneSize: () => Vec2) {
     return member ? member.defaultConfig : undefined
   }
 
-  function getAllFlockConfigs() {
-    return getAllFlockIDs().map((fid) => getFlockConfig(fid))
-  }
-
-  function setFlockConfig(flockID: number, cfg: BoidConfig) {
-    const prevCfg = getFlockConfig(flockID)
-    const newCfg = { ...prevCfg, ...cfg }
-    if (newCfg.numBoids === 0) newCfg.numBoids = 1
-
-    getFlockEntities(flockID).forEach((e) => (e.config = newCfg))
-
-    if (prevCfg && prevCfg.numBoids !== newCfg.numBoids) {
-      onChangeNumBoids(flockID, newCfg)
-    }
-  }
-
-  function removeFlock(flockID: number) {
-    entities.forEach((e) => {
-      if (e.flock === flockID) entities.delete(e)
-    })
+  function getAllFlockConfigs(): BoidConfig[] {
+    return getAllFlockIDs().map((fid) => getFlockConfig(fid) as BoidConfig)
   }
 
   return {

@@ -38,6 +38,7 @@ function Combo(props: ComboProps) {
     }
   }, [hidden])
 
+  // clicking outside combo closes the combo
   function handleDocClick(event: MouseEvent) {
     if (!ref.current || !event.target) return
 
@@ -47,6 +48,7 @@ function Combo(props: ComboProps) {
     }
   }
 
+  // clicking the combo box toggles the combo
   function handleClickCombo(event: React.MouseEvent) {
     setIsOpen(!isOpen)
     event.preventDefault()

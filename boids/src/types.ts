@@ -39,7 +39,7 @@ export enum AppSetting {
   ColliderSearchOptimization,
 }
 
-export enum BoidSetting {
+export enum FlockSetting {
   Color,
   NumBoids,
   VisionRange,

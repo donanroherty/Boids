@@ -1,4 +1,4 @@
-import { BoidSetting, AppSetting } from "@boids/boids"
+import { FlockSetting, AppSetting } from "@boids/boids"
 
 export type SettingType = {
   title: string
@@ -7,7 +7,7 @@ export type SettingType = {
 }
 
 export type Control = {
-  id: BoidSetting | AppSetting
+  id: FlockSetting | AppSetting
   label?: string
   type: "slider" | "checkbox" | "combo"
   properties: SliderProperties | CheckboxProperties | ComboProperties
@@ -70,7 +70,7 @@ const boidProperties: SettingType[] = [
     description: "",
     controls: [
       {
-        id: BoidSetting.NumBoids,
+        id: FlockSetting.NumBoids,
         type: "slider",
         properties: {
           default: 50,
@@ -86,7 +86,7 @@ const boidProperties: SettingType[] = [
     description: "",
     controls: [
       {
-        id: BoidSetting.VisionRange,
+        id: FlockSetting.VisionRange,
         type: "slider",
         properties: {
           default: 50,
@@ -102,7 +102,7 @@ const boidProperties: SettingType[] = [
     description: "",
     controls: [
       {
-        id: BoidSetting.FOV,
+        id: FlockSetting.FOV,
         type: "slider",
         properties: {
           default: 340,
@@ -118,7 +118,7 @@ const boidProperties: SettingType[] = [
     description: "",
     controls: [
       {
-        id: BoidSetting.Cohesion,
+        id: FlockSetting.Cohesion,
         type: "slider",
         properties: {
           default: 0.2,
@@ -134,7 +134,7 @@ const boidProperties: SettingType[] = [
     description: "",
     controls: [
       {
-        id: BoidSetting.Alignment,
+        id: FlockSetting.Alignment,
         type: "slider",
         properties: {
           default: 0.3,
@@ -150,7 +150,7 @@ const boidProperties: SettingType[] = [
     description: "",
     controls: [
       {
-        id: BoidSetting.Seperation,
+        id: FlockSetting.Seperation,
         type: "slider",
         properties: {
           default: 10,
@@ -161,7 +161,7 @@ const boidProperties: SettingType[] = [
       },
       {
         label: "Range",
-        id: BoidSetting.SeperationRange,
+        id: FlockSetting.SeperationRange,
         type: "slider",
         properties: {
           default: 30,
@@ -178,7 +178,7 @@ const boidProperties: SettingType[] = [
     description: "",
     controls: [
       {
-        id: BoidSetting.PredatorAttack,
+        id: FlockSetting.PredatorAttack,
         type: "slider",
         properties: {
           default: 0.9,
@@ -194,7 +194,7 @@ const boidProperties: SettingType[] = [
     description: "",
     controls: [
       {
-        id: BoidSetting.PredatorAvoid,
+        id: FlockSetting.PredatorAvoid,
         type: "slider",
         properties: {
           default: 40,
@@ -210,7 +210,7 @@ const boidProperties: SettingType[] = [
     description: "",
     controls: [
       {
-        id: BoidSetting.Drag,
+        id: FlockSetting.Drag,
         type: "slider",
         properties: {
           default: 0.01,
@@ -226,7 +226,7 @@ const boidProperties: SettingType[] = [
     description: "",
     controls: [
       {
-        id: BoidSetting.MinSpeed,
+        id: FlockSetting.MinSpeed,
         type: "slider",
         properties: {
           default: 50,
@@ -242,7 +242,7 @@ const boidProperties: SettingType[] = [
     description: "",
     controls: [
       {
-        id: BoidSetting.MaxSpeed,
+        id: FlockSetting.MaxSpeed,
         type: "slider",
         properties: {
           default: 150,
@@ -258,7 +258,7 @@ const boidProperties: SettingType[] = [
     description: "",
     controls: [
       {
-        id: BoidSetting.ObstacleAvoid,
+        id: FlockSetting.ObstacleAvoid,
         type: "slider",
         properties: {
           default: 5,
@@ -274,7 +274,7 @@ const boidProperties: SettingType[] = [
     description: "",
     controls: [
       {
-        id: BoidSetting.Size,
+        id: FlockSetting.Size,
         type: "slider",
         properties: {
           default: 5,
@@ -290,7 +290,7 @@ const boidProperties: SettingType[] = [
     description: "",
     controls: [
       {
-        id: BoidSetting.PredatorInteraction,
+        id: FlockSetting.PredatorInteraction,
         type: "checkbox",
         label: "Predator",
         properties: {
@@ -298,7 +298,7 @@ const boidProperties: SettingType[] = [
         } as CheckboxProperties,
       },
       {
-        id: BoidSetting.CohesionInteraction,
+        id: FlockSetting.CohesionInteraction,
         type: "checkbox",
         label: "Cohesion",
         properties: {
@@ -306,7 +306,7 @@ const boidProperties: SettingType[] = [
         } as CheckboxProperties,
       },
       {
-        id: BoidSetting.AlignmentInteraction,
+        id: FlockSetting.AlignmentInteraction,
         type: "checkbox",
         label: "Alignment",
         properties: {
@@ -314,7 +314,7 @@ const boidProperties: SettingType[] = [
         } as CheckboxProperties,
       },
       {
-        id: BoidSetting.SeperationInteraction,
+        id: FlockSetting.SeperationInteraction,
         type: "checkbox",
         label: "Seperation",
         properties: {

@@ -7,6 +7,7 @@ type SettingsListProps = {
   children: JSX.Element | JSX.Element[]
 }
 
+// SettingsList wraps a list of settings, with a button to toggle visibility of the list.
 function SettingsList(props: SettingsListProps) {
   const { icon, children } = props
 
@@ -17,7 +18,7 @@ function SettingsList(props: SettingsListProps) {
   }
 
   return (
-    <div className="">
+    <div>
       <Button onClick={handleClick} icon={icon} className="w-6 h-6" />
       <div
         className={`relative mt-1 flex flex-col gap-1 transition-all duration-200 ease-in-out 

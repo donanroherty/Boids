@@ -1,13 +1,13 @@
 import Icon from "./Icon"
-import Setting from "./Setting"
+import SettingExpander from "./SettingExpander"
 import SettingsList from "./SettingsList"
 import { boidProperties, SettingType, appProperties } from "../settings"
 
 const AppSettings: Function = (props: { properties: SettingType[] }): JSX.Element[] => {
-  return props.properties.map((p) => <Setting key={p.title} property={p} />)
+  return props.properties.map((p) => <SettingExpander key={p.title} property={p} />)
 }
 const FlockSettings: Function = (props: { properties: SettingType[] }): JSX.Element[] => {
-  return props.properties.map((p) => <Setting key={p.title} property={p} />)
+  return props.properties.map((p) => <SettingExpander key={p.title} property={p} />)
 }
 
 function Sidebar() {
@@ -20,6 +20,7 @@ function Sidebar() {
           <SettingsList icon="controller">
             {FlockSettings({ properties: boidProperties })}
 
+            {/* reset button */}
             <div className="group flex gap-2 py-0.5 text-neutral-600 hover:text-neutral-300">
               <Icon type="reset" color="boids_btn" hoverColor="boids_btn_hover" />
 

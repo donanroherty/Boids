@@ -1,14 +1,12 @@
 import { useEffect, useRef, useState, useCallback } from "react"
-import { ComboProperties, SettingType, SliderProperties } from "../settings"
-import Checkbox from "./Checkbox"
-import Combo from "./Combo"
-import Slider from "./Slider"
+import { SettingType } from "../settings"
+import ControlComponentBuilder from "./ControlComponentBuilder"
 
 type SettingExpanderProps = {
   property: SettingType
 }
 
-function Setting(props: SettingExpanderProps) {
+function SettingExpander(props: SettingExpanderProps) {
   const { property } = props
 
   // hovered state offers more control than css hover selector when using absolute positioned items (eg. Combo component)
@@ -17,6 +15,7 @@ function Setting(props: SettingExpanderProps) {
   const ref = useRef<HTMLDivElement>()
   const callback = useCallback((el: HTMLDivElement) => {
     ref.current = el
+    // setup event listeners for mouse enter/leave
     if (el) {
       el.addEventListener("pointerenter", handleMouseEnter)
       el.addEventListener("pointerleave", handleMouseLeave)
@@ -24,6 +23,7 @@ function Setting(props: SettingExpanderProps) {
   }, [])
 
   useEffect(() => {
+    // tear down event listeners for mouse enter/leave on unmount
     return () => {
       document.removeEventListener("pointerenter", handleMouseEnter)
       document.removeEventListener("pointerleave", handleMouseLeave)
@@ -31,6 +31,7 @@ function Setting(props: SettingExpanderProps) {
   })
 
   function handleMouseEnter(event: MouseEvent) {
+    // check if the mouse is over the setting
     const contains =
       (ref.current && ref.current.contains(event.target as HTMLElement)) ||
       event.target === ref.current
@@ -39,10 +40,6 @@ function Setting(props: SettingExpanderProps) {
   }
 
   function handleMouseLeave(_: MouseEvent) {
-    setHovered(false)
-  }
-
-  function onComboSelection() {
     setHovered(false)
   }
 
@@ -60,48 +57,16 @@ function Setting(props: SettingExpanderProps) {
         className={`font-light origin-left max-w-0 scale-x-0 py-0.5 flex items-center gap-2 transition-all duration-200 ease-in
         ${hovered && "scale-x-100 max-w-md p-0.5"}`}
       >
-        {/* Create property controls */}
+        {/* Create appropriate component for control type */}
         {property.controls.map((control) => {
-          if (control.type === "slider") {
-            return (
-              <div key={`${property.title}_${control.id}`} className="flex justify-center gap-1">
-                {control.label && control.label}
-                <Slider
-                  className={control.className}
-                  label={control.label}
-                  min={(control.properties as SliderProperties).min}
-                  max={(control.properties as SliderProperties).max}
-                  step={(control.properties as SliderProperties).step}
-                />
-              </div>
-            )
-          }
-
-          if (control.type === "combo") {
-            return (
-              <div key={`${property.title}_${control.id}`} className="flex justify-center gap-1">
-                {control.label && control.label}
-                <Combo
-                  className={control.className}
-                  label={control.label}
-                  options={(control.properties as ComboProperties).options}
-                  hidden={!hovered}
-                  onSelection={onComboSelection}
-                />
-              </div>
-            )
-          }
-
-          if (control.type === "checkbox") {
-            return (
-              <div key={`${property.title}_${control.id}`} className="flex justify-center gap-1">
-                {control.label && control.label}
-                <Checkbox className={control.className} label={control.label} />
-              </div>
-            )
-          }
-
-          return null
+          return (
+            <ControlComponentBuilder
+              control={control}
+              hidden={!hovered}
+              unHover={() => setHovered(false)}
+              key={`${property.title}_${control.id}`}
+            />
+          )
         })}
       </div>
 
@@ -117,4 +82,4 @@ function Setting(props: SettingExpanderProps) {
   )
 }
 
-export default Setting
+export default SettingExpander

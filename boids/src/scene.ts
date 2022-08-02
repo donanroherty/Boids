@@ -1,3 +1,4 @@
+import { BoidsApp } from "@boids/boids/src/app"
 import { Boid, renderBoid, updateBoid, updateVisibleBoids } from "./boid.js"
 import { boxCollider, Edge, polygonCollider, Shape } from "./lib/colliders"
 import vec2, { Vec2 } from "./lib/vec2.js"
@@ -7,7 +8,7 @@ import { createSpatialIndex, SpatialIndexSystem } from "./lib/spatialHash.js"
 
 export type Scene = ReturnType<typeof createScene>
 
-function createScene(canvas: HTMLCanvasElement) {
+function createScene(canvas: HTMLCanvasElement, app: BoidsApp) {
   let entities: Set<Boid> = new Set()
   let geometry: Set<Shape> = new Set()
 
@@ -23,15 +24,23 @@ function createScene(canvas: HTMLCanvasElement) {
 
   return {
     entities,
-    shapes: geometry,
+    geometry,
     getSceneSize: () => getSceneSize(canvas),
     update,
   }
 
   function update(deltatime: number, quadTree: QuadTreeNode | null, isPaused: boolean) {
-    updateBoidHashTable(entities, boidHashTable)
-    // boidHashTable.draw(canvas)
-    // geomHashTable.draw(canvas)
+    if (app.getBoidSearchOptimization() === "Spatial Index") {
+      updateBoidHashTable(entities, boidHashTable)
+      if (app.getDrawBoidSearchOptimization()) boidHashTable.draw(canvas)
+    }
+
+    if (
+      app.getColliderSearchOptimization() === "Spatial Index" &&
+      app.getDrawColliderSearchOptimization()
+    ) {
+      geomHashTable.draw(canvas)
+    }
 
     entities.forEach((b) => updateVisibleBoids(b, entities, quadTree, boidHashTable))
     entities.forEach((b) => updateBoid(b, deltatime, getSceneSize(canvas), geomHashTable, isPaused))

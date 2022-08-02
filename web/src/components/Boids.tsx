@@ -19,26 +19,26 @@ function Boids() {
     boidsApp.getFlockhandler().addFlock({
       color: colors[0],
       numBoids: 50,
-      detectionRange: 50,
-      alignmentMaxStrength: 1.5,
+      visionRange: 50,
+      alignment: 1.5,
       separationRange: 20,
       predatorAvoid: 100,
       minSpeed: 30,
       maxSpeed: 200,
       size: 4,
-      coheseWithOtherFlocks: false,
-      alignWithOtherFlocks: false,
-      separateFromOtherFlocks: true,
+      cohesionInteraction: false,
+      alignmentInteraction: false,
+      separationInteraction: true,
     })
     // Predator
     boidsApp.getFlockhandler().addFlock({
       color: colors[1],
       numBoids: 1,
-      detectionRange: 90,
+      visionRange: 90,
       fov: 90,
       minSpeed: 90,
       maxSpeed: 200,
-      dragFactor: 0.04,
+      drag: 0.04,
       size: 8,
       predatorAttack: 0.3,
       predatorAvoid: 50,
@@ -53,6 +53,7 @@ function Boids() {
       <div className="absolute" style={dimensionsStyle}>
         {isInitialized && <UI boidsApp={boidsApp} />}
       </div>
+
       <div className="self-center border border-solid rounded-lg border-boids_btn bg-boids_scene_bg">
         <canvas
           ref={canvasRef}

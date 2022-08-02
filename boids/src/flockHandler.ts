@@ -72,7 +72,7 @@ function createFlockHandler(entities: Set<Boid>, getSceneSize: () => Vec2) {
     return member ? member.config : undefined
   }
 
-  function getFlockDefaultConfig(flockID: number): BoidConfig | undefined {
+  function getFlockInitialConfig(flockID: number): BoidConfig | undefined {
     const member = Array.from(entities).find((e) => e.flock === flockID)
     return member ? member.defaultConfig : undefined
   }
@@ -86,7 +86,7 @@ function createFlockHandler(entities: Set<Boid>, getSceneSize: () => Vec2) {
     removeFlock,
     getAllFlockIDs,
     getFlockConfig,
-    getFlockDefaultConfig,
+    getFlockInitialConfig,
     getAllFlockConfigs,
     setFlockConfig,
   }

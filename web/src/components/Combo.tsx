@@ -2,25 +2,18 @@ import { useState, useEffect, useRef } from "react"
 import Icon from "./Icon"
 
 type ComboProps = {
-  label?: string
-  defaultSelectionIdx?: number
   options: string[]
   hidden: boolean
-  className?: string
+  value: string
+  setValue: (val: string) => void
   onSelection?: () => void
+  color?: string
+  className?: string
 }
 
 function Combo(props: ComboProps) {
-  const {
-    label = "combo",
-    defaultSelectionIdx = 1,
-    options,
-    hidden = false,
-    className = "",
-    onSelection = () => {},
-  } = props
+  const { options, hidden = false, value, setValue, className = "", onSelection = () => {} } = props
 
-  const [selected, setSelected] = useState(defaultSelectionIdx)
   const [isOpen, setIsOpen] = useState(false)
 
   const ref = useRef<HTMLDivElement>(null)
@@ -33,9 +26,7 @@ function Combo(props: ComboProps) {
   })
 
   useEffect(() => {
-    if (hidden) {
-      setIsOpen(false)
-    }
+    if (hidden) setIsOpen(false)
   }, [hidden])
 
   // clicking outside combo closes the combo
@@ -55,8 +46,7 @@ function Combo(props: ComboProps) {
   }
 
   function handleClickOption(label: string) {
-    const idx = options.findIndex((o) => o === label)
-    setSelected(idx)
+    setValue(label)
     setIsOpen(false)
     onSelection()
   }
@@ -70,7 +60,7 @@ function Combo(props: ComboProps) {
       >
         <div className="flex items-center justify-between h-3 p-1">
           <div className="flex items-center justify-between w-full h-full px-2 rounded-md">
-            <div>{options[selected]}</div>
+            <div>{value}</div>
             <Icon type="downarrow" color="boids_btn" />
           </div>
         </div>
@@ -80,7 +70,7 @@ function Combo(props: ComboProps) {
       {isOpen && (
         <div className="absolute z-10 rounded-md top-[1.3rem] w-full border-neutral-800 bg-neutral-700">
           {options
-            .filter((_, i) => i !== selected)
+            .filter((opt) => opt !== value)
             .map((opt) => (
               <div
                 className="flex items-center justify-between h-8 p-1"

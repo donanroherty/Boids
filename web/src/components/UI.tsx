@@ -14,7 +14,7 @@ type UIProps = {
 function UI(props: UIProps) {
   const { boidsApp } = props
 
-  const [selectedFlockID, setSelectedFlockID] = useState(0)
+  const [selectedFlock, setSelectedFlock] = useState(0)
   const [tabData, setTabData] = useState(getUpdatedTabData())
   const [isPaused, setIsPaused] = useState(boidsApp.getPaused())
 
@@ -38,7 +38,7 @@ function UI(props: UIProps) {
 
   function onSelectFlock(idx: number) {
     const flocks = boidsApp.getFlockhandler().getAllFlockIDs()
-    setSelectedFlockID(flocks[idx])
+    setSelectedFlock(flocks[idx])
   }
 
   function getUpdatedTabData() {
@@ -60,7 +60,7 @@ function UI(props: UIProps) {
 
   return (
     <div className="absolute grid h-full w-full grid-cols-1 grid-rows-[minmax(auto,1fr)] text-xs">
-      <Sidebar />
+      <Sidebar boidsApp={boidsApp} selectedFlock={selectedFlock} />
 
       {/* Bottom bar */}
       <div className="flex p-5">

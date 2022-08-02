@@ -34,29 +34,5 @@ export type Line = {
   to: Point
 }
 
-export enum AppSetting {
-  BoidSearchOptimization,
-  ColliderSearchOptimization,
-}
-
-export enum FlockSetting {
-  Color,
-  NumBoids,
-  VisionRange,
-  FOV,
-  Cohesion,
-  Alignment,
-  Seperation,
-  SeperationRange,
-  PredatorAttack,
-  PredatorAvoid,
-  Drag,
-  MinSpeed,
-  MaxSpeed,
-  ObstacleAvoid,
-  Size,
-  PredatorInteraction,
-  CohesionInteraction,
-  AlignmentInteraction,
-  SeperationInteraction,
-}
+export type BoidSearchOptimization = "Quad Tree" | "Spatial Index" | "None"
+export type ColliderSearchOptimization = "Spatial Index" | "None"

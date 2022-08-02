@@ -35,7 +35,7 @@ function createBoidController(canvas: HTMLCanvasElement) {
       const targetRadius = 2
       drawDebugPoint(
         selected.position.add(
-          selected.direction.scale(selected.config.detectionRange + 10 - targetRadius)
+          selected.direction.scale(selected.config.visionRange + 10 - targetRadius)
         ),
         targetRadius,
         {}

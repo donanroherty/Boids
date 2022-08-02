@@ -1,6 +1,6 @@
 input[type="range"] {
   -webkit-appearance: none;
-  background-image: linear-gradient(#0C8CE9, #0C8CE9);
+  background-image: linear-gradient(var(--flock-color), var(--flock-color));
   background-size: 70% 100%;
 }
 
@@ -10,7 +10,7 @@ input[type="range"]::-webkit-slider-thumb {
   width: 12px;
   border-radius: 50%;
   background: #2C2C2C;
-  border: 1px solid #0C8CE9;
+  border: 1px solid var(--flock-color);
   cursor: ew-resize;
   box-shadow: 0 0 2px 0 #555;
   transition: background .3s ease-in-out;

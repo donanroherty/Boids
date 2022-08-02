@@ -1,29 +1,20 @@
-import { useRef, useCallback, useState } from "react"
+import { useRef, useCallback } from "react"
 import Button from "./Button"
 import "./slider.css"
 
 type SliderProps = {
-  label?: string
-  min?: number
-  max?: number
-  step?: number
-  value?: number
-  setValue?: (val: number) => void
+  title?: string
+  min: number
+  max: number
+  step: number
+  value: number
+  setValue: (val: number) => void
+  color?: string
   className?: string
 }
 
 function Slider(props: SliderProps) {
-  const {
-    label = "slider",
-    min = 0,
-    max = 100,
-    step = 1,
-    value = 35,
-    setValue = (val: number) => {},
-    className = "",
-  } = props
-
-  const [val, setVal] = useState(value)
+  const { title = "slider", min = 0, max = 100, step = 1, value, color, className = "" } = props
 
   const rangeRef = useRef<HTMLInputElement>()
   const rangeCB = useCallback((el: HTMLInputElement) => {
@@ -33,16 +24,16 @@ function Slider(props: SliderProps) {
 
   function handleInputChange(e: React.FormEvent<HTMLInputElement>) {
     updateBackgroundGradient()
-    setVal(parseFloat(e.currentTarget.value))
+    props.setValue(parseFloat(e.currentTarget.value))
     e.preventDefault()
   }
 
   function handleIncrement() {
-    setVal(Math.min(max, val + step))
+    props.setValue(Math.min(max, value + step))
   }
 
   function handleDecrement() {
-    setVal(Math.max(min, val - step))
+    props.setValue(Math.max(min, value - step))
   }
 
   function updateBackgroundGradient() {
@@ -58,16 +49,19 @@ function Slider(props: SliderProps) {
   updateBackgroundGradient()
 
   return (
-    <div className={`flex items-center w-40 h-full gap-1 select-none ${className}`}>
+    <div
+      style={{ "--flock-color": `${color}` } as React.CSSProperties}
+      className={`flex items-center w-40 h-full gap-1 select-none ${className}`}
+    >
       <Button icon="subtract" onClick={handleDecrement} className="w-4 h-4" />
 
       <input
-        title={label}
+        title={title}
         ref={rangeCB}
         type="range"
         min={min}
         max={max}
-        value={val}
+        value={value}
         step={step}
         onInput={handleInputChange}
         className="range h-[1px] w-full bg-[#D9D9D9] bg-no-repeat"
@@ -80,7 +74,7 @@ function Slider(props: SliderProps) {
         ${step <= 0.01 ? "w-14" : step <= 0.1 ? "w-10" : "w-6"}
         `}
       >
-        {val}
+        {value}
       </div>
     </div>
   )

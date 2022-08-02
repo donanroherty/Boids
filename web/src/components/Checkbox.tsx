@@ -1,17 +1,17 @@
-import { useState } from "react"
 import Icon from "./Icon"
 
 type CheckboxProps = {
-  label?: string
+  checked: boolean
+  setChecked: (val: boolean) => void
+  color?: string
   className?: string
 }
 
 function Checkbox(props: CheckboxProps) {
-  const { label, className = "" } = props
-  const [checked, setChecked] = useState(false)
+  const { checked: value, className = "" } = props
 
   function handleClick() {
-    setChecked(!checked)
+    props.setChecked(!value)
   }
 
   return (
@@ -20,7 +20,7 @@ function Checkbox(props: CheckboxProps) {
         onClick={handleClick}
         className="w-3 h-3 rounded-sm border-[1px] solid border-boids_scene_stroke bg-[#0C8CE9]"
       >
-        {checked ? (
+        {value ? (
           <div className="bg-[#0C8CE9] w-full h-full flex justify-center items-center">
             <Icon type="tick" color="white" className="w-full h-full" />
           </div>

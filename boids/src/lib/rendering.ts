@@ -2,8 +2,11 @@ import { Edge, ShapeRenderOptions } from "./colliders"
 import { QuadTreeNode } from "./pointQuadTree"
 import vec2, { Vec2 } from "./vec2"
 
-function scaleCanvasToPixelRatio(canvas: HTMLCanvasElement) {
-  const { width, height } = canvas
+function scaleCanvasToPixelRatio(
+  canvas: HTMLCanvasElement,
+  canvasResolution: { x: number; y: number }
+) {
+  const { x: width, y: height } = canvasResolution
   const rect = canvas.getBoundingClientRect()
   const pixelRatio = window.devicePixelRatio || 1
 

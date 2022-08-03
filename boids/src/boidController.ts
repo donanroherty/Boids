@@ -2,6 +2,8 @@ import { Boid } from "./boid"
 import debugHelper from "./lib/debugHelper"
 import vec2, { Vec2 } from "./lib/vec2.js"
 
+export type BoidController = ReturnType<typeof createBoidController>
+
 function createBoidController(canvas: HTMLCanvasElement) {
   let pointerDown = false
   let mouseX = 0
@@ -33,7 +35,7 @@ function createBoidController(canvas: HTMLCanvasElement) {
       const targetRadius = 2
       drawDebugPoint(
         selected.position.add(
-          selected.direction.scale(selected.config.detectionRange + 10 - targetRadius)
+          selected.direction.scale(selected.config.visionRange + 10 - targetRadius)
         ),
         targetRadius,
         {}

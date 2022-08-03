@@ -27,20 +27,20 @@ function createConfig(override = {}) {
     numBoids: 50,
     size: 5,
     fov: 340,
-    detectionRange: 50,
-    cohesionFactor: 0.2,
-    alignmentMaxStrength: 0.3,
-    separationMaxStrength: 10,
+    visionRange: 50,
+    cohesion: 0.2,
+    alignment: 0.3,
+    separation: 10,
     separationRange: 30,
     predatorAttack: 0.9,
     predatorAvoid: 40,
-    dragFactor: 0.01,
+    drag: 0.01,
     minSpeed: 50,
     maxSpeed: 150,
     obstacleAvoid: 5,
-    coheseWithOtherFlocks: false,
-    alignWithOtherFlocks: false,
-    separateFromOtherFlocks: false,
+    cohesionInteraction: false,
+    alignmentInteraction: false,
+    separationInteraction: false,
     isPredator: false,
     drawDebug: false,
     ...override,
@@ -77,22 +77,22 @@ function updateVisibleBoids(
   b.visibleBoids = []
   let inRange: Boid[] = []
 
-  if (boidHashTable) {
-    inRange = boidHashTable.boxQuery(
-      b.position,
-      b.config.detectionRange * 2,
-      drawDebug && isDebugBoid(b)
-    )
-  } else if (quadTree) {
-    let positions = circleQuery(quadTree, b.position, b.config.detectionRange)
+  if (quadTree) {
+    let positions = circleQuery(quadTree, b.position, b.config.visionRange)
     inRange = Array.from(entities).filter(
       (o) => positions.find((p) => p.x === o.position.x && p.y === o.position.y) !== undefined
+    )
+  } else if (boidHashTable) {
+    inRange = boidHashTable.boxQuery(
+      b.position,
+      b.config.visionRange * 2,
+      drawDebug && isDebugBoid(b)
     )
   } else {
     inRange = Array.from(entities).filter(
       (o) =>
         vec2(o.position.x, o.position.y).sub(b.position).lenSq() <
-        b.config.detectionRange * b.config.detectionRange
+        b.config.visionRange * b.config.visionRange
     )
   }
   b.visibleBoids = inRange.filter((o) => o !== b && canSee(b, o))
@@ -193,14 +193,14 @@ function drawDebug(b: Boid, canvas: HTMLCanvasElement) {
     b.position,
     vec2(b.velocity.x, b.velocity.y).norm(),
     b.config.fov,
-    b.config.detectionRange,
+    b.config.visionRange,
     b.config.color,
     0.03
   )
 }
 
 function cohesion(b: Boid, others: Boid[]) {
-  const flockmates = others.filter((o) => b.config.coheseWithOtherFlocks || sameFlock(b, o))
+  const flockmates = others.filter((o) => b.config.cohesionInteraction || sameFlock(b, o))
 
   if (flockmates.length === 0) return vec2()
 
@@ -212,11 +212,11 @@ function cohesion(b: Boid, others: Boid[]) {
     .div(vec2(flockmates.length, flockmates.length))
 
   const toGroupCenter = avgPos.sub(b.position)
-  return toGroupCenter.scale(b.config.cohesionFactor)
+  return toGroupCenter.scale(b.config.cohesion)
 }
 
 function alignment(b: Boid, others: Boid[]) {
-  const flockmates = others.filter((o) => b.config.alignWithOtherFlocks || sameFlock(b, o))
+  const flockmates = others.filter((o) => b.config.alignmentInteraction || sameFlock(b, o))
   if (flockmates.length === 0) return vec2()
 
   const avgVel = flockmates
@@ -224,12 +224,12 @@ function alignment(b: Boid, others: Boid[]) {
     .div(vec2(flockmates.length, flockmates.length))
 
   const diff = avgVel.sub(b.velocity)
-  return diff.clampedLen(0, b.config.alignmentMaxStrength)
+  return diff.clampedLen(0, b.config.alignment)
 }
 
 function separation(b: Boid, others: Boid[]) {
   const flockmates = others.filter((o) => {
-    if (!(sameFlock(b, o) || b.config.separateFromOtherFlocks)) return false
+    if (!(sameFlock(b, o) || b.config.separationInteraction)) return false
     const otherPos = o.position
     const distSq = vec2(b.position.x, b.position.y).sub(otherPos).lenSq()
     return distSq < b.config.separationRange * b.config.separationRange
@@ -239,7 +239,7 @@ function separation(b: Boid, others: Boid[]) {
     const ba = vec2(b.position.x, b.position.y).sub(o.position)
     const dist = ba.len()
     const perc = 1 - dist / b.config.separationRange
-    return acc.add(ba.norm().scale(b.config.separationMaxStrength * perc))
+    return acc.add(ba.norm().scale(b.config.separation * perc))
   }, vec2())
 }
 
@@ -249,7 +249,7 @@ function avoidPredator(b: Boid, others: Boid[]) {
   return predators.reduce((acc, other: Boid) => {
     const ba = b.position.sub(other.position)
     const dist = ba.len()
-    const perc = 1 - dist / b.config.detectionRange
+    const perc = 1 - dist / b.config.visionRange
     return acc.add(ba.norm().scale(b.config.predatorAvoid * perc))
   }, vec2())
 }
@@ -281,13 +281,13 @@ function chasePrey(b: Boid, others: Boid[]) {
 
 // todo: this should pick a safe path away from collisions, not just push away from them
 function avoidObstacles(b: Boid, geomHashTable: SpatialIndexSystem) {
-  const edges = getCollisionGeometry(b.position, b.config.detectionRange, geomHashTable, false)
+  const edges = getCollisionGeometry(b.position, b.config.visionRange, geomHashTable, false)
 
   const hits = raycastCone(
     b.position,
     b.direction,
     b.config.fov,
-    b.config.detectionRange,
+    b.config.visionRange,
     5,
     edges,
     false
@@ -303,7 +303,7 @@ function avoidObstacles(b: Boid, geomHashTable: SpatialIndexSystem) {
       if (dir.dot(toPt.norm()) > headingTollerance) return vec2()
 
       const dist = toPt.len()
-      const alpha = 1 - dist / (b.config.detectionRange + b.config.size * 0.5)
+      const alpha = 1 - dist / (b.config.visionRange + b.config.size * 0.5)
       const vel = toPt.norm().scale(b.config.obstacleAvoid * alpha)
 
       return vel
@@ -314,7 +314,7 @@ function avoidObstacles(b: Boid, geomHashTable: SpatialIndexSystem) {
 }
 
 function drag(b: Boid, vel: Vec2) {
-  return vel.scale(-b.config.dragFactor)
+  return vel.scale(-b.config.drag)
 }
 
 function sameFlock(a: Boid, b: Boid) {

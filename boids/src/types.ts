@@ -33,3 +33,6 @@ export type Line = {
   from: Point
   to: Point
 }
+
+export type BoidSearchOptimization = "Quad Tree" | "Spatial Index" | "None"
+export type ColliderSearchOptimization = "Spatial Index" | "None"

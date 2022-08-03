@@ -8,6 +8,7 @@ type Shape = {
 }
 
 type ShapeRenderOptions = {
+  visible?: boolean
   color?: string
   lineWidth?: number
   drawNormal?: boolean
@@ -22,8 +23,9 @@ type Edge = {
   normal: Vec2
 }
 
-function edgeCollider(start: Vec2, end: Vec2, options: ShapeRenderOptions): Shape {
+function edgeCollider(start: Vec2, end: Vec2, options: Partial<ShapeRenderOptions>): Shape {
   const opts: ShapeRenderOptions = {
+    visible: true,
     color: "black",
     lineWidth: 1,
     drawNormal: false,
@@ -37,7 +39,7 @@ function edgeCollider(start: Vec2, end: Vec2, options: ShapeRenderOptions): Shap
   const edge = { start, end, normal: normal }
 
   function draw(canvas: HTMLCanvasElement) {
-    drawLine(canvas, edge.start, edge.end, edge.normal, opts)
+    if (opts.visible) drawLine(canvas, edge.start, edge.end, edge.normal, opts)
   }
 
   return {
@@ -47,8 +49,9 @@ function edgeCollider(start: Vec2, end: Vec2, options: ShapeRenderOptions): Shap
   }
 }
 
-function polygonCollider(pts: Vec2[], options: ShapeRenderOptions): Shape {
+function polygonCollider(pts: Vec2[], options: Partial<ShapeRenderOptions>): Shape {
   const opts = {
+    visible: true,
     color: "black",
     lineWidth: 1,
     fill: false,
@@ -71,7 +74,7 @@ function polygonCollider(pts: Vec2[], options: ShapeRenderOptions): Shape {
   })
 
   function draw(canvas: HTMLCanvasElement) {
-    drawPolygon(canvas, edges, opts)
+    if (opts.visible) drawPolygon(canvas, edges, opts)
   }
 
   return {
@@ -81,8 +84,14 @@ function polygonCollider(pts: Vec2[], options: ShapeRenderOptions): Shape {
   }
 }
 
-function boxCollider(pos: Vec2, size: Vec2, options: ShapeRenderOptions, normalCW = false): Shape {
+function boxCollider(
+  pos: Vec2,
+  size: Vec2,
+  options: Partial<ShapeRenderOptions>,
+  normalCW = false
+): Shape {
   const opts: ShapeRenderOptions = {
+    visible: true,
     color: "black",
     lineWidth: 1,
     fill: false,

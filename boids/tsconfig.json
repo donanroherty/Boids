@@ -16,7 +16,10 @@
     "noImplicitReturns": true,
     "noImplicitAny": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+
+    "declaration": true,
+    "declarationMap": true
   },
-  "include": ["src"]
+  "include": ["src", "index.ts"]
 }

@@ -1,3 +1,4 @@
+import { BoidsApp } from "@boids/boids/src/app"
 import { Boid, renderBoid, updateBoid, updateVisibleBoids } from "./boid.js"
 import { boxCollider, Edge, polygonCollider, Shape } from "./lib/colliders"
 import vec2, { Vec2 } from "./lib/vec2.js"
@@ -7,7 +8,7 @@ import { createSpatialIndex, SpatialIndexSystem } from "./lib/spatialHash.js"
 
 export type Scene = ReturnType<typeof createScene>
 
-function createScene(canvas: HTMLCanvasElement) {
+function createScene(canvas: HTMLCanvasElement, app: BoidsApp) {
   let entities: Set<Boid> = new Set()
   let geometry: Set<Shape> = new Set()
 
@@ -23,15 +24,23 @@ function createScene(canvas: HTMLCanvasElement) {
 
   return {
     entities,
-    shapes: geometry,
+    geometry,
     getSceneSize: () => getSceneSize(canvas),
     update,
   }
 
   function update(deltatime: number, quadTree: QuadTreeNode | null, isPaused: boolean) {
-    updateBoidHashTable(entities, boidHashTable)
-    // boidHashTable.draw(canvas)
-    // geomHashTable.draw(canvas)
+    if (app.getBoidSearchOptimization() === "Spatial Index") {
+      updateBoidHashTable(entities, boidHashTable)
+      if (app.getDrawBoidSearchOptimization()) boidHashTable.draw(canvas)
+    }
+
+    if (
+      app.getColliderSearchOptimization() === "Spatial Index" &&
+      app.getDrawColliderSearchOptimization()
+    ) {
+      geomHashTable.draw(canvas)
+    }
 
     entities.forEach((b) => updateVisibleBoids(b, entities, quadTree, boidHashTable))
     entities.forEach((b) => updateBoid(b, deltatime, getSceneSize(canvas), geomHashTable, isPaused))
@@ -55,20 +64,20 @@ function getSceneSize(canvas: HTMLCanvasElement) {
 function createShapes(shapes: Set<Shape>, sceneSize: Vec2) {
   const geometry = getGeometry()
   geometry.reversePathPointOrder([0, 1, 2, 3, 4, 5])
-  geometry.scale(vec2(4, 4))
-  geometry.offset(vec2(80, 165))
+  geometry.scale(vec2(3.3, 3.3))
+  geometry.offset(vec2(135, 245))
 
   // create geometry in scene
   geometry.getPaths().forEach((ps) => {
-    const shape = polygonCollider(ps, { fill: false, drawNormal: true })
+    const shape = polygonCollider(ps, { fill: false, drawNormal: false, color: "rgb(160,160,160)" })
     shapes.add(shape)
   })
 
-  const padding = 1
+  const padding = 2
   const sceneBox = boxCollider(
     vec2(padding, padding),
     sceneSize.sub(vec2(padding * 2, padding * 2)),
-    { color: "purple", lineWidth: 1, drawNormal: true },
+    { color: "purple", lineWidth: 1, drawNormal: true, visible: false },
     true
   )
   shapes.add(sceneBox)

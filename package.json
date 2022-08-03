@@ -1,8 +1,19 @@
 {
-  "name": "boids",
+  "name": "@boids/root",
   "description": "An implementation of Craig Reynolds boids flocking algorithm",
   "version": "1.2.0",
   "author": "Ronan Doherty",
   "license": "MIT",
-  "type": "module"
+  "type": "module",
+  "workspaces": [
+    "boids",
+    "web"
+  ],
+  "scripts": {
+    "dev": "cd web && npm run dev"
+  },
+  "devDependencies": {},
+  "dependencies": {
+    "@types/tailwindcss": "^3.1.0"
+  }
 }

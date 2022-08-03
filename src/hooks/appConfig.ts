@@ -1,6 +1,5 @@
-import { BoidSearchOptimization, ColliderSearchOptimization } from "./../../../boids/src/types"
 import { useEffect, useState } from "react"
-import { BoidsApp } from "@boids/boids/src/app"
+import { BoidsApp } from "../boids/src/app"
 
 function useAppConfig(boidsApp: BoidsApp) {
   const [boidSearchOptimization, setBoidSearchOptimization] = useState(
@@ -17,9 +16,9 @@ function useAppConfig(boidsApp: BoidsApp) {
   )
 
   useEffect(() => {
-    boidsApp.setBoidSearchOptimization(boidSearchOptimization as BoidSearchOptimization)
+    boidsApp.setBoidSearchOptimization(boidSearchOptimization)
     boidsApp.setDrawBoidSearchOptimization(drawBoidSearchOptimization)
-    boidsApp.setColliderSearchOptimization(colliderSearchOptimization as ColliderSearchOptimization)
+    boidsApp.setColliderSearchOptimization(colliderSearchOptimization)
     boidsApp.setDrawColliderSearchOptimization(drawColliderSearchOptimization)
   }, [
     boidSearchOptimization,

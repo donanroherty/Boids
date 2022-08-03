@@ -169,5 +169,25 @@ function rectContainsPoint(pt: Point, rect: Rect) {
   return res
 }
 
-export { pointQuadTree, circleQuery }
+function drawQuadTree(quadTree: QuadTreeNode, canvas: HTMLCanvasElement) {
+  const ctx = canvas.getContext("2d")
+  if (!ctx) return
+  ctx.beginPath()
+  ctx.rect(quadTree.bounds.x, quadTree.bounds.y, quadTree.bounds.w, quadTree.bounds.h)
+  ctx.strokeStyle = "blue"
+  ctx.lineWidth = 1
+  ctx.stroke()
+
+  const subdivs = quadTree.subdivisions
+  if (subdivs) {
+    const { bottomLeft, topLeft, topRight, bottomRight } = subdivs
+
+    drawQuadTree(bottomLeft, canvas)
+    drawQuadTree(topLeft, canvas)
+    drawQuadTree(topRight, canvas)
+    drawQuadTree(bottomRight, canvas)
+  }
+}
+
+export { pointQuadTree, circleQuery, drawQuadTree }
 export type { QuadTreeNode }

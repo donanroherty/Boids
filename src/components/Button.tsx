@@ -1,3 +1,4 @@
+import React from "react"
 import Icon, { IconType } from "./Icon"
 
 type ButtonProps = {

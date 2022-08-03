@@ -1,8 +1,8 @@
 import { useCallback, useState } from "react"
-import { createBoidsApp } from "@boids/boids"
-import { BoidsApp } from "@boids/boids/src/app"
 import UI from "./UI"
 import { colors } from "../utils"
+import { createBoidsApp, BoidsApp } from "../boids/src/app"
+import React from "react"
 
 function Boids() {
   const [boidsApp] = useState<BoidsApp>(createBoidsApp())

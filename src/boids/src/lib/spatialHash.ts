@@ -10,9 +10,9 @@ export type Cell = {
 }
 
 export type Grid = Map<string, Cell>
-export type SpatialIndexSystem = ReturnType<typeof createSpatialIndex>
+export type SpatialIndexSystem = ReturnType<typeof createSpatialHashTable>
 
-function createSpatialIndex(cellSize: number, gridSize: Vec2) {
+function createSpatialHashTable(cellSize: number, gridSize: Vec2) {
   const grid: Grid = new Map<string, Cell>()
 
   return {
@@ -176,4 +176,4 @@ function getRectEdges(rect: Rect) {
   return [top, right, bottom, left]
 }
 
-export { createSpatialIndex }
+export { createSpatialHashTable as createSpatialIndex }

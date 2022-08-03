@@ -1,5 +1,5 @@
-import { Tick } from "@boids/boids/src/tick"
-import { useEffect, useRef, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
+import { Tick } from "../boids/src/tick"
 
 type FPSCounterProps = {
   tick: Tick

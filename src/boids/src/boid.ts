@@ -5,7 +5,7 @@ import { drawArcCone, drawBoid, drawCircle } from "./lib/rendering.js"
 import { closestPointOnLine, raycastCone } from "./lib/utils.js"
 import { getFirstSweptHit } from "./lib/utils"
 import vec2, { Vec2 } from "./lib/vec2.js"
-import { Hit } from "./types.js"
+import { BoidSearchOpt, Hit } from "./types.js"
 import debugHelper from "./lib/debugHelper"
 
 type BoidConfig = ReturnType<typeof createConfig>
@@ -70,6 +70,7 @@ function createBoid(
 function updateVisibleBoids(
   b: Boid,
   entities: Set<Boid>,
+  optimization: BoidSearchOpt,
   quadTree: QuadTreeNode | null,
   boidHashTable: SpatialIndexSystem,
   drawDebug: boolean = false
@@ -77,18 +78,19 @@ function updateVisibleBoids(
   b.visibleBoids = []
   let inRange: Boid[] = []
 
-  if (quadTree) {
-    let positions = circleQuery(quadTree, b.position, b.config.visionRange)
-    inRange = Array.from(entities).filter(
-      (o) => positions.find((p) => p.x === o.position.x && p.y === o.position.y) !== undefined
-    )
-  } else if (boidHashTable) {
+  if (optimization === BoidSearchOpt.SpatialHash) {
     inRange = boidHashTable.boxQuery(
       b.position,
       b.config.visionRange * 2,
       drawDebug && isDebugBoid(b)
     )
+  } else if (optimization === BoidSearchOpt.QuadTree && quadTree) {
+    let positions = circleQuery(quadTree, b.position, b.config.visionRange)
+    inRange = Array.from(entities).filter(
+      (o) => positions.find((p) => p.x === o.position.x && p.y === o.position.y) !== undefined
+    )
   } else {
+    // brute force
     inRange = Array.from(entities).filter(
       (o) =>
         vec2(o.position.x, o.position.y).sub(b.position).lenSq() <

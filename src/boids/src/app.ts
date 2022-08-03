@@ -1,26 +1,25 @@
-import createTick, { Tick } from "./tick"
+import createTick from "./tick"
 import { createFlockHandler, FlockHandler } from "./flockHandler"
-import { pointQuadTree, QuadTreeNode } from "./lib/pointQuadTree.js"
-import { drawQuadTree, scaleCanvasToPixelRatio } from "./lib/rendering"
+import { scaleCanvasToPixelRatio } from "./lib/rendering"
 import debugHelper from "./lib/debugHelper"
 import { BoidController, createBoidController } from "./boidController"
 import { createScene, Scene } from "./scene.js"
-import { Boid } from "./boid"
-import { BoidSearchOptimization, ColliderSearchOptimization } from "./types"
+
+import { BoidSearchOpt, ColliderSearchOpt } from "./types"
 
 type BoidsApp = ReturnType<typeof createBoidsApp>
 
 function createBoidsApp() {
   let canvas: HTMLCanvasElement
-  let quadTree: QuadTreeNode | null = null
+
   let scene: Scene
   let boidController: BoidController
   let flockHandler: FlockHandler
   let tick = createTick()
   let isPaused: boolean
-  let boidSearchOptimization: BoidSearchOptimization = "Spatial Index"
+  let boidSearchOptimization: BoidSearchOpt = BoidSearchOpt.SpatialHash
   let drawBoidSearchOptimization = false
-  let colliderSearchOptimization: ColliderSearchOptimization = "Spatial Index"
+  let colliderSearchOptimization: ColliderSearchOpt = ColliderSearchOpt.SpatialHash
   let drawColliderSearchOptimization = false
 
   const app = {
@@ -56,25 +55,14 @@ function createBoidsApp() {
 
   function update(deltatime: number) {
     clearCanvas()
-    updateQuadTree()
+
     if (boidController) boidController.update(scene.entities)
-    scene.update(deltatime, quadTree, app.getPaused())
+    scene.update(deltatime, app.getPaused())
   }
 
   function clearCanvas() {
     const ctx = canvas.getContext("2d")
     if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height)
-  }
-
-  function updateQuadTree() {
-    if (boidSearchOptimization === "Quad Tree") {
-      const sceneSize = scene.getSceneSize()
-      const positions = Array.from(scene.entities).map((b: Boid) => b.position.toPoint())
-      quadTree = pointQuadTree({ x: 0, y: 0, w: sceneSize.x, h: sceneSize.y }, 8, positions)
-      if (drawBoidSearchOptimization) {
-        drawQuadTree(quadTree, canvas)
-      }
-    } else quadTree = null
   }
 
   function getFlockhandler(): FlockHandler {
@@ -97,7 +85,7 @@ function createBoidsApp() {
   function getBoidSearchOptimization() {
     return boidSearchOptimization
   }
-  function setBoidSearchOptimization(val: BoidSearchOptimization) {
+  function setBoidSearchOptimization(val: BoidSearchOpt) {
     boidSearchOptimization = val
   }
   function getDrawBoidSearchOptimization() {
@@ -111,7 +99,7 @@ function createBoidsApp() {
   function getColliderSearchOptimization() {
     return colliderSearchOptimization
   }
-  function setColliderSearchOptimization(val: ColliderSearchOptimization) {
+  function setColliderSearchOptimization(val: ColliderSearchOpt) {
     colliderSearchOptimization = val
   }
   function getDrawColliderSearchOptimization() {
@@ -122,5 +110,5 @@ function createBoidsApp() {
   }
 }
 
-export default createBoidsApp
+export { createBoidsApp }
 export type { BoidsApp }

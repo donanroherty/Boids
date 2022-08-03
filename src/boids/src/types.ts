@@ -34,5 +34,13 @@ export type Line = {
   to: Point
 }
 
-export type BoidSearchOptimization = "Quad Tree" | "Spatial Index" | "None"
-export type ColliderSearchOptimization = "Spatial Index" | "None"
+export enum BoidSearchOpt {
+  SpatialHash = "Spatial Hash",
+  QuadTree = "Quad Tree",
+  None = "None",
+}
+
+export enum ColliderSearchOpt {
+  SpatialHash = "Spatial Hash",
+  None = "None",
+}

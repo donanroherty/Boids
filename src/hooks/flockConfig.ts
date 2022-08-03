@@ -1,6 +1,6 @@
-import { BoidsApp } from "@boids/boids/src/app"
-import { BoidConfig } from "@boids/boids/src/boid"
 import { useState, useEffect } from "react"
+import { BoidsApp } from "../boids/src/app"
+import { BoidConfig } from "../boids/src/boid"
 
 const defaultConfig = {
   color: "black",

@@ -1,5 +1,4 @@
 import { Edge, ShapeRenderOptions } from "./colliders"
-import { QuadTreeNode } from "./pointQuadTree"
 import vec2, { Vec2 } from "./vec2"
 
 function scaleCanvasToPixelRatio(
@@ -127,26 +126,6 @@ function drawArcCone(
 
   ctx.globalAlpha = 1
   ctx.restore()
-}
-
-function drawQuadTree(quadTree: QuadTreeNode, canvas: HTMLCanvasElement) {
-  const ctx = canvas.getContext("2d")
-  if (!ctx) return
-  ctx.beginPath()
-  ctx.rect(quadTree.bounds.x, quadTree.bounds.y, quadTree.bounds.w, quadTree.bounds.h)
-  ctx.strokeStyle = "blue"
-  ctx.lineWidth = 1
-  ctx.stroke()
-
-  const subdivs = quadTree.subdivisions
-  if (subdivs) {
-    const { bottomLeft, topLeft, topRight, bottomRight } = subdivs
-
-    drawQuadTree(bottomLeft, canvas)
-    drawQuadTree(topLeft, canvas)
-    drawQuadTree(topRight, canvas)
-    drawQuadTree(bottomRight, canvas)
-  }
 }
 
 function drawPolygon(
@@ -294,7 +273,6 @@ export {
   scaleCanvasToPixelRatio,
   drawBoid,
   drawCircle,
-  drawQuadTree,
   drawArcCone,
   drawLine,
   drawPolygon,

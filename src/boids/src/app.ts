@@ -11,7 +11,6 @@ type BoidsApp = ReturnType<typeof createBoidsApp>
 
 function createBoidsApp() {
   let canvas: HTMLCanvasElement
-
   let scene: Scene
   let boidController: BoidController
   let flockHandler: FlockHandler
@@ -24,6 +23,7 @@ function createBoidsApp() {
 
   const app = {
     init,
+    getScene,
     getFlockhandler,
     getTick,
     getPaused,
@@ -63,6 +63,10 @@ function createBoidsApp() {
   function clearCanvas() {
     const ctx = canvas.getContext("2d")
     if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height)
+  }
+
+  function getScene() {
+    return scene
   }
 
   function getFlockhandler(): FlockHandler {

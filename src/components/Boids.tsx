@@ -3,6 +3,10 @@ import UI from "./UI"
 import { colors } from "../utils"
 import { createBoidsApp, BoidsApp } from "../boids/src/app"
 import React from "react"
+import { getGeometry } from "../boids/src/scene-geo"
+import vec2 from "../boids/src/lib/vec2"
+
+import { polygonCollider, boxCollider } from "../boids/src/lib/colliders"
 
 function Boids() {
   const [boidsApp] = useState<BoidsApp>(createBoidsApp())
@@ -13,37 +17,71 @@ function Boids() {
     if (!canvas) return
 
     boidsApp.init(canvas, canvasResolution)
+    buildScene()
     setIsInitialized(true)
 
-    // Prey
-    boidsApp.getFlockhandler().addFlock({
-      color: colors[0],
-      numBoids: 50,
-      visionRange: 50,
-      alignment: 1.5,
-      separationRange: 20,
-      predatorAvoid: 100,
-      minSpeed: 30,
-      maxSpeed: 200,
-      size: 4,
-      cohesionInteraction: false,
-      alignmentInteraction: false,
-      separationInteraction: true,
-    })
-    // Predator
-    boidsApp.getFlockhandler().addFlock({
-      color: colors[1],
-      numBoids: 1,
-      visionRange: 90,
-      fov: 90,
-      minSpeed: 90,
-      maxSpeed: 200,
-      drag: 0.04,
-      size: 8,
-      predatorAttack: 0.3,
-      predatorAvoid: 50,
-      isPredator: true,
-    })
+    function buildScene() {
+      /** Create scene geometry */
+
+      const geometry = getGeometry()
+      geometry.reversePathPointOrder([0, 1, 2, 3, 4, 5])
+      geometry.scale(vec2(3.3, 3.3))
+      geometry.offset(vec2(135, 245))
+
+      // create geometry in scene
+      geometry.getPaths().forEach((ps) => {
+        const shape = polygonCollider(ps, {
+          fill: false,
+          drawNormal: false,
+          color: "rgb(160,160,160)",
+        })
+        boidsApp.getScene().addGeometry(shape)
+      })
+
+      const padding = 2
+      const sceneBox = boxCollider(
+        vec2(padding, padding),
+        boidsApp
+          .getScene()
+          .getSceneSize()
+          .sub(vec2(padding * 2, padding * 2)),
+        { color: "purple", lineWidth: 1, drawNormal: true, visible: false },
+        true
+      )
+      boidsApp.getScene().addGeometry(sceneBox)
+
+      /** Create boids */
+
+      // Prey
+      boidsApp.getFlockhandler().addFlock({
+        color: colors[0],
+        numBoids: 50,
+        visionRange: 50,
+        alignment: 1.5,
+        separationRange: 20,
+        predatorAvoid: 100,
+        minSpeed: 30,
+        maxSpeed: 200,
+        size: 4,
+        cohesionInteraction: false,
+        alignmentInteraction: false,
+        separationInteraction: true,
+      })
+      // Predator
+      boidsApp.getFlockhandler().addFlock({
+        color: colors[1],
+        numBoids: 1,
+        visionRange: 90,
+        fov: 90,
+        minSpeed: 90,
+        maxSpeed: 200,
+        drag: 0.04,
+        size: 8,
+        predatorAttack: 0.3,
+        predatorAvoid: 50,
+        isPredator: true,
+      })
+    }
   }, [])
 
   const dimensionsStyle = { width: `${canvasResolution.x}px`, height: `${canvasResolution.y}px` }

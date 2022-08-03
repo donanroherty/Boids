@@ -1,4 +1,4 @@
-import createTick, { Tick } from "./lib/tick"
+import createTick, { Tick } from "./tick"
 import { createFlockHandler, FlockHandler } from "./flockHandler"
 import { pointQuadTree, QuadTreeNode } from "./lib/pointQuadTree.js"
 import { drawQuadTree, scaleCanvasToPixelRatio } from "./lib/rendering"
@@ -16,7 +16,7 @@ function createBoidsApp() {
   let scene: Scene
   let boidController: BoidController
   let flockHandler: FlockHandler
-  let tick: Tick | undefined
+  let tick = createTick()
   let isPaused: boolean
   let boidSearchOptimization: BoidSearchOptimization = "Spatial Index"
   let drawBoidSearchOptimization = false
@@ -51,8 +51,7 @@ function createBoidsApp() {
     boidController = createBoidController(canvas)
     flockHandler = createFlockHandler(scene.entities, scene.getSceneSize)
 
-    tick = createTick(update)
-    tick.start()
+    tick.subscribe(update)
   }
 
   function update(deltatime: number) {

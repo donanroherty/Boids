@@ -160,6 +160,7 @@ function Sidebar(props: SidebarProps) {
               content={() => {
                 return (
                   <>
+                    Force
                     <Slider
                       min={0}
                       max={20}
@@ -168,6 +169,7 @@ function Sidebar(props: SidebarProps) {
                       setValue={flockCfg.setSeparation}
                       color={flockCfg.color}
                     />
+                    Range
                     <Slider
                       min={0}
                       max={50}

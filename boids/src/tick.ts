@@ -1,20 +1,27 @@
 export type Tick = ReturnType<typeof createTick>
 
-function createTick(tickFn: (dt: number) => void) {
+function createTick() {
   const targetFPS = 60
   let timeout: number
   let lastRealDelta: number
+  let tickFunctions: Array<(dt: number) => void> = []
 
-  function start() {
-    doTick_R(performance.now())
+  doTick_R(performance.now())
+
+  function subscribe(fn: (dt: number) => void) {
+    tickFunctions.push(fn)
+  }
+
+  function unsubscribe(fn: (dt: number) => void) {
+    tickFunctions = tickFunctions.filter((tf) => tf !== fn)
   }
 
   function doTick_R(timestamp: number) {
     const now = performance.now()
 
-    tickFn(1 / targetFPS)
+    tickFunctions.forEach((tf) => tf(1 / targetFPS))
 
-    timeout = setTimeout(() => {
+    timeout = window.setTimeout(() => {
       doTick_R(now)
       lastRealDelta = now - timestamp
     }, 1000 / targetFPS)
@@ -23,7 +30,8 @@ function createTick(tickFn: (dt: number) => void) {
   }
 
   return {
-    start,
+    subscribe,
+    unsubscribe,
     targetFPS,
     getTimeout: () => timeout,
     getLastRealDelta: () => lastRealDelta,

@@ -96,14 +96,22 @@ function Sidebar(props: SidebarProps) {
               title="Vision Range"
               content={() => {
                 return (
-                  <Slider
-                    min={0}
-                    max={300}
-                    step={1}
-                    value={flockCfg.visionRange}
-                    setValue={flockCfg.setVisionRange}
-                    color={flockCfg.color}
-                  />
+                  <>
+                    <Slider
+                      min={0}
+                      max={300}
+                      step={1}
+                      value={flockCfg.visionRange}
+                      setValue={flockCfg.setVisionRange}
+                      color={flockCfg.color}
+                    />
+                    Draw
+                    <Checkbox
+                      checked={flockCfg.drawDebug}
+                      setChecked={flockCfg.setDrawDebug}
+                      color={flockCfg.color}
+                    />
+                  </>
                 )
               }}
             />
@@ -112,14 +120,22 @@ function Sidebar(props: SidebarProps) {
               title="Field Of View"
               content={() => {
                 return (
-                  <Slider
-                    min={0}
-                    max={360}
-                    step={1}
-                    value={flockCfg.fov}
-                    setValue={flockCfg.setFOV}
-                    color={flockCfg.color}
-                  />
+                  <>
+                    <Slider
+                      min={0}
+                      max={360}
+                      step={1}
+                      value={flockCfg.fov}
+                      setValue={flockCfg.setFOV}
+                      color={flockCfg.color}
+                    />
+                    Draw
+                    <Checkbox
+                      checked={flockCfg.drawDebug}
+                      setChecked={flockCfg.setDrawDebug}
+                      color={flockCfg.color}
+                    />
+                  </>
                 )
               }}
             />

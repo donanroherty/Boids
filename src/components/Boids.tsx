@@ -66,6 +66,7 @@ function Boids() {
         cohesionInteraction: false,
         alignmentInteraction: false,
         separationInteraction: true,
+        drawDebug: true,
       })
       // Predator
       boidsApp.getFlockhandler().addFlock({
@@ -80,6 +81,7 @@ function Boids() {
         predatorAttack: 0.3,
         predatorAvoid: 50,
         isPredator: true,
+        drawDebug: true,
       })
     }
   }, [])

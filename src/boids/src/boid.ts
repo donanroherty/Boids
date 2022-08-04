@@ -39,7 +39,7 @@ function createConfig(override = {}) {
     alignmentInteraction: false,
     separationInteraction: false,
     isPredator: false,
-    drawDebug: true,
+    drawDebug: false,
     ...override,
   }
 }
@@ -72,12 +72,7 @@ function updateVisibleBoids(b: Boid) {
   b.visibleBoids = []
 
   b.visibleBoids = scene
-    .getBoidsInRange(
-      b.position,
-      b.config.visionRange,
-      b.config.drawDebug && isDebugBoid(b),
-      b.config.color
-    )
+    .getBoidsInRange(b.position, b.config.visionRange, isDebugBoid(b), b.config.color)
     .filter((o) => o !== b && canSee(b, o))
 }
 
@@ -156,7 +151,7 @@ function renderBoid(b: Boid, canvas: HTMLCanvasElement) {
     b.hasPrey
   )
 
-  if (isDebugBoid(b)) drawDebug(b, canvas)
+  if (isDebugBoid(b) && b.config.drawDebug) drawDebug(b, canvas)
 }
 
 function drawDebug(b: Boid, canvas: HTMLCanvasElement) {
@@ -369,7 +364,7 @@ function sweepAndSlidePosition(
 }
 
 function isDebugBoid(b: Boid) {
-  return b.index === 0 && b.config.drawDebug
+  return b.index === 0
 }
 
 export { createBoid, updateVisibleBoids, updateBoid, renderBoid, createConfig }

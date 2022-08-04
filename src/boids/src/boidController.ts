@@ -81,14 +81,14 @@ function createBoidController(canvas: HTMLCanvasElement) {
     draggingSelection = false
   }
 
-  function onPointerDown(event: PointerEvent) {
+  function onPointerDown(_: PointerEvent) {
     pointerDown = true
     if (!dragging && hoveredBoid) {
       startDrag()
     }
   }
 
-  function onPointerUp(event: PointerEvent) {
+  function onPointerUp(_: PointerEvent) {
     pointerDown = false
     endDrag()
   }

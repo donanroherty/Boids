@@ -1,12 +1,12 @@
-import { BoidsApp } from "@boids/boids/src/app"
-import { useState } from "react"
+import React, { useState } from "react"
 import { randColor } from "../utils"
-import { BoidConfig } from "@boids/boids/src/boid"
 import Button from "./Button"
 import TabBar from "./TabBar"
 import Tooltip from "./Tooltip"
 import Sidebar from "./Sidebar"
 import FPSCounter from "./FPSCounter"
+import { BoidConfig } from "../boids/src/boid"
+import { BoidsApp } from "../boids/src/app"
 
 type UIProps = {
   boidsApp: BoidsApp

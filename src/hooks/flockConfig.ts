@@ -1,34 +1,10 @@
-import { BoidsApp } from "@boids/boids/src/app"
-import { BoidConfig } from "@boids/boids/src/boid"
-import { useState, useEffect } from "react"
-
-const defaultConfig = {
-  color: "black",
-  numBoids: 50,
-  size: 5,
-  fov: 340,
-  visionRange: 50,
-  cohesion: 0.2,
-  alignment: 0.3,
-  separation: 10,
-  separationRange: 30,
-  predatorAttack: 0.9,
-  predatorAvoid: 40,
-  drag: 0.01,
-  minSpeed: 50,
-  maxSpeed: 150,
-  obstacleAvoid: 5,
-  cohesionInteraction: false,
-  alignmentInteraction: false,
-  separationInteraction: false,
-  isPredator: false,
-  drawDebug: false,
-}
-
-let prevSelectedFlock = -1
+import { useState, useEffect, useRef } from "react"
+import { BoidsApp } from "../boids/src/app"
+import { BoidConfig } from "../boids/src/boid"
 
 function useFlockConfig(boidsApp: BoidsApp, selectedFlock: number) {
   const cfg = boidsApp.getFlockhandler().getFlockConfig(selectedFlock) as BoidConfig
+  const prevSelectedFlock = useRef(-1)
 
   const [color, setColor] = useState(cfg.color)
   const [numBoids, setNumBoids] = useState(cfg.numBoids)
@@ -82,10 +58,10 @@ function useFlockConfig(boidsApp: BoidsApp, selectedFlock: number) {
   useEffect(() => {
     // handle flock selection changed
     {
-      if (selectedFlock !== prevSelectedFlock) {
+      if (selectedFlock !== prevSelectedFlock.current) {
         const cfg = boidsApp.getFlockhandler().getFlockConfig(selectedFlock) as BoidConfig
         setAll(cfg)
-        prevSelectedFlock = selectedFlock
+        prevSelectedFlock.current = selectedFlock
         return
       }
     }

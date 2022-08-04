@@ -1,12 +1,9 @@
-import { SpatialIndexSystem } from "./lib/spatialHash"
-import { circleQuery } from "./lib/pointQuadTree"
-import { QuadTreeNode } from "./lib/pointQuadTree.js"
 import { drawArcCone, drawBoid, drawCircle } from "./lib/rendering.js"
 import { closestPointOnLine, raycastCone } from "./lib/utils.js"
 import { getFirstSweptHit } from "./lib/utils"
 import vec2, { Vec2 } from "./lib/vec2.js"
 import { Hit } from "./types.js"
-import debugHelper from "./lib/debugHelper"
+import { Scene } from "./scene"
 
 type BoidConfig = ReturnType<typeof createConfig>
 type Boid = {
@@ -47,13 +44,17 @@ function createConfig(override = {}) {
   }
 }
 
+let scene: Scene
+
 function createBoid(
   position: Vec2,
   velocity: Vec2,
   flock: number,
   index: number,
-  config: BoidConfig
+  config: BoidConfig,
+  inScene: Scene
 ): Boid {
+  scene = inScene
   return {
     position,
     velocity,
@@ -67,44 +68,15 @@ function createBoid(
   }
 }
 
-function updateVisibleBoids(
-  b: Boid,
-  entities: Set<Boid>,
-  quadTree: QuadTreeNode | null,
-  boidHashTable: SpatialIndexSystem,
-  drawDebug: boolean = false
-) {
+function updateVisibleBoids(b: Boid) {
   b.visibleBoids = []
-  let inRange: Boid[] = []
 
-  if (quadTree) {
-    let positions = circleQuery(quadTree, b.position, b.config.visionRange)
-    inRange = Array.from(entities).filter(
-      (o) => positions.find((p) => p.x === o.position.x && p.y === o.position.y) !== undefined
-    )
-  } else if (boidHashTable) {
-    inRange = boidHashTable.boxQuery(
-      b.position,
-      b.config.visionRange * 2,
-      drawDebug && isDebugBoid(b)
-    )
-  } else {
-    inRange = Array.from(entities).filter(
-      (o) =>
-        vec2(o.position.x, o.position.y).sub(b.position).lenSq() <
-        b.config.visionRange * b.config.visionRange
-    )
-  }
-  b.visibleBoids = inRange.filter((o) => o !== b && canSee(b, o))
+  b.visibleBoids = scene
+    .getBoidsInRange(b.position, b.config.visionRange, isDebugBoid(b), b.config.color)
+    .filter((o) => o !== b && canSee(b, o))
 }
 
-function updateBoid(
-  b: Boid,
-  deltatime: number,
-  sceneSize: Vec2,
-  geomHashTable: SpatialIndexSystem,
-  isPaused: boolean
-) {
+function updateBoid(b: Boid, deltatime: number, sceneSize: Vec2, isPaused: boolean) {
   // update forces
   let vel = vec2(b.velocity.x, b.velocity.y)
   vel = vel.add(cohesion(b, b.visibleBoids))
@@ -112,7 +84,7 @@ function updateBoid(
   vel = vel.add(separation(b, b.visibleBoids))
   vel = vel.add(avoidPredator(b, b.visibleBoids))
   vel = vel.add(chasePrey(b, b.visibleBoids))
-  vel = vel.add(avoidObstacles(b, geomHashTable))
+  vel = vel.add(avoidObstacles(b))
   vel = vel.add(drag(b, vel))
   vel = vel.clampedLen(b.config.minSpeed, b.config.maxSpeed)
 
@@ -124,9 +96,9 @@ function updateBoid(
     vel,
     deltatime,
     b.config.size * 0.5,
-    geomHashTable,
     0.1,
-    2
+    2,
+    b
   )
 
   b.velocity.set(velocity)
@@ -179,7 +151,7 @@ function renderBoid(b: Boid, canvas: HTMLCanvasElement) {
     b.hasPrey
   )
 
-  if (isDebugBoid(b)) drawDebug(b, canvas)
+  if (isDebugBoid(b) && b.config.drawDebug) drawDebug(b, canvas)
 }
 
 function drawDebug(b: Boid, canvas: HTMLCanvasElement) {
@@ -280,8 +252,13 @@ function chasePrey(b: Boid, others: Boid[]) {
 }
 
 // todo: this should pick a safe path away from collisions, not just push away from them
-function avoidObstacles(b: Boid, geomHashTable: SpatialIndexSystem) {
-  const edges = getCollisionGeometry(b.position, b.config.visionRange, geomHashTable, false)
+function avoidObstacles(b: Boid) {
+  const edges = scene.getCollisionGeometryInRange(
+    b.position,
+    b.config.visionRange,
+    isDebugBoid(b),
+    b.config.color
+  )
 
   const hits = raycastCone(
     b.position,
@@ -326,9 +303,9 @@ function sweepAndSlidePosition(
   velocity: Vec2,
   deltatime: number,
   rad: number,
-  geomHashTable: SpatialIndexSystem,
   padding: number,
-  maxBounces: number
+  maxBounces: number,
+  b: Boid
 ) {
   let from = start.clone()
   let vel = velocity.clone()
@@ -342,7 +319,12 @@ function sweepAndSlidePosition(
 
   // must do minimum 1 sweep check
   for (let i = 0; i < maxBounces + 1; i++) {
-    const collisionGeo = getCollisionGeometry(from, (len + rad) * deltatime, geomHashTable, false)
+    const collisionGeo = scene.getCollisionGeometryInRange(
+      from,
+      (len + rad) * deltatime,
+      isDebugBoid(b),
+      b.config.color
+    )
 
     const hit: Hit | undefined = getFirstSweptHit(from, to, rad, collisionGeo)
     if (!hit) break
@@ -381,32 +363,8 @@ function sweepAndSlidePosition(
   return [to, outVelocity] // position, velocity
 }
 
-function getCollisionGeometry(
-  pos: Vec2,
-  radius: number,
-  geomHashTable: SpatialIndexSystem,
-  drawDebug = false
-) {
-  const edges = geomHashTable.boxQuery(pos, radius * 2, drawDebug).filter((edge) => {
-    // boid is on the colliding side of the edge
-    const ptToBoid = pos.sub(edge.start).norm()
-    if (ptToBoid.dot(edge.normal) < 0) return false
-
-    return true
-  })
-
-  if (drawDebug) {
-    edges.forEach((edge) => {
-      debugHelper.drawDebugLine(edge.start, edge.end, { lineWidth: 3 })
-      debugHelper.drawDebugPoint(edge.start, 2, {})
-    })
-  }
-
-  return edges
-}
-
 function isDebugBoid(b: Boid) {
-  return b.index === 0 && b.config.drawDebug
+  return b.index === 0
 }
 
 export { createBoid, updateVisibleBoids, updateBoid, renderBoid, createConfig }

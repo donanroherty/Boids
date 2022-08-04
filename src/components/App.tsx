@@ -1,4 +1,5 @@
-import Boids from "./components/Boids"
+import React from "react"
+import Boids from "./Boids"
 
 function App() {
   return (

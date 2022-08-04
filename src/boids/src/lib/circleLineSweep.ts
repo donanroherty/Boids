@@ -105,7 +105,7 @@ function lineEndPointTest(
   const speed = sweepVec.len()
 
   if (drawDebug) {
-    debugHelper.drawDebugPoint(linePt, 4, "red")
+    debugHelper.drawDebugPoint(linePt, 4, { color: "red" })
   }
 
   const dia1 = from.add(dirPerp.scale(rad))

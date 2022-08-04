@@ -1,13 +1,14 @@
+import React from "react"
 import Icon from "./Icon"
 import SettingExpander from "./SettingExpander"
 import SettingsList from "./SettingsList"
-import { BoidsApp } from "@boids/boids/src/app"
 import Slider from "./Slider"
 import Checkbox from "./Checkbox"
 import Combo from "./Combo"
 import useFlockConfig from "../hooks/flockConfig"
 import useAppConfig from "../hooks/appConfig"
-import { BoidSearchOptimization, ColliderSearchOptimization } from "@boids/boids/src/types"
+import { BoidsApp } from "../boids/src/app"
+import { BoidSearchOpt } from "../boids/src/types"
 
 type SidebarProps = {
   selectedFlock: number
@@ -35,7 +36,7 @@ function Sidebar(props: SidebarProps) {
                     onSelection={unhover}
                     value={appCfg.boidSearchOptimization}
                     setValue={(val: string) =>
-                      appCfg.setBoidSearchOptimization(val as BoidSearchOptimization)
+                      appCfg.setBoidSearchOptimization(val as BoidSearchOpt)
                     }
                   />
                   Draw
@@ -53,15 +54,15 @@ function Sidebar(props: SidebarProps) {
             content={(hovered, unhover) => {
               return (
                 <>
-                  <Combo
+                  {/* <Combo
                     options={["Spatial Hash", "None"]}
                     hidden={!hovered}
                     onSelection={unhover}
                     value={appCfg.colliderSearchOptimization}
                     setValue={(val: string) =>
-                      appCfg.setColliderOptimization(val as ColliderSearchOptimization)
+                      appCfg.setColliderOptimization(val as ColliderSearchOpt)
                     }
-                  />
+                  /> */}
                   Draw
                   <Checkbox
                     checked={appCfg.drawColliderSearchOptimization}
@@ -95,14 +96,22 @@ function Sidebar(props: SidebarProps) {
               title="Vision Range"
               content={() => {
                 return (
-                  <Slider
-                    min={0}
-                    max={300}
-                    step={1}
-                    value={flockCfg.visionRange}
-                    setValue={flockCfg.setVisionRange}
-                    color={flockCfg.color}
-                  />
+                  <>
+                    <Slider
+                      min={0}
+                      max={300}
+                      step={1}
+                      value={flockCfg.visionRange}
+                      setValue={flockCfg.setVisionRange}
+                      color={flockCfg.color}
+                    />
+                    Draw
+                    <Checkbox
+                      checked={flockCfg.drawDebug}
+                      setChecked={flockCfg.setDrawDebug}
+                      color={flockCfg.color}
+                    />
+                  </>
                 )
               }}
             />
@@ -111,14 +120,22 @@ function Sidebar(props: SidebarProps) {
               title="Field Of View"
               content={() => {
                 return (
-                  <Slider
-                    min={0}
-                    max={360}
-                    step={1}
-                    value={flockCfg.fov}
-                    setValue={flockCfg.setFOV}
-                    color={flockCfg.color}
-                  />
+                  <>
+                    <Slider
+                      min={0}
+                      max={360}
+                      step={1}
+                      value={flockCfg.fov}
+                      setValue={flockCfg.setFOV}
+                      color={flockCfg.color}
+                    />
+                    Draw
+                    <Checkbox
+                      checked={flockCfg.drawDebug}
+                      setChecked={flockCfg.setDrawDebug}
+                      color={flockCfg.color}
+                    />
+                  </>
                 )
               }}
             />

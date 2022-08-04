@@ -23,8 +23,8 @@ function createSpatialHashTable(cellSize: number, gridSize: Vec2) {
     insertPointType: (pt: Vec2, value: any) => insertPointType(pt, value, grid, cellSize),
     indexLineType: (from: Vec2, to: Vec2, value: any) =>
       insertLineType(from, to, value, grid, cellSize, gridSize),
-    boxQuery: (pt: Vec2, boxSize: number, drawDebug: boolean = false) =>
-      boxQuery(pt, boxSize, drawDebug, cellSize, gridSize, grid),
+    boxQuery: (pt: Vec2, boxSize: number, drawDebug: boolean = false, debugColor = "red") =>
+      boxQuery(pt, boxSize, drawDebug, cellSize, gridSize, grid, debugColor),
     draw: (canvas: HTMLCanvasElement) => drawGrid(canvas, grid),
   }
 }
@@ -96,7 +96,8 @@ function boxQuery(
   drawDebug: boolean = false,
   cellSize: number,
   gridSize: Vec2,
-  grid: Grid
+  grid: Grid,
+  debugColor: string
 ): any[] {
   const cellsX = Math.floor(gridSize.x / cellSize) + 1
   const cellsY = Math.floor(gridSize.y / cellSize) + 1
@@ -123,7 +124,9 @@ function boxQuery(
   }
   if (drawDebug) {
     selection.forEach((cell) => {
-      debugHelper.drawDebugRect(vec2(cell.rect.x, cell.rect.y), vec2(cell.rect.w, cell.rect.h))
+      debugHelper.drawDebugRect(vec2(cell.rect.x, cell.rect.y), vec2(cell.rect.w, cell.rect.h), {
+        color: debugColor,
+      })
     })
   }
 

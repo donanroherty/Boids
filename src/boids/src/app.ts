@@ -4,7 +4,6 @@ import { scaleCanvasToPixelRatio } from "./lib/rendering"
 import debugHelper from "./lib/debugHelper"
 import { BoidController, createBoidController } from "./boidController"
 import { createScene, Scene } from "./scene.js"
-
 import { BoidSearchOpt, ColliderSearchOpt } from "./types"
 
 type BoidsApp = ReturnType<typeof createBoidsApp>
@@ -48,7 +47,7 @@ function createBoidsApp() {
 
     scene = createScene(canvas, app)
     boidController = createBoidController(canvas)
-    flockHandler = createFlockHandler(scene.entities, scene.getSceneSize)
+    flockHandler = createFlockHandler(scene)
 
     tick.subscribe(update)
   }

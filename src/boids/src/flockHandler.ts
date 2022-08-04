@@ -1,9 +1,10 @@
-import { Boid, BoidConfig, createBoid, createConfig } from "./boid"
+import { BoidConfig, createBoid, createConfig } from "./boid"
 import vec2, { Vec2 } from "./lib/vec2.js"
+import { Scene } from "./scene"
 
 export type FlockHandler = ReturnType<typeof createFlockHandler>
 
-function createFlockHandler(entities: Set<Boid>, getSceneSize: () => Vec2) {
+function createFlockHandler(scene: Scene) {
   let lastFlockID = -1
 
   function addFlock(cfg?: Partial<BoidConfig>, spawnPos?: Vec2) {
@@ -11,20 +12,20 @@ function createFlockHandler(entities: Set<Boid>, getSceneSize: () => Vec2) {
     const config = createConfig(cfg)
 
     const newBoids = Array.from(Array(config.numBoids), (_, index) => {
-      const pos = spawnPos || getSceneSize().mul(vec2(Math.random(), Math.random()))
+      const pos = spawnPos || scene.getSceneSize().mul(vec2(Math.random(), Math.random()))
       const vel = vec2(-Math.random() + Math.random(), -Math.random() + Math.random())
         .norm()
         .scale(config.minSpeed)
 
-      return createBoid(pos, vel, flock, index, config)
+      return createBoid(pos, vel, flock, index, config, scene)
     })
 
-    newBoids.forEach((b) => entities.add(b))
+    newBoids.forEach((b) => scene.entities.add(b))
   }
 
   function removeFlock(flockID: number) {
-    entities.forEach((e) => {
-      if (e.flock === flockID) entities.delete(e)
+    scene.entities.forEach((e) => {
+      if (e.flock === flockID) scene.entities.delete(e)
     })
   }
 
@@ -33,16 +34,16 @@ function createFlockHandler(entities: Set<Boid>, getSceneSize: () => Vec2) {
     const len = boidEntities.length
 
     if (len > cfg.numBoids) {
-      boidEntities.forEach((b, i) => i >= cfg.numBoids && entities.delete(b))
+      boidEntities.forEach((b, i) => i >= cfg.numBoids && scene.entities.delete(b))
     } else if (len < cfg.numBoids) {
       const diff = cfg.numBoids - len
       for (let i = 0; i < diff; i++) {
-        const pos = getSceneSize().mul(vec2(Math.random(), Math.random()))
+        const pos = scene.getSceneSize().mul(vec2(Math.random(), Math.random()))
         const vel = vec2(-Math.random() + Math.random(), -Math.random() + Math.random())
           .norm()
           .scale(cfg.minSpeed)
 
-        entities.add(createBoid(pos, vel, flockID, len + i, cfg))
+        scene.entities.add(createBoid(pos, vel, flockID, len + i, cfg, scene))
       }
     }
   }
@@ -60,20 +61,20 @@ function createFlockHandler(entities: Set<Boid>, getSceneSize: () => Vec2) {
   }
 
   function getAllFlockIDs() {
-    return Array.from(new Set(Array.from(entities).map((e) => e.flock)))
+    return Array.from(new Set(Array.from(scene.entities).map((e) => e.flock)))
   }
 
   function getFlockEntities(flockID: number) {
-    return Array.from(entities).filter((e) => e.flock === flockID, [])
+    return Array.from(scene.entities).filter((e) => e.flock === flockID, [])
   }
 
   function getFlockConfig(flockID: number): BoidConfig | undefined {
-    const member = Array.from(entities).find((e) => e.flock === flockID)
+    const member = Array.from(scene.entities).find((e) => e.flock === flockID)
     return member ? member.config : undefined
   }
 
   function getFlockInitialConfig(flockID: number): BoidConfig | undefined {
-    const member = Array.from(entities).find((e) => e.flock === flockID)
+    const member = Array.from(scene.entities).find((e) => e.flock === flockID)
     return member ? member.defaultConfig : undefined
   }
 

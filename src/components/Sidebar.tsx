@@ -8,7 +8,7 @@ import Combo from "./Combo"
 import useFlockConfig from "../hooks/flockConfig"
 import useAppConfig from "../hooks/appConfig"
 import { BoidsApp } from "../boids/src/app"
-import { BoidSearchOpt, ColliderSearchOpt } from "../boids/src/types"
+import { BoidSearchOpt } from "../boids/src/types"
 
 type SidebarProps = {
   selectedFlock: number
@@ -54,7 +54,7 @@ function Sidebar(props: SidebarProps) {
             content={(hovered, unhover) => {
               return (
                 <>
-                  <Combo
+                  {/* <Combo
                     options={["Spatial Hash", "None"]}
                     hidden={!hovered}
                     onSelection={unhover}
@@ -62,7 +62,7 @@ function Sidebar(props: SidebarProps) {
                     setValue={(val: string) =>
                       appCfg.setColliderOptimization(val as ColliderSearchOpt)
                     }
-                  />
+                  /> */}
                   Draw
                   <Checkbox
                     checked={appCfg.drawColliderSearchOptimization}

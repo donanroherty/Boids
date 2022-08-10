@@ -1,5 +1,5 @@
 import { BoidConfig, createBoid, createConfig } from "./boid"
-import vec2, { Vec2 } from "./lib/vec2.js"
+import vec2, { Vec2 } from "./lib/vec2"
 import { Scene } from "./scene"
 
 export type FlockHandler = ReturnType<typeof createFlockHandler>

@@ -8,6 +8,8 @@
 // stroke-white
 // group-hover:stroke-white
 
+import React from "react"
+
 export type IconType =
   | "settings"
   | "controller"

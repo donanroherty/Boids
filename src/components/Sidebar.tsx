@@ -86,7 +86,6 @@ function Sidebar(props: SidebarProps) {
                     step={1}
                     value={flockCfg.numBoids}
                     setValue={flockCfg.setNumBoids}
-                    color={flockCfg.color}
                   />
                 )
               }}
@@ -103,14 +102,9 @@ function Sidebar(props: SidebarProps) {
                       step={1}
                       value={flockCfg.visionRange}
                       setValue={flockCfg.setVisionRange}
-                      color={flockCfg.color}
                     />
                     Draw
-                    <Checkbox
-                      checked={flockCfg.drawDebug}
-                      setChecked={flockCfg.setDrawDebug}
-                      color={flockCfg.color}
-                    />
+                    <Checkbox checked={flockCfg.drawDebug} setChecked={flockCfg.setDrawDebug} />
                   </>
                 )
               }}
@@ -127,14 +121,9 @@ function Sidebar(props: SidebarProps) {
                       step={1}
                       value={flockCfg.fov}
                       setValue={flockCfg.setFOV}
-                      color={flockCfg.color}
                     />
                     Draw
-                    <Checkbox
-                      checked={flockCfg.drawDebug}
-                      setChecked={flockCfg.setDrawDebug}
-                      color={flockCfg.color}
-                    />
+                    <Checkbox checked={flockCfg.drawDebug} setChecked={flockCfg.setDrawDebug} />
                   </>
                 )
               }}
@@ -150,7 +139,6 @@ function Sidebar(props: SidebarProps) {
                     step={0.001}
                     value={flockCfg.cohesion}
                     setValue={flockCfg.setCohesion}
-                    color={flockCfg.color}
                   />
                 )
               }}
@@ -166,7 +154,6 @@ function Sidebar(props: SidebarProps) {
                     step={0.01}
                     value={flockCfg.alignment}
                     setValue={flockCfg.setAlignment}
-                    color={flockCfg.color}
                   />
                 )
               }}
@@ -184,7 +171,6 @@ function Sidebar(props: SidebarProps) {
                       step={0.1}
                       value={flockCfg.separation}
                       setValue={flockCfg.setSeparation}
-                      color={flockCfg.color}
                     />
                     Range
                     <Slider
@@ -193,7 +179,6 @@ function Sidebar(props: SidebarProps) {
                       step={0.1}
                       value={flockCfg.separationRange}
                       setValue={flockCfg.setSeparationRange}
-                      color={flockCfg.color}
                     />
                   </>
                 )
@@ -210,7 +195,6 @@ function Sidebar(props: SidebarProps) {
                     step={0.1}
                     value={flockCfg.predatorAttack}
                     setValue={flockCfg.setPredatorAttack}
-                    color={flockCfg.color}
                   />
                 )
               }}
@@ -226,7 +210,6 @@ function Sidebar(props: SidebarProps) {
                     step={0.1}
                     value={flockCfg.predatorAvoid}
                     setValue={flockCfg.setPredatorAvoid}
-                    color={flockCfg.color}
                   />
                 )
               }}
@@ -242,7 +225,6 @@ function Sidebar(props: SidebarProps) {
                     step={0.01}
                     value={flockCfg.drag}
                     setValue={flockCfg.setDrag}
-                    color={flockCfg.color}
                   />
                 )
               }}
@@ -258,7 +240,6 @@ function Sidebar(props: SidebarProps) {
                     step={1}
                     value={flockCfg.minSpeed}
                     setValue={flockCfg.setMinSpeed}
-                    color={flockCfg.color}
                   />
                 )
               }}
@@ -274,7 +255,6 @@ function Sidebar(props: SidebarProps) {
                     step={1}
                     value={flockCfg.maxSpeed}
                     setValue={flockCfg.setMaxSpeed}
-                    color={flockCfg.color}
                   />
                 )
               }}
@@ -290,7 +270,6 @@ function Sidebar(props: SidebarProps) {
                     step={0.1}
                     value={flockCfg.obstacleAvoid}
                     setValue={flockCfg.setObstacleAvoid}
-                    color={flockCfg.color}
                   />
                 )
               }}
@@ -306,7 +285,6 @@ function Sidebar(props: SidebarProps) {
                     step={0.1}
                     value={flockCfg.size}
                     setValue={flockCfg.setSize}
-                    color={flockCfg.color}
                   />
                 )
               }}
@@ -318,28 +296,21 @@ function Sidebar(props: SidebarProps) {
                 return (
                   <>
                     Predator
-                    <Checkbox
-                      checked={flockCfg.isPredator}
-                      setChecked={flockCfg.setIsPredator}
-                      color={flockCfg.color}
-                    />
+                    <Checkbox checked={flockCfg.isPredator} setChecked={flockCfg.setIsPredator} />
                     Cohesion
                     <Checkbox
                       checked={flockCfg.cohesionInteraction}
                       setChecked={flockCfg.setCohesionInteraction}
-                      color={flockCfg.color}
                     />
                     Alignment
                     <Checkbox
                       checked={flockCfg.alignmentInteraction}
                       setChecked={flockCfg.setAlignmentInteraction}
-                      color={flockCfg.color}
                     />
                     Separation
                     <Checkbox
                       checked={flockCfg.separationInteraction}
                       setChecked={flockCfg.setSeparationInteraction}
-                      color={flockCfg.color}
                     />
                   </>
                 )

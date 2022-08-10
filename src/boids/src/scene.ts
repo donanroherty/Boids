@@ -1,12 +1,12 @@
-import { Boid, renderBoid, updateBoid, updateVisibleBoids } from "./boid.js"
+import { Boid, renderBoid, updateBoid, updateVisibleBoids } from "./boid"
 import { Edge, Shape } from "./lib/colliders"
-import vec2, { Vec2 } from "./lib/vec2.js"
+import vec2, { Vec2 } from "./lib/vec2"
 
-import { circleQuery, drawQuadTree, pointQuadTree, QuadTreeNode } from "./lib/pointQuadTree.js"
-import { createSpatialIndex } from "./lib/spatialHash.js"
-import { BoidSearchOpt } from "./types.js"
-import { BoidsApp } from "./app.js"
-import debugHelper from "./lib/debugHelper.js"
+import { circleQuery, drawQuadTree, pointQuadTree, QuadTreeNode } from "./lib/pointQuadTree"
+import { createSpatialIndex } from "./lib/spatialHash"
+import { BoidSearchOpt } from "./types"
+import { BoidsApp } from "./app"
+import debugHelper from "./lib/debugHelper"
 
 export type Scene = ReturnType<typeof createScene>
 

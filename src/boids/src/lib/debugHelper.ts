@@ -1,6 +1,6 @@
-import { ShapeRenderOptions } from "./colliders.js"
-import { drawLine, drawCircle, drawCapsule, drawRect } from "./rendering.js"
-import vec2, { Vec2 } from "./vec2.js"
+import { ShapeRenderOptions } from "./colliders"
+import { drawLine, drawCircle, drawCapsule, drawRect } from "./rendering"
+import vec2, { Vec2 } from "./vec2"
 
 function createDebugHelper() {
   let canvas: HTMLCanvasElement | undefined

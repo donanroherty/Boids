@@ -3,7 +3,7 @@ import { createFlockHandler, FlockHandler } from "./flockHandler"
 import { scaleCanvasToPixelRatio } from "./lib/rendering"
 import debugHelper from "./lib/debugHelper"
 import { BoidController, createBoidController } from "./boidController"
-import { createScene, Scene } from "./scene.js"
+import { createScene, Scene } from "./scene"
 import { BoidSearchOpt, ColliderSearchOpt } from "./types"
 
 type BoidsApp = ReturnType<typeof createBoidsApp>

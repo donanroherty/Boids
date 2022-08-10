@@ -54,15 +54,6 @@ function Sidebar(props: SidebarProps) {
             content={(hovered, unhover) => {
               return (
                 <>
-                  {/* <Combo
-                    options={["Spatial Hash", "None"]}
-                    hidden={!hovered}
-                    onSelection={unhover}
-                    value={appCfg.colliderSearchOptimization}
-                    setValue={(val: string) =>
-                      appCfg.setColliderOptimization(val as ColliderSearchOpt)
-                    }
-                  /> */}
                   Draw
                   <Checkbox
                     checked={appCfg.drawColliderSearchOptimization}
@@ -222,7 +213,7 @@ function Sidebar(props: SidebarProps) {
                   <Slider
                     min={0}
                     max={0.2}
-                    step={0.01}
+                    step={0.001}
                     value={flockCfg.drag}
                     setValue={flockCfg.setDrag}
                   />
@@ -322,7 +313,12 @@ function Sidebar(props: SidebarProps) {
               className="group flex gap-2 py-0.5 text-neutral-600 hover:text-neutral-300"
               onClick={flockCfg.reset}
             >
-              <Icon type="reset" color="boids_btn" hoverColor="boids_btn_hover" />
+              <Icon
+                type="reset"
+                color="boids_btn"
+                hoverColor="boids_btn_hover"
+                className="w-4 h-4"
+              />
 
               <div className="text-neutral-600 group-hover:text-neutral-300">
                 <div className="font-sans">Reset</div>

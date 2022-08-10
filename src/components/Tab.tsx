@@ -18,8 +18,8 @@ function Tab(props: TabProps) {
 
   return (
     <div
-      className={`flex items-center pl-1 h-5 gap  border rounded 
-      ${selected ? "border-boids_btn" : "border-transparent"}`}
+      className={`flex items-center pl-1 h-5 gap border rounded`}
+      style={{ borderColor: selected ? color : "transparent" }}
       onClick={onSelect}
     >
       {/* Color label */}

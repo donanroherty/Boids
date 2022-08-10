@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from "react"
+import React, { useCallback, useRef, useEffect } from "react"
 import "./range-input.css"
 
 type RangeInputProps = {
@@ -10,11 +10,11 @@ type RangeInputProps = {
 }
 
 function RangeInput(props: RangeInputProps) {
-  const inputRef = useRef<HTMLInputElement>()
-  const rangeCB = useCallback((el: HTMLInputElement) => {
-    inputRef.current = el
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
     updateBackgroundGradient()
-  }, [])
+  })
 
   function updateBackgroundGradient() {
     const input = inputRef.current
@@ -33,7 +33,7 @@ function RangeInput(props: RangeInputProps) {
 
   return (
     <input
-      ref={rangeCB}
+      ref={inputRef}
       type="range"
       title="slider"
       min={props.min}

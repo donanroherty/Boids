@@ -95,12 +95,7 @@ function Boids() {
       </div>
 
       <div className="self-center border border-solid rounded-lg border-boids_btn bg-boids_scene_bg">
-        <canvas
-          ref={canvasRef}
-          width={canvasResolution.x}
-          height={canvasResolution.y}
-          className=""
-        ></canvas>
+        <canvas ref={canvasRef} width={canvasResolution.x} height={canvasResolution.y}></canvas>
       </div>
     </div>
   )

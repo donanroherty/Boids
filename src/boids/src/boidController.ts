@@ -1,6 +1,6 @@
 import { Boid } from "./boid"
 import debugHelper from "./lib/debugHelper"
-import vec2, { Vec2 } from "./lib/vec2.js"
+import vec2, { Vec2 } from "./lib/vec2"
 
 export type BoidController = ReturnType<typeof createBoidController>
 

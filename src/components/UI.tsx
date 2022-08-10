@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useState, useCallback, useRef, useEffect } from "react"
 import { randColor } from "../utils"
 import Button from "./Button"
 import TabBar from "./TabBar"
@@ -14,10 +14,15 @@ type UIProps = {
 
 function UI(props: UIProps) {
   const { boidsApp } = props
-
   const [selectedFlock, setSelectedFlock] = useState(0)
   const [tabData, setTabData] = useState(getUpdatedTabData())
   const [isPaused, setIsPaused] = useState(boidsApp.getPaused())
+
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    onSelectFlock(0)
+  }, [])
 
   function onAddFlock() {
     const usedColors = boidsApp
@@ -40,6 +45,12 @@ function UI(props: UIProps) {
   function onSelectFlock(idx: number) {
     const flocks = boidsApp.getFlockhandler().getAllFlockIDs()
     setSelectedFlock(flocks[idx])
+
+    const ui = ref.current
+    if (ui) {
+      const cfg = boidsApp.getFlockhandler().getFlockConfig(flocks[idx])
+      if (cfg) ui.style.setProperty("--flock-color", cfg.color)
+    }
   }
 
   function getUpdatedTabData() {
@@ -60,7 +71,10 @@ function UI(props: UIProps) {
   }
 
   return (
-    <div className="absolute grid h-full w-full grid-cols-1 grid-rows-[minmax(auto,1fr)] text-xs">
+    <div
+      ref={ref}
+      className="absolute grid h-full w-full grid-cols-1 grid-rows-[minmax(auto,1fr)] text-xs"
+    >
       <Sidebar boidsApp={boidsApp} selectedFlock={selectedFlock} />
 
       {/* Bottom bar */}

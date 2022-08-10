@@ -1,8 +1,8 @@
-import { drawArcCone, drawBoid, drawCircle } from "./lib/rendering.js"
-import { closestPointOnLine, raycastCone } from "./lib/utils.js"
+import { drawArcCone, drawBoid, drawCircle } from "./lib/rendering"
+import { closestPointOnLine, raycastCone } from "./lib/utils"
 import { getFirstSweptHit } from "./lib/utils"
-import vec2, { Vec2 } from "./lib/vec2.js"
-import { Hit } from "./types.js"
+import vec2, { Vec2 } from "./lib/vec2"
+import { Hit } from "./types"
 import { Scene } from "./scene"
 
 type BoidConfig = ReturnType<typeof createConfig>

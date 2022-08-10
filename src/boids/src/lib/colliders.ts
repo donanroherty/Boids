@@ -1,5 +1,5 @@
-import { drawLine, drawPolygon } from "./rendering.js"
-import vec2, { Vec2 } from "./vec2.js"
+import { drawLine, drawPolygon } from "./rendering"
+import vec2, { Vec2 } from "./vec2"
 
 type Shape = {
   options: ShapeRenderOptions

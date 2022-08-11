@@ -2,21 +2,26 @@ import { useCallback, useState } from "react"
 import UI from "./UI"
 import { colors } from "../utils"
 import { createBoidsApp, BoidsApp } from "../boids/src/app"
-import React from "react"
 import { getGeometry } from "../boids/src/scene-geo"
 import vec2 from "../boids/src/lib/vec2"
-
 import { polygonCollider, boxCollider } from "../boids/src/lib/colliders"
+import "../index.css"
 
-function Boids() {
+type BoidsProps = {
+  width?: number
+  height?: number
+}
+
+function Boids(props: BoidsProps) {
+  const { width = 640, height = 640 } = props
+
   const [boidsApp] = useState<BoidsApp>(createBoidsApp())
-  const [canvasResolution] = useState({ x: 640, y: 640 })
   const [isInitialized, setIsInitialized] = useState(false)
 
   const canvasRef = useCallback((canvas: HTMLCanvasElement) => {
     if (!canvas) return
 
-    boidsApp.init(canvas, canvasResolution)
+    boidsApp.init(canvas, { x: width, y: height })
     buildScene()
     setIsInitialized(true)
 
@@ -86,7 +91,7 @@ function Boids() {
     }
   }, [])
 
-  const dimensionsStyle = { width: `${canvasResolution.x}px`, height: `${canvasResolution.y}px` }
+  const dimensionsStyle = { width: `${width}px`, height: `${height}px` }
 
   return (
     <div style={dimensionsStyle}>
@@ -95,7 +100,7 @@ function Boids() {
       </div>
 
       <div className="self-center border border-solid rounded-lg border-boids_btn bg-boids_scene_bg">
-        <canvas ref={canvasRef} width={canvasResolution.x} height={canvasResolution.y}></canvas>
+        <canvas ref={canvasRef} width={width} height={height}></canvas>
       </div>
     </div>
   )

@@ -3,32 +3,38 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "module": "./dist/index.es.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.es.js",
+    "./style.css": "./dist/style.css"
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "buildpack": "npm run build && npm pack",
     "preview": "vite preview"
   },
   "dependencies": {
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
-  },
-  "exports": "./src/components/Boids.tsx",
-  "typesVersions": {
-    "*": {
-      "/*": [
-        "/src/*"
-      ]
-    }
+    "react-dom": "^18.2.0",
+    "tailwindcss": "^3.1.6"
   },
   "devDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "@types/node": "^18.7.1",
     "@types/react": "^18.0.15",
     "@types/react-dom": "^18.0.6",
     "@types/tailwindcss": "^3.1.0",
     "@vitejs/plugin-react": "^2.0.0",
     "autoprefixer": "^10.4.7",
     "postcss": "^8.4.14",
-    "tailwindcss": "^3.1.6",
     "typescript": "^4.6.4",
-    "vite": "^3.0.0"
+    "vite": "^3.0.0",
+    "vite-plugin-dts": "^1.4.1"
   }
 }

@@ -7,7 +7,7 @@ import vec2 from "../boids/src/lib/vec2"
 import { polygonCollider, boxCollider } from "../boids/src/lib/colliders"
 import "../index.css"
 
-type BoidsProps = {
+export type BoidsProps = {
   width?: number
   height?: number
 }

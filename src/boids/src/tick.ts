@@ -21,10 +21,12 @@ function createTick() {
 
     tickFunctions.forEach((tf) => tf(1 / targetFPS))
 
-    timeout = window.setTimeout(() => {
-      doTick_R(now)
-      lastRealDelta = now - timestamp
-    }, 1000 / targetFPS)
+    if (typeof window !== "undefined") {
+      timeout = window.setTimeout(() => {
+        doTick_R(now)
+        lastRealDelta = now - timestamp
+      }, 1000 / targetFPS)
+    }
 
     return timeout
   }

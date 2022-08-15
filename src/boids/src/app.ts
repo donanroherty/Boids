@@ -1,4 +1,4 @@
-import createTick from "./tick"
+import createTick, { Tick } from "./tick"
 import { createFlockHandler, FlockHandler } from "./flockHandler"
 import { scaleCanvasToPixelRatio } from "./lib/rendering"
 import debugHelper from "./lib/debugHelper"
@@ -13,7 +13,7 @@ function createBoidsApp() {
   let scene: Scene
   let boidController: BoidController
   let flockHandler: FlockHandler
-  let tick = createTick()
+  let tick: Tick
   let isPaused: boolean
   let boidSearchOptimization: BoidSearchOpt = BoidSearchOpt.SpatialHash
   let drawBoidSearchOptimization = false
@@ -42,6 +42,7 @@ function createBoidsApp() {
   function init(cvs: HTMLCanvasElement, canvasResolution: { x: number; y: number }) {
     canvas = cvs
     debugHelper.init(canvas)
+    tick = createTick()
 
     scaleCanvasToPixelRatio(canvas, canvasResolution)
 

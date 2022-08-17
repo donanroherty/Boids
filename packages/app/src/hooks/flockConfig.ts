@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react"
-import { BoidsApp } from "../boids/src/app"
-import { BoidConfig } from "../boids/src/boid"
+import { BoidsApp } from "@boids/lib/src/app"
+import { BoidConfig } from "@boids/lib/src/boid"
 
 function useFlockConfig(boidsApp: BoidsApp, selectedFlock: number) {
   const cfg = boidsApp.getFlockhandler().getFlockConfig(selectedFlock) as BoidConfig

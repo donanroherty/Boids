@@ -1,4 +1,3 @@
-import React from "react"
 import Icon from "./Icon"
 import SettingExpander from "./SettingExpander"
 import SettingsList from "./SettingsList"
@@ -7,8 +6,8 @@ import Checkbox from "./Checkbox"
 import Combo from "./Combo"
 import useFlockConfig from "../hooks/flockConfig"
 import useAppConfig from "../hooks/appConfig"
-import { BoidsApp } from "../boids/src/app"
-import { BoidSearchOpt } from "../boids/src/types"
+import { BoidsApp } from "@boids/lib/src/app"
+import { BoidSearchOpt } from "@boids/lib/src/types"
 
 type SidebarProps = {
   selectedFlock: number

@@ -1,12 +1,12 @@
-import React, { useState, useCallback, useRef, useEffect } from "react"
+import { useState, useRef, useEffect } from "react"
 import { randColor } from "../utils"
 import Button from "./Button"
 import TabBar from "./TabBar"
 import Tooltip from "./Tooltip"
 import Sidebar from "./Sidebar"
 import FPSCounter from "./FPSCounter"
-import { BoidConfig } from "../boids/src/boid"
-import { BoidsApp } from "../boids/src/app"
+import { BoidConfig } from "@boids/lib/src/boid"
+import { BoidsApp } from "@boids/lib/src/app"
 
 type UIProps = {
   boidsApp: BoidsApp

@@ -1,10 +1,10 @@
 import { useCallback, useState } from "react"
 import UI from "./UI"
 import { colors } from "../utils"
-import { createBoidsApp, BoidsApp } from "../boids/src/app"
-import { getGeometry } from "../boids/src/scene-geo"
-import vec2 from "../boids/src/lib/vec2"
-import { polygonCollider, boxCollider } from "../boids/src/lib/colliders"
+import { createBoidsApp, BoidsApp } from "@boids/lib/src/app"
+import { getGeometry } from "@boids/lib/src/scene-geo"
+import vec2 from "@boids/lib/src/lib/vec2"
+import { polygonCollider, boxCollider } from "@boids/lib/src/lib/colliders"
 import "../index.css"
 
 export type BoidsProps = {

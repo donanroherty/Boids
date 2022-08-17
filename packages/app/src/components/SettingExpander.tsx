@@ -1,4 +1,3 @@
-import React from "react"
 import { useEffect, useRef, useState, useCallback } from "react"
 
 type SettingExpanderProps = {

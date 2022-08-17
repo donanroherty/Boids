@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { BoidsApp } from "../boids/src/app"
+import { BoidsApp } from "@boids/lib/src/app"
 
 function useAppConfig(boidsApp: BoidsApp) {
   const [boidSearchOptimization, setBoidSearchOptimization] = useState(

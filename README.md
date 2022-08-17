@@ -1,12 +1,23 @@
 # Boids
 
-This is an implementation of Craig Reynolds flocking algorithm, boids.
+This is an implementation of Craig Reynolds flocking algorithm, built using Vite, Typescript, React and Tailwind.
 
-This repository accompanies an article I wrote on my blog at https://www.ronandoherty.com/blog/boids.  Version v1.0.0 implements the core rules of cohesion, alignment and separation with an additional drag force to simulate air or fluidfriction.
+Demo: https://ronandoherty.com/projects/boids
 
-The boids source and user interface are provided in separate folders.  The boids algorithm is implemented in JavaScript, no libraries necessary.  The GUI is created with SolidJS, TailwindCSS and builds to eith a web app or a web component.  Use the following commands to launch the GUI:
 
 ```bash
-npm install
-npm run dev
+npm run dev # run local dev server
+
+npm run build # build the project as a library to ./dist
 ```
+
+
+**Features:**
+- Predator boids which hunt smaller boids
+- Spatial Hashing for boid and collider lookup
+- Quad Tree for boid lookup
+- Interactions between flocks
+- Obstacle avoidance
+- Swept collisions with static geometry
+- Field of view controls
+

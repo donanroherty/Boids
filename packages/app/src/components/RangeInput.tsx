@@ -35,7 +35,7 @@ function RangeInput(props: RangeInputProps) {
     <StyledInput
       ref={inputRef}
       type="range"
-      title="slider"
+      // title="slider"
       min={props.min}
       max={props.max}
       step={props.step}

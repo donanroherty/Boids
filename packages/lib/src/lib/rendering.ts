@@ -98,21 +98,21 @@ function drawArcCone(
   ctx.translate(pos.x, pos.y)
   ctx.rotate(Math.atan2(dir.y, dir.x) - Math.PI * 0.5)
 
-  {
-    // ctx.globalCompositeOperation = "destination-in"
-    ctx.globalAlpha = alpha
-    ctx.beginPath()
-    const coneGrad = ctx.createConicGradient(arcEnd, 0, 0)
-    const transWhite = "rgba(255,255,255,0)"
-    const fade = 0.01
-    coneGrad.addColorStop(0, transWhite)
-    coneGrad.addColorStop(fade, color)
-    coneGrad.addColorStop(Math.max(fov / 360 - fade, 0), color)
-    coneGrad.addColorStop(fov / 360, transWhite)
-    ctx.arc(0, 0, radius, 0, Math.PI * 2, true)
-    ctx.fillStyle = coneGrad
-    ctx.fill()
-  }
+  // {
+  //   // ctx.globalCompositeOperation = "destination-in"
+  //   ctx.globalAlpha = alpha
+  //   ctx.beginPath()
+  //   const coneGrad = ctx.createConicGradient(arcEnd, 0, 0)
+  //   const transWhite = "rgba(255,255,255,0)"
+  //   const fade = 0.01
+  //   coneGrad.addColorStop(0, transWhite)
+  //   coneGrad.addColorStop(fade, color)
+  //   coneGrad.addColorStop(Math.max(fov / 360 - fade, 0), color)
+  //   coneGrad.addColorStop(fov / 360, transWhite)
+  //   ctx.arc(0, 0, radius, 0, Math.PI * 2, true)
+  //   ctx.fillStyle = coneGrad
+  //   ctx.fill()
+  // }
 
   // draw arc stroke
   {

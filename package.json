@@ -16,7 +16,9 @@
   ],
   "scripts": {
     "dev": "npm run dev -w @boids/app",
-    "buildpack": "mkdir dist & npm run buildpack --pack-destination ../../dist -w @boids/app"
+    "build": "npm run build -w @boids/app",
+    "buildpack": "mkdir dist & npm run buildpack --pack-destination ../../dist -w @boids/app",
+    "deploy": "cd packages/app && vercel"
   },
   "dependencies": {
     "@boids/app": "*",

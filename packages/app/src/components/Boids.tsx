@@ -99,7 +99,7 @@ function Boids(props: BoidsProps) {
         {isInitialized && <UI boidsApp={boidsApp} />}
       </div>
 
-      <div className="self-center border border-solid rounded-lg border-boids_btn bg-boids_scene_bg">
+      <div className="self-center rounded-lg bg-boids_scene_bg">
         <canvas ref={canvasRef} width={width} height={height}></canvas>
       </div>
     </div>
